@@ -1,0 +1,12 @@
+export {default as Logo} from './logo.png';
+export {default as CarOne} from './car.png';
+export {default as SPFK} from './spfk_logo.png';
+export {default as ClientsIcon} from './clients_icon.png';
+export {default as OrdersIcon} from './orders_icon.png';
+export {default as PlansIcon} from './plans_icon.png';
+export {default as MyAccountIcon} from './myaccount_icon.png';
+export {default as CirclePlus} from './circle_plus_icon.png';
+export {default as ReturnIcon} from './return_icon.png';
+export {default as SliderIcon} from './slider_icon.png';
+export {default as PencilIcon} from './pencil_icon.png';
+export {default as NoImage} from './no_image.png';

@@ -1,0 +1,41 @@
+.dashboard_home_ctr {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .dashboard_home_filter {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+  }
+
+  .dashboard_box {
+    display: flex;
+    color: #3e3e3e;
+    padding: 20px;
+    border-radius: 10px;
+    background: #f6f6f6;
+    .dashboard_info {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      gap: 20px;
+      .dashboard_info_title {
+        font-weight: 500;
+        font-size: 13px;
+      }
+      .dashboard_info_value {
+        font-size: 88px;
+        font-weight: 500;
+        line-height: 104%;
+      }
+    }
+  }
+  .dashboard_text_title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #3e3e3e;
+  }
+}

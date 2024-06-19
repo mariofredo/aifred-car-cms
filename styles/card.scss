@@ -1,0 +1,55 @@
+.card_ctr {
+  font-family: 'Manrope' !important;
+  position: relative;
+  border-radius: 20px;
+  background: #fff;
+  transition: all 0.5s ease;
+  bottom: 0;
+  &:hover {
+    bottom: 10px;
+    transition: all 0.5s ease;
+  }
+  .card_image_ctr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e2e2e2;
+    border-radius: 20px;
+    min-height: 120px;
+    max-height: 180px;
+    width: 100%;
+    img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+    }
+  }
+  .card_body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 18px;
+
+    .card_title {
+      font-family: 'Manrope' !important;
+      color: #3e3e3e;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .card_attribute {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .card_type {
+        font-family: 'Manrope' !important;
+        font-size: 11px;
+        font-weight: 300;
+      }
+      .card_price {
+        font-family: 'Manrope' !important;
+        font-size: 11px;
+        font-weight: 700;
+      }
+    }
+  }
+}
