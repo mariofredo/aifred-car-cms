@@ -1,6 +1,6 @@
 'use client';
 import {useState} from 'react';
-import {Card, DateRange, Select, Table} from '@/components';
+import {Card, DateRange, HomeHeader, Select, Table} from '@/components';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -32,6 +32,7 @@ export default function DashboardHome() {
   const [dataTotalCompleted, setTotalCompleted] = useState();
   return (
     <div className='dashboard_home_ctr'>
+      <HomeHeader />
       <div className='dashboard_home_filter'>
         <Select
           options={[
@@ -95,8 +96,6 @@ export default function DashboardHome() {
                   },
                   datalabels: {
                     formatter(value, context) {
-                      console.log(value, 'value');
-                      console.log(context, 'context');
                       if (context.dataset.data) {
                         const total = (context.dataset.data as number[]).reduce(
                           (total, num) => total + num,

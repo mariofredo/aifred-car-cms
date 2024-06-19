@@ -10,3 +10,8 @@ export {default as ReturnIcon} from './return_icon.png';
 export {default as SliderIcon} from './slider_icon.png';
 export {default as PencilIcon} from './pencil_icon.png';
 export {default as NoImage} from './no_image.png';
+export {default as DummyBanner} from './dummy_banner.png';
+export {default as DummyProfileIcon} from './dummy_profile_icon.png';
+export {default as UserIcon} from './user_icon.svg';
+export {default as ContactIcon} from './contact_icon.svg';
+export {default as MailIcon} from './mail_icon.svg';

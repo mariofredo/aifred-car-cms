@@ -1,44 +1,120 @@
+import Image from 'next/image';
+import {ReturnIcon, SliderIcon, PencilIcon, NoImage} from '@/public';
+import {HiDotsVertical} from 'react-icons/hi';
+import {useRouter} from 'next/navigation';
 import '@/styles/table.scss';
-interface TableProps {
-  tableName?: {
-    name: string;
-    colSpan: number;
-  }[];
-  tableValue?: {[key: string]: any}[];
-  tableKey?: string[];
-  tHeadBg?: string;
-}
 export default function Table({
-  tableName = [],
-  tableValue = [],
-  tableKey = [],
-  tHeadBg = '#B5B5B5',
-}: TableProps) {
+  listTitle,
+  data,
+  type,
+  listKey,
+  productId,
+}: {
+  listTitle: string[];
+  data: {[key: string]: any}[];
+  type: string;
+  listKey: string[];
+  productId: number | null;
+}) {
+  const router = useRouter();
   return (
-    <div className='table_wrapper'>
-      <table className='table_ctr'>
-        <thead
-          className='table_head_ctr'
-          style={{
-            background: tHeadBg,
-          }}
-        >
-          <tr>
-            {tableName.map((item) => (
-              <th colSpan={item.colSpan}>{item.name}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className='table_body_ctr'>
-          {tableValue.map((item) => (
-            <tr>
-              {tableKey.map((key) => (
-                <td>{item[key]}</td>
-              ))}
-            </tr>
+    <table>
+      <thead>
+        <tr>
+          {listTitle.map((title) => (
+            <th>{title}</th>
           ))}
-        </tbody>
-      </table>
-    </div>
+          <th className='table_pencil'>
+            <Image
+              src={ReturnIcon}
+              className='w-[20px] h-[15px]'
+              alt='return_icon'
+            />
+          </th>
+          <th className='table_dots'>
+            <Image
+              src={SliderIcon}
+              className='w-[20px] h-[20px]'
+              alt='slider_icon'
+            />
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((el, i) =>
+          type === 'question' ? (
+            <tr key={`question_${i}`}>
+              {listKey.map((key) => (
+                <td>{el[key]}</td>
+              ))}
+              <td className='table_pencil'>
+                <Image
+                  src={PencilIcon}
+                  className='w-[20px] h-[20px]'
+                  alt='return_icon'
+                  onClick={() => {
+                    router.push(`/dashboard/question/${el.batch}`);
+                  }}
+                />
+              </td>
+              <td className='table_dots'>
+                <HiDotsVertical className='w-[20px] h-[20px]' />
+              </td>
+            </tr>
+          ) : (
+            <tr key={`cat_${i}`}>
+              {listKey.map((key) => (
+                <>
+                  {key === 'status' ? (
+                    <td>
+                      <span
+                        className={`table_status ${
+                          el[key] ? 'publish' : 'draft'
+                        }`}
+                      >
+                        {el[key] ? 'Publish' : 'Draft'}
+                      </span>
+                    </td>
+                  ) : key === 'image' ? (
+                    <td className='flex items-center justify-center'>
+                      <Image
+                        src={el?.image || NoImage}
+                        height={200}
+                        width={300}
+                        alt={`gambar`}
+                        className='rounded-md'
+                      />
+                    </td>
+                  ) : (
+                    <td>{el[key]}</td>
+                  )}
+                </>
+              ))}
+              {/* <td>
+                <div>John Doe</div>
+                <div className='table_date'>18 January 2024</div>
+              </td> */}
+              <td className='table_pencil'>
+                <Image
+                  src={PencilIcon}
+                  className='w-[20px] h-[20px]'
+                  alt='return_icon'
+                  onClick={() =>
+                    type === 'comparison'
+                      ? router.push(
+                          `/dashboard/comparisonProduct/${el.object_id}?category_level_1_product_id=${productId}`
+                        )
+                      : router.push(`/dashboard/product/${el.object_id}`)
+                  }
+                />
+              </td>
+              <td className='table_dots'>
+                <HiDotsVertical className='w-[20px] h-[20px]' />
+              </td>
+            </tr>
+          )
+        )}
+      </tbody>
+    </table>
   );
 }

@@ -45,13 +45,13 @@ export const MENU_ITEMS = [
   //   type: 'normal',
   //   subMenu: [],
   // },
-  // {
-  //   title: 'My Account',
-  //   path: '/dashboard/myAccount',
-  //   icon: '',
-  //   type: 'normal',
-  //   subMenu: [],
-  // },
+  {
+    title: 'My Account',
+    path: '/dashboard/account',
+    icon: '',
+    type: 'normal',
+    subMenu: [],
+  },
   {
     title: 'Logout',
     path: '/login',

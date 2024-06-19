@@ -1,0 +1,16 @@
+.button_style {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  &:hover {
+    transition: 1s ease;
+    opacity: 0.5;
+  }
+  &:disabled {
+    transition: 1s ease;
+    opacity: 0.5;
+  }
+}
