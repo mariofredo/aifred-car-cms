@@ -1,9 +1,17 @@
-import {Select, DefaultContainer, Table} from '@/components';
+'use client';
+import {useState} from 'react';
+import {Select, DefaultContainer, Table, TablePagination} from '@/components';
 import '@/styles/submission.scss';
 
 export default function page() {
+  const [pagination, setPagination] = useState({
+    limit: 10,
+    currentPage: 1,
+    totalCount: 0,
+  });
+
   return (
-    <div>
+    <div className='flex flex-col gap-[15px]'>
       <DefaultContainer title={'Submission'} />
       <div className='flex gap-[23px]'>
         <Select label={'SERIES'} />
@@ -13,12 +21,14 @@ export default function page() {
         <p>Submission List</p>
         <Table
           listTitle={[
+            'Unique ID',
             'Brand',
-            'Name',
-            'Sub-series name',
+            'Date Submitted',
+            'Duration',
             'Status',
-            // 'Created by and date',
-            'Image',
+            'Name',
+            'Email',
+            'Action',
           ]}
           data={[
             {
@@ -38,6 +48,11 @@ export default function page() {
           ]}
           type={'product'}
           productId={null}
+        />
+        <TablePagination
+          pagination={pagination}
+          setPagination={setPagination}
+          limit={pagination.limit}
         />
       </div>
     </div>

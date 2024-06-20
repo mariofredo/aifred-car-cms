@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import {ContactIcon, MailIcon, UserIcon} from '@/public';
-import {Select, DefaultContainer, TableHome, Card} from '@/components';
+import {DefaultContainer, TableHome, Card} from '@/components';
 import '@/styles/submissionDetail.scss';
 
 export default function page() {
   return (
-    <div>
+    <div className='flex flex-col gap-[15px]'>
       <DefaultContainer title={'Submission Detail'} />
       <div className='sd_about'>
         <div className='sd_about_title'>About</div>

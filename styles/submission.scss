@@ -1,3 +1,9 @@
-.submission_container{
-    
+.submission_container {
+  display: flex;
+  padding: 14.551px;
+  flex-direction: column;
+  gap: 9.7px;
+
+  border-radius: 9.7px;
+  background: var(--Hovering, #f6f6f6);
 }
