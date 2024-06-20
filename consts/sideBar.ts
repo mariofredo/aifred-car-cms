@@ -14,7 +14,7 @@ export const MENU_ITEMS = [
     subMenu: [
       {
         subMenuTitle: 'Add Product',
-        path: '/dashboard/product/addProduct',
+        path: '/dashboard/product/create',
       },
       {
         subMenuTitle: 'Product Library',

@@ -1,6 +1,13 @@
 'use client';
 import {useState} from 'react';
-import {Card, DateRange, HomeHeader, Select, Table} from '@/components';
+import {
+  Card,
+  DateRange,
+  HomeHeader,
+  Select,
+  Table,
+  TableHome,
+} from '@/components';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -174,7 +181,7 @@ export default function DashboardHome() {
       </div>
       <div className='grid grid-cols-4 gap-[20px]'>
         <div className='col-span-1 dashboard_box'>
-          <Table
+          <TableHome
             tableName={[{name: 'COMPLETED DURATION', colSpan: 2}]}
             tableValue={[
               {
@@ -264,7 +271,7 @@ export default function DashboardHome() {
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Summary of Answered Questions</p>
-          <Table
+          <TableHome
             tableName={[
               {
                 name: 'Question',

@@ -1,0 +1,99 @@
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 55px;
+  height: 25px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fff;
+  border: 1px solid #3e3e3e;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 2px;
+  background-color: #3e3e3e;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #fff;
+  border: 1px solid #18be1f;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #fff;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(28px);
+  -ms-transform: translateX(28px);
+  transform: translateX(28px);
+  background: #18be1f;
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 20px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.tag_input_ctr {
+  margin-top: 20px;
+  &:focus-visible {
+    border: 0 solid #fff;
+  }
+  .tag_input_style {
+    width: 100%;
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}
+
+.tag_suggestions_style {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #3e3e3e;
+  ul {
+    li {
+      padding: 5px 10px;
+      mark {
+        background: transparent;
+      }
+    }
+  }
+}
+
+.tag_selected_style {
+}
+.tag_activeSuggestion_style {
+  border-radius: 10px;
+  background: #dfdfdf;
+}
