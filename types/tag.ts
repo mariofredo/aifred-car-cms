@@ -1,4 +1,5 @@
 export interface Tag {
   id: string;
-  text: string;
+  [key: string]: any;
+  className: string;
 }
