@@ -1,14 +1,22 @@
 .dc_ctr {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   .dc_title {
     color: #3e3e3e;
     font-size: 48px;
     font-weight: 500;
     border-bottom: 2px solid #dfdfdf;
     padding-bottom: 25px;
-    margin-bottom: 25px;
+    // margin-bottom: 25px;
+  }
+  .dc_filter_ctr {
+    display: flex;
+    width: 100%;
+    gap: 20px;
   }
   .dc_table_ctr {
-    padding: 14.55px;
+    padding: 14.5px;
     background: #f6f6f6;
     border-radius: 10px;
     .dc_action_ctr {
@@ -16,29 +24,43 @@
       gap: 20px;
       margin-bottom: 10px;
 
-      button {
-        padding: 10px 21px;
-        border-radius: 12px;
-        background: #dfdfdf;
-        font-size: 16px;
-        width: 20%;
-        gap: 15px;
-        img {
+      // button {
+      //   padding: 10px 21px;
+      //   border-radius: 12px;
+      //   background: #dfdfdf;
+      //   font-size: 16px;
+      //   width: 20%;
+      //   gap: 15px;
+      //   img {
+      //     width: 20px;
+      //     height: 20px;
+      //   }
+      // }
+      .dc_search_ctr {
+        width: 100%;
+        position: relative;
+        .dc_search_icon {
           width: 20px;
           height: 20px;
+          position: absolute;
+          top: 50%;
+          left: 15px;
+          transform: translateY(-50%);
         }
-      }
-      .dc_search_ctr {
-        width: 80%;
-        position: relative;
         input[type='text'] {
           padding: 10px 21px 10px 41px;
           border-radius: 12px;
           border: 2px solid #dfdfdf;
+          color: #b5b5b5;
+          font-weight: 500;
           font-size: 16px;
           width: 100%;
+          height: 100%;
         }
       }
+    }
+    .dc_table {
+      overflow-x: scroll;
     }
   }
 }

@@ -137,72 +137,72 @@ export default function ProductForm(
   );
 
   const handleGetDetail = async () => {
-    const data = await getDetailCategoryTwo({productId});
-    setPayload({
-      ...payload,
-      company_brand_id: data.company_brand_id,
-      category_level_1_id: data.category_level_1_id,
-      name: data.name,
-      price: data.price.split('.').join(''),
-      status: data.status,
-      image: null,
-    });
-    setTags(data.tags.map((el: string) => ({id: el, text: el})));
-    setSpecs((prev) => {
-      let updatedData = [...prev];
-      updatedData.map((obj) => {
-        if (data.specs) {
-          let found = data.specs.find(
-            (el: {[key: string]: any}) => obj.id === el.id
-          );
-          if (found) obj.checked = true;
-          return obj;
-        }
-      });
-      setSelectedSpecs((prev) => {
-        return data.specs.map((el: SelectedSpec) => {
-          const found = specs.find((key) => key.id === el.id);
-          if (found) {
-            return {
-              id: el.id,
-              checked: true,
-              name: found.name,
-              value: el.value,
-            };
-          }
-          return {
-            id: el.id,
-            checked: true,
-            name: '',
-            value: el.value,
-          };
-        });
-      });
-      return updatedData;
-    });
-    setPreviewImg(data.image);
-    setComparison(data.comparison);
-    setFetchSpecs(true);
+    // const data = await getDetailCategoryTwo({productId});
+    // setPayload({
+    //   ...payload,
+    //   company_brand_id: data.company_brand_id,
+    //   category_level_1_id: data.category_level_1_id,
+    //   name: data.name,
+    //   price: data.price.split('.').join(''),
+    //   status: data.status,
+    //   image: null,
+    // });
+    // setTags(data.tags.map((el: string) => ({id: el, text: el})));
+    // setSpecs((prev) => {
+    //   let updatedData = [...prev];
+    //   updatedData.map((obj) => {
+    //     if (data.specs) {
+    //       let found = data.specs.find(
+    //         (el: {[key: string]: any}) => obj.id === el.id
+    //       );
+    //       if (found) obj.checked = true;
+    //       return obj;
+    //     }
+    //   });
+    //   setSelectedSpecs((prev) => {
+    //     return data.specs.map((el: SelectedSpec) => {
+    //       const found = specs.find((key) => key.id === el.id);
+    //       if (found) {
+    //         return {
+    //           id: el.id,
+    //           checked: true,
+    //           name: found.name,
+    //           value: el.value,
+    //         };
+    //       }
+    //       return {
+    //         id: el.id,
+    //         checked: true,
+    //         name: '',
+    //         value: el.value,
+    //       };
+    //     });
+    //   });
+    //   return updatedData;
+    // });
+    // setPreviewImg(data.image);
+    // setComparison(data.comparison);
+    // setFetchSpecs(true);
   };
   useEffect(() => {
-    setFetchSpecs(false);
-    getListSpec();
-    getListTag();
-    getListBrand(type === 'addProduct' || type === 'detailProduct' ? 0 : 1);
+    // setFetchSpecs(false);
+    // getListSpec();
+    // getListTag();
+    // getListBrand(type === 'addProduct' || type === 'detailProduct' ? 0 : 1);
   }, []);
 
   useEffect(() => {
-    if (
-      (type === 'detailProduct' || type === 'detailComparison') &&
-      specs.length > 0 &&
-      !fetchSpecs
-    ) {
-      handleGetDetail();
-    }
+    // if (
+    //   (type === 'detailProduct' || type === 'detailComparison') &&
+    //   specs.length > 0 &&
+    //   !fetchSpecs
+    // ) {
+    //   handleGetDetail();
+    // }
   }, [specs]);
 
   useEffect(() => {
-    if (payload.company_brand_id) getListCategoryOne(payload.company_brand_id);
+    // if (payload.company_brand_id) getListCategoryOne(payload.company_brand_id);
   }, [payload.company_brand_id]);
 
   return (
@@ -257,207 +257,88 @@ export default function ProductForm(
         </div>
         <div className='col-span-1 flex flex-col justify-center'>
           <div className='text-[15px]'>
-            PRODUCT NAME<span className='text-[#F31D1E]'>*</span>
+            SERIES NAME<span className='text-[#F31D1E]'>*</span>
           </div>
           <div className='text-[12px] text-[#b5b5b5]'>
-            Nama produk max. 20 karakter
+            Nama series max. 20 karakter
           </div>
         </div>
         <div className='col-span-2 flex gap-[20px] '>
-          <select
-            name='brand'
-            className='h-full w-[80%] rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+          <input
+            name='series'
+            className='h-full w-full rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setPayload({...payload, category_level_1_id: e.target.value})
             }
             value={payload.category_level_1_id}
-            disabled={!payload.company_brand_id}
-          >
-            <option value='' disabled>
-              Select the product
-            </option>
-            {categoryOne.map((catOne) => (
-              <option key={`${catOne.id}_${catOne.name}`} value={catOne.id}>
-                {catOne.name}
-              </option>
-            ))}
-          </select>
-          <button
-            className='flex justify-center items-center py-[10px] px-[21px] rounded-[12px] bg-[#dfdfdf] text-[14px] w-[30%] gap-[15px] whitespace-nowrap'
-            onClick={() => {
-              setModalProps({title: 'NEW PRODUCT', content: 'product'});
-              setShowModal(true);
-            }}
-            disabled={!payload.company_brand_id}
-          >
-            <Image
-              src={CirclePlus}
-              alt='circle_plus'
-              className='w-[15px] h-[15px]'
-            />{' '}
-            New Product
-          </button>
-        </div>
-        <div className='col-span-1 flex flex-col justify-center'>
-          <div className='text-[15px]'>
-            SUB-SERIES PRODUCT NAME<span className='text-[#F31D1E]'>*</span>
-          </div>
-          <div className='text-[12px] text-[#b5b5b5]'>
-            Nama produk max. 20 karakter
-          </div>
-        </div>
-        <div className='col-span-2 flex gap-[20px] '>
-          <input
-            type='text'
-            name='name'
-            className='h-full w-full px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPayload({...payload, name: e.target.value})
-            }
-            value={payload.name}
+            // disabled={!payload.company_brand_id}
           />
         </div>
-        <div className='col-span-1 flex flex-col justify-center'>
-          <div className='text-[15px]'>
-            Price<span className='text-[#F31D1E]'>*</span>
-          </div>
-        </div>
-        <div className='col-span-2 flex gap-[20px] '>
-          <div className='h-full w-[25%] rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'>
-            Rp
-          </div>
-          <input
-            type='number'
-            name='price'
-            className='h-full w-full px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
-            onChange={handleChange}
-            value={payload.price}
-          />
-        </div>
-        {(type === 'addProduct' || type === 'detailProduct') && (
+
+        {type === 'detailProduct' && (
           <>
-            <div className='col-span-1 flex flex-col justify-center'>
-              <div className='text-[15px]'>
-                Tags<span className='text-[#F31D1E]'>*</span>
+            <div className='col-span-3'>
+              <div className='h-[2px] bg-[#dfdfdf] w-full my-[20px]'></div>
+            </div>
+            <div className='col-span-3'>
+              <div className='text-[24px] text-[#3e3e3e]'>Variant</div>
+              <div className='text-[12px] text-[#b5b5b5]'>
+                (<span className='text-[#F31D1E]'>*</span>) are mandatory
               </div>
             </div>
-            <div className='col-span-2 flex gap-[20px] '>
-              <div className='rounded-[10px] border-[1.5px] border-[#b5b5b5] p-[10px] w-full '>
-                <ReactTags
-                  autofocus={false}
-                  tags={tags}
-                  suggestions={suggestions}
-                  delimiters={delimiters}
-                  handleAddition={handleAddition}
-                  handleDelete={handleDelete}
-                  allowDragDrop={false}
-                  autocomplete={false}
-                  classNames={{
-                    tag: 'py-[5px] px-[5px] rounded-[5px] bg-[#DFDFDF] mr-2 text-[#3e3e3e]',
-                    tagInput: 'tag_input_ctr',
-                    tagInputField: 'tag_input_style',
-                    suggestions: 'tag_suggestions_style',
-                    selected: 'tag_selected_style',
-                    activeSuggestion: 'tag_activeSuggestion_style',
-                  }}
-                  key={'tags'}
+            <div className='col-span-3 flex gap-[20px] '>
+              <button
+                className='flex justify-center items-center py-[10px] px-[21px] rounded-[12px] bg-[#dfdfdf] text-[16px] w-[30%] gap-[15px] whitespace-nowrap'
+                onClick={() =>
+                  router.push(
+                    `/dashboard/product/${productId}/addComparison?category_level_1_product_id=${payload.category_level_1_id}`
+                  )
+                }
+              >
+                <Image
+                  src={CirclePlus}
+                  alt='circle_plus'
+                  className='w-[15px] h-[15px]'
+                />
+                New Variant
+              </button>
+              <div className='relative w-[80%]'>
+                <input
+                  name='brand'
+                  type='text'
+                  className='h-full w-full  rounded-[10px] border-[1.5px] border-[#b5b5b5] pl-[15px] pr-[40px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
+                  placeholder='Search name or sub-series'
+                />
+                <IoSearch
+                  color='#b5b5b5'
+                  className='w-[20px] h-[20px] absolute top-[50%] right-[15px] transform translate-y-[-50%]'
                 />
               </div>
+            </div>
+            <div className='col-span-3 overflow-scroll'>
+              <Table
+                listTitle={[
+                  'Brand',
+                  'Name',
+                  'Sub-series name',
+                  'Status',
+                  // 'Created by and date',
+                  'Image',
+                ]}
+                listKey={[
+                  'company_brand_name',
+                  'category_level_1_name',
+                  'category_level_2_name',
+                  'status',
+                  'image',
+                ]}
+                data={comparison}
+                type={'comparison'}
+                productId={productId}
+              />
             </div>
           </>
         )}
-        <div className='col-span-3'>
-          <div className='h-[2px] bg-[#dfdfdf] w-full my-[20px]'></div>
-        </div>
-        <div className='col-span-3'>
-          <div className='text-[24px] text-[#3e3e3e]'>
-            Specification Category
-          </div>
-          <div className='text-[12px] text-[#b5b5b5]'>
-            (<span className='text-[#F31D1E]'>*</span>) are mandatory
-          </div>
-        </div>
-        <div className='col-span-3'>
-          <button
-            className='flex justify-center items-center py-[10px] px-[21px] rounded-[12px] bg-[#dfdfdf] text-[16px] w-[20%] gap-[15px] whitespace-nowrap'
-            onClick={() => {
-              setModalProps({title: 'NEW SPEC CATEGORY', content: 'spec'});
-              setShowModal(true);
-            }}
-          >
-            <Image
-              src={CirclePlus}
-              alt='circle_plus'
-              className='w-[15px] h-[15px]'
-            />{' '}
-            New Category
-          </button>
-        </div>
-        <div className='col-span-3 flex gap-[20px] flex-col'>
-          {selectedSpecs.map((el, idx) => (
-            <div key={idx} className='w-full flex gap-[20px]'>
-              <div className='h-full w-[25%] rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'>
-                {el.name}
-              </div>
-              <input
-                type='text'
-                name={`spec_${el.id}`}
-                value={selectedSpecs[idx].value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleSelectedSpecChange(e, idx)
-                }
-                className='h-full w-[75%] px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className='col-span-3'>
-          <div className='h-[2px] bg-[#dfdfdf] w-full my-[20px]'></div>
-        </div>
-        <div className='col-span-3 flex gap-[70px]'>
-          <div className='flex flex-col w-[33%]'>
-            <div className='text-[24px] text-[#3e3e3e]'>Product Image</div>
-            <p className='text-justify text-[12px] text-[#B5B5B5]'>
-              Optimize the image by using Clear background image on .PNG format
-              300 x 200 image size with less than 500 kb file size
-            </p>
-            <div className='flex gap-[20px]'>
-              <button
-                className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-                onClick={() => {
-                  setPreviewImg('');
-                  setPayload({...payload, image: null});
-                }}
-              >
-                Remove
-              </button>
-              <div className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf] relative text-center'>
-                <input
-                  type='file'
-                  className='opacity-0 absolute top-0 left-0 w-full h-full'
-                  accept='image/*'
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      setPayload({...payload, image: e.target.files[0]});
-                      const imageUrl = URL.createObjectURL(e.target.files[0]);
-                      setPreviewImg(imageUrl);
-                    }
-                  }}
-                />
-                Upload
-              </div>
-            </div>
-          </div>
-          {previewImg && (
-            <img
-              src={previewImg}
-              alt='previewImg'
-              className='w-[300px] h-[200px]'
-            />
-          )}
-        </div>
-
         {type === 'detailProduct' && (
           <>
             <div className='col-span-3'>
