@@ -1,0 +1,28 @@
+.ReactTags__tag {
+  display: inline-flex !important;
+  gap: 10px !important;
+  padding: 5px !important;
+  border-radius: 5px !important;
+  background: #dfdfdf !important;
+  margin-right: 10px !important;
+  color: #3e3e3e !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+.ReactTags__tagInput {
+  margin-top: 20px !important;
+  width: 100% !important;
+}
+.ReactTags__tagInputField {
+  width: 100% !important;
+  &:focus-visible {
+    outline: none;
+  }
+}
+.ReactTags__suggestions {
+  padding-top: 10px !important;
+}
+.ReactTags__activeSuggestion {
+  border-radius: 10px !important;
+  background: #dfdfdf !important;
+}

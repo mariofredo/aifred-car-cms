@@ -5,6 +5,7 @@ import {HiDotsVertical} from 'react-icons/hi';
 import {useRouter} from 'next/navigation';
 import {Button} from '@/components';
 import '@/styles/table.scss';
+import Link from 'next/link';
 export default function Table({
   listTitle,
   data,
@@ -99,18 +100,26 @@ export default function Table({
               </td> */}
               <td>
                 <div className='flex flex-col gap-[10px]'>
-                  <Button
-                    borderRadius='5px'
-                    bgColor='rgba(101, 57, 228, 0.58)'
-                    color='#fff'
-                    text='Variant List'
-                  />
-                  <Button
-                    borderRadius='5px'
-                    bgColor='rgba(228, 57, 57, 0.58)'
-                    color='#fff'
-                    text='Comparison List'
-                  />
+                  <Link href={'/dashboard/variant/1'} className='w-full'>
+                    <Button
+                      borderRadius='5px'
+                      bgColor='rgba(101, 57, 228, 0.58)'
+                      color='#fff'
+                      text='Variant List'
+                      width='100%'
+                      padding='3.5px'
+                    />
+                  </Link>
+                  <Link href={'/dashboard/comparison/1'}>
+                    <Button
+                      borderRadius='5px'
+                      bgColor='rgba(228, 57, 57, 0.58)'
+                      color='#fff'
+                      text='Comparison List'
+                      width='100%'
+                      padding='3.5px'
+                    />
+                  </Link>
                 </div>
               </td>
               <td className='table_pencil'>
