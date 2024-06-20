@@ -2,6 +2,7 @@ import Image from 'next/image';
 import {ReturnIcon, SliderIcon, PencilIcon, NoImage} from '@/public';
 import {HiDotsVertical} from 'react-icons/hi';
 import {useRouter} from 'next/navigation';
+import {Button} from '@/components';
 import '@/styles/table.scss';
 export default function Table({
   listTitle,
@@ -24,6 +25,7 @@ export default function Table({
           {listTitle.map((title) => (
             <th>{title}</th>
           ))}
+          <th className='table_action'></th>
           <th className='table_pencil'>
             <Image
               src={ReturnIcon}
@@ -94,6 +96,22 @@ export default function Table({
                 <div>John Doe</div>
                 <div className='table_date'>18 January 2024</div>
               </td> */}
+              <td>
+                <div className='flex flex-col gap-[10px]'>
+                  <Button
+                    borderRadius='5px'
+                    bgColor='rgba(101, 57, 228, 0.58)'
+                    color='#fff'
+                    text='Variant List'
+                  />
+                  <Button
+                    borderRadius='5px'
+                    bgColor='rgba(228, 57, 57, 0.58)'
+                    color='#fff'
+                    text='Comparison List'
+                  />
+                </div>
+              </td>
               <td className='table_pencil'>
                 <Image
                   src={PencilIcon}
