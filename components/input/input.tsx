@@ -5,6 +5,7 @@ interface InputProps {
   value: any;
   name: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  id: string;
 }
 export default function Input({
   type = 'text',
@@ -12,14 +13,19 @@ export default function Input({
   value,
   name,
   onChange,
+  id,
 }: InputProps) {
   return (
-    <input
-      name={name}
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-    />
+    <div>
+      <label htmlFor={id}></label>
+      <input
+        id={id}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
   );
 }

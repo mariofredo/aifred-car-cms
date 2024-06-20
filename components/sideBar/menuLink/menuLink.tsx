@@ -30,13 +30,14 @@ export default function MenuLink({
   return (
     <>
       {type === 'normal' ? (
-        <div
+        <Link
+          href={path}
           className={`flex items-center gap-4 px-4 justify-between  m-2  hover:bg-[#F6F6F6] hover:rounded-md text-[#B5B5B5]`}
           onClick={async () => {
             if (title === 'Logout') {
               await Cookies.remove('token');
-              router.push(path);
             }
+            // router.push(path);
           }}
         >
           <div
@@ -48,7 +49,7 @@ export default function MenuLink({
             )}
             {title}
           </div>
-        </div>
+        </Link>
       ) : (
         <div className='relative'>
           <div

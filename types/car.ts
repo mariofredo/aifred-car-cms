@@ -1,6 +1,6 @@
 import {StaticImageData} from 'next/image';
 
-export interface Spec {
+export interface SpecCar {
   content: string;
   spec_name: string;
 }
@@ -13,7 +13,7 @@ export interface Car {
   product_level_2_name?: string;
   image?: null | StaticImageData | string;
   price?: null | string;
-  specs?: Spec[];
+  specs?: SpecCar[];
 }
 
 export interface CompareForMoreCar {
@@ -24,7 +24,7 @@ export interface CompareForMoreCar {
     level_2_name: string;
     price: string;
     product_level_1_id: number;
-    specs: Spec[];
+    specs: SpecCar[];
   }[];
   product_level_2: {
     id: number;
@@ -33,7 +33,7 @@ export interface CompareForMoreCar {
     name: string;
     price: string;
     product_level_1_id: number;
-    specs: Spec[];
+    specs: SpecCar[];
   };
 }
 
@@ -45,7 +45,7 @@ export interface CompareCar {
     level_2_name: string;
     price: string;
     product_level_1_id: number;
-    specs: Spec[];
+    specs: SpecCar[];
   };
   product_level_2: {
     id: number;
@@ -54,6 +54,6 @@ export interface CompareCar {
     name: string;
     price: string;
     product_level_1_id: number;
-    specs: Spec[];
+    specs: SpecCar[];
   };
 }

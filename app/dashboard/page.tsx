@@ -1,6 +1,13 @@
 'use client';
 import {useState} from 'react';
-import {Card, DateRange, Select, Table} from '@/components';
+import {
+  Card,
+  DateRange,
+  HomeHeader,
+  Select,
+  Table,
+  TableHome,
+} from '@/components';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -32,6 +39,7 @@ export default function DashboardHome() {
   const [dataTotalCompleted, setTotalCompleted] = useState();
   return (
     <div className='dashboard_home_ctr'>
+      <HomeHeader />
       <div className='dashboard_home_filter'>
         <Select
           options={[
@@ -95,8 +103,6 @@ export default function DashboardHome() {
                   },
                   datalabels: {
                     formatter(value, context) {
-                      console.log(value, 'value');
-                      console.log(context, 'context');
                       if (context.dataset.data) {
                         const total = (context.dataset.data as number[]).reduce(
                           (total, num) => total + num,
@@ -175,7 +181,7 @@ export default function DashboardHome() {
       </div>
       <div className='grid grid-cols-4 gap-[20px]'>
         <div className='col-span-1 dashboard_box'>
-          <Table
+          <TableHome
             tableName={[{name: 'COMPLETED DURATION', colSpan: 2}]}
             tableValue={[
               {
@@ -265,7 +271,7 @@ export default function DashboardHome() {
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Summary of Answered Questions</p>
-          <Table
+          <TableHome
             tableName={[
               {
                 name: 'Question',

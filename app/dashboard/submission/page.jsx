@@ -1,3 +1,10 @@
+import {Select} from '@/components';
+
 export default function page() {
-  return <div>page</div>;
+  return (
+    <div>
+      <Select />
+      <Select />
+    </div>
+  );
 }

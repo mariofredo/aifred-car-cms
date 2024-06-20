@@ -1,0 +1,13 @@
+.da_pi_ctr {
+  display: flex;
+  flex-direction: column;
+  .da_pi_info {
+    font-size: 24px;
+    font-weight: 500;
+    color: #3e3e3e;
+  }
+  .da_pi_name_input {
+    display: flex;
+    gap: 20px;
+  }
+}

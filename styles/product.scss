@@ -1,0 +1,18 @@
+.dp_ctr {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .dp_filter_ctr {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+  }
+  .dp_table_ctr {
+    padding: 14.5px;
+    background: #f6f6f6;
+    border-radius: 10px;
+    .dp_table {
+      overflow-x: scroll;
+    }
+  }
+}
