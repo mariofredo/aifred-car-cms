@@ -7,6 +7,13 @@ export const MENU_ITEMS = [
     subMenu: [],
   },
   {
+    title: 'Submission',
+    path: '/dashboard/submission',
+    icon: '',
+    type: 'normal',
+    subMenu: [],
+  },
+  {
     title: 'Product',
     path: '',
     type: 'list',

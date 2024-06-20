@@ -1,0 +1,23 @@
+.sd_about {
+    background: #f6f6f6;
+    border-radius: 10px;
+    width: 100%;
+    display: flex;
+    gap: 50px;
+    padding: 15px 20px;
+    .sd_about_title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #3e3e3e;
+    }
+    .sd_about_content {
+      display: flex;
+      align-items: center;
+      color: #b5b5b5;
+      gap: 5px;
+      font-weight: 500;
+      .highlight {
+        color: #3e3e3e;
+      }
+    }
+  }
