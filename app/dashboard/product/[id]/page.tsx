@@ -4,7 +4,7 @@ import {Suspense} from 'react';
 
 export default function DashboardProductDetail() {
   return (
-    <DefaultContainer title={'Detail Product'}>
+    <DefaultContainer title={'Edit Product'}>
       <Suspense fallback={<>Loading...</>}>
         <ProductForm type={'detailProduct'} params={{}} />
       </Suspense>

@@ -1,4 +1,4 @@
-import '@/styles/table.scss';
+import '@/styles/tableHome.scss';
 interface TableProps {
   tableName?: {
     name: string;
