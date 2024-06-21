@@ -37,7 +37,7 @@ export const MENU_ITEMS = [
     subMenu: [
       {
         subMenuTitle: 'Add Question',
-        path: '/dashboard/question/addQuestion',
+        path: '/dashboard/question/create',
       },
       {
         subMenuTitle: 'Question Library',

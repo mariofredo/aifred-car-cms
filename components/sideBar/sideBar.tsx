@@ -13,11 +13,7 @@ export default function SideBar({}) {
   return (
     <div className='sb_ctr'>
       <div className='sb_img_ctr'>
-        <Image
-          src={SPFK}
-          alt='Logo'
-          className={`w-[140px] h-[120px] mt-[40px] mb-[20px]`}
-        />
+        <Image src={SPFK} alt='Logo' className={`w-[100%] h-[auto]`} />
         {/* <div className='sb_toggle' onClick={() => setOpen(!open)}>
           {open ? (
             <FaChevronCircleLeft color='#fff' />

@@ -23,3 +23,29 @@ export interface PayloadSideBar {
   u_id: string;
   view: string;
 }
+
+export interface Question {
+  company_brand_name: string;
+  batch: number;
+}
+
+export interface ListQuestionItem {
+  question_id: number;
+  question: string;
+  answer: {
+    answer_tag_id: number;
+    next_question_id: number;
+  }[];
+}
+
+export interface QuestionInput {
+  question: {
+    name: string;
+    value: string;
+  };
+  answer: {
+    name: string;
+    value: string;
+  }[];
+  flow: {name: string; value: string}[];
+}

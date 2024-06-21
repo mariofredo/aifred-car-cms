@@ -1,26 +1,26 @@
 'use client';
-import {Button, DefaultContainer, Select, Table} from '@/components';
-import React from 'react';
+
+import {Button, DefaultContainer, Table} from '@/components';
 import {CirclePlus} from '@/public';
+import Link from 'next/link';
 import {IoSearch} from 'react-icons/io5';
-export default function DashboardProduct() {
+
+export default function DashboardQuestion() {
   return (
-    <DefaultContainer title='Product Library'>
+    <DefaultContainer title='Question List'>
       <div className='dc_ctr'>
-        <div className='dc_filter_ctr'>
-          <Select options={[{label: 'Pajero', value: '123'}]} label='SERIES' />
-          <Select options={[]} label='VARIANT' />
-        </div>
         <div className='dc_table_ctr'>
           <div className='dc_action_ctr'>
-            <Button
-              bgColor='#DFDFDF'
-              text='Create New'
-              borderRadius='12px'
-              padding='10px 21px'
-              color='#3e3e3e'
-              image={CirclePlus}
-            />
+            <Link href={`/dashboard/question/create`}>
+              <Button
+                bgColor='#DFDFDF'
+                text='Create New'
+                borderRadius='12px'
+                padding='10px 21px'
+                color='#3e3e3e'
+                image={CirclePlus}
+              />
+            </Link>
             <div className='dc_search_ctr'>
               <IoSearch
                 color='#b5b5b5'
@@ -60,7 +60,7 @@ export default function DashboardProduct() {
                 'status',
                 'image',
               ]}
-              type={'product'}
+              type={'question'}
               productId={null}
             />
           </div>

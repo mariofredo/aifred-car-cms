@@ -34,7 +34,9 @@ export default function LoginForm() {
   );
   return (
     <div className='login_form'>
-      <Image src={SPFK} alt='spfk_logo' />
+      <div className='login_img_ctr'>
+        <Image src={SPFK} alt='spfk_logo' />
+      </div>
       <input
         type='text'
         name='username'

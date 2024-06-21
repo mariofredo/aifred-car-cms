@@ -1,0 +1,131 @@
+.qc_ctr {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  .qc_title {
+    color: #3e3e3e;
+    font-size: 48px;
+    font-weight: 500;
+  }
+  .qc_num_of_q {
+    padding: 24px;
+    border-radius: 20px;
+    background: #f6f6f6;
+    color: #3e3e3e;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .qc_num_of_q_wrapper {
+      input[type='number'] {
+        border-radius: 10px;
+        border: 1.5px solid #b5b5b5;
+        margin-left: 30px;
+        height: 50px;
+        width: 50px;
+        text-align: center;
+      }
+    }
+    button {
+      padding: 10px 21px;
+      border-radius: 12px;
+      background: #dfdfdf;
+      font-size: 16px;
+      width: 150px;
+      gap: 15px;
+      text-wrap: nowrap;
+    }
+  }
+  .qc_list_q {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    .qc_card_ctr {
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      background: #f6f6f6;
+      gap: 30px;
+      .qc_card_title_ctr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .qc_card_title {
+          padding: 10px 50px;
+          color: #3e3e3e;
+          font-size: 26px;
+          background: #dfdfdf;
+          border-radius: 10px;
+          font-weight: 700;
+        }
+      }
+      .qc_card_input_ctr {
+        display: flex;
+        gap: 30px;
+        .qc_card_input {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          &.question {
+            width: 50%;
+          }
+          &.answer {
+            width: 30%;
+          }
+          &.flow {
+            width: 20%;
+          }
+          .qc_card_input_title {
+            color: #3e3e3e;
+            font-size: 20px;
+            width: 100%;
+          }
+          .qc_card_input_info {
+            font-size: 12px;
+            color: #b5b5b5;
+            width: 100%;
+          }
+          .qc_card_input_input {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            button {
+              padding: 10px 21px;
+              border-radius: 12px;
+              background: #dfdfdf;
+              font-size: 16px;
+              width: 80%;
+              gap: 15px;
+              text-wrap: nowrap;
+              img {
+                width: 20px;
+                height: 20px;
+              }
+            }
+            input,
+            select {
+              padding: 10px 15px;
+              border-radius: 10px;
+              border: 1.5px solid #b5b5b5;
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+  button {
+    padding: 10px 21px;
+    border-radius: 12px;
+    background: #dfdfdf;
+    font-size: 16px;
+    width: 200px;
+    gap: 15px;
+    text-wrap: nowrap;
+    &.outline_btn {
+      background: transparent;
+      border: 1px solid #dfdfdf;
+    }
+  }
+}

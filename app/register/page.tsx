@@ -1,3 +1,4 @@
+'use client';
 import {RegisterForm} from '@/components';
 import '@/styles/register.scss';
 export default function Login() {
