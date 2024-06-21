@@ -6,4 +6,19 @@
 
   border-radius: 9.7px;
   background: var(--Hovering, #f6f6f6);
+
+  .submission_table_header {
+    color: var(--unselect, #3e3e3e);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 19.401px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 104%; /* 20.177px */
+    letter-spacing: -0.97px;
+  }
+
+  .submission_table_ctrs {
+    overflow-x: scroll;
+    width: 100%;
+  }
 }
