@@ -5,47 +5,33 @@ import {useCallback, useEffect, useState} from 'react';
 import {WithContext as ReactTags} from 'react-tag-input';
 import {IoSearch} from 'react-icons/io5';
 import {Table, ModalForm} from '@/components';
-import {useModal} from '@/context/ModalContext';
-import {useCategory} from '@/context/CategoryContext';
-import {useBrand} from '@/context/BrandContext';
-import {useRouter, useSearchParams} from 'next/navigation';
-import {useSpec} from '@/context/SpecContext';
-import {Tag, SelectedSpec} from '@/types';
+import {useModal, useBrand} from '@/context';
+import {useParams, useRouter, useSearchParams} from 'next/navigation';
+import {useSpec} from '@/context/specContext';
+import {Tag, SelectedSpec, Brand} from '@/types';
 import Cookie from 'js-cookie';
 import '@/styles/productForm.scss';
+import {useProduct} from '@/context';
 interface ProductFormProps {
   type: string;
   params: {[key: string]: any};
 }
 
 interface Payload {
-  company_brand_id: string;
-  category_level_1_id: string;
+  brand_unique_id: string;
   name: string;
-  price: string;
-  status: number;
-  image: File | null;
+  is_active: number;
 }
 export default function ProductForm(
   {type, params}: ProductFormProps = {type: '', params: {}}
 ) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const category_level_1_product_id = searchParams.get(
-    'category_level_1_product_id'
-  );
+  const {id}: {id: string} = useParams();
   const token = Cookie.get('token')?.toString();
   const {showModal, setShowModal} = useModal();
   const {productId} = params;
-
-  const {
-    categoryOne,
-    getListCategoryOne,
-    createCategoryTwo,
-    updateCategoryTwo,
-    getDetailCategoryTwo,
-  } = useCategory();
-  const {brands, getListBrand} = useBrand();
+  const {createProduct, getDetailProduct, updateProduct} = useProduct();
+  const {getListBrand} = useBrand();
   const {
     selectedSpecs,
     setSelectedSpecs,
@@ -55,52 +41,61 @@ export default function ProductForm(
     fetchSpecs,
     setFetchSpecs,
   } = useSpec();
+  const [brand, setBrand] = useState<Brand[]>([]);
   const [modalProps, setModalProps] = useState({
     title: '',
     content: '',
   });
   const [payload, setPayload] = useState<Payload>({
-    company_brand_id: '',
-    category_level_1_id: '',
+    brand_unique_id: '',
     name: '',
-    price: '',
-    status: 0,
-    image: null,
+    is_active: 0,
   });
   const [previewImg, setPreviewImg] = useState<string>('');
   const [tags, setTags] = useState<Tag[]>([]);
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
+  const [variant, setVariant] = useState([]);
   const [comparison, setComparison] = useState([]);
-  const KeyCodes = {
-    comma: 188,
-    enter: 13,
-  };
 
-  const delimiters = [KeyCodes.comma, KeyCodes.enter];
+  const callListBrand = useCallback(async () => {
+    const {data} = await getListBrand();
+    setBrand(data);
+  }, []);
+  const handleSubmitProduct = useCallback(
+    async (type: string, payload: Payload, id: string) => {
+      try {
+        switch (type) {
+          case 'edit':
+            const resUpdate = await updateProduct({
+              id,
+              ...payload,
+            });
+            if (resUpdate.code === 200) router.push('/dashboard/product');
+            return;
 
-  const handleAddition = (tag: Tag) => {
-    // Add logic for handling tag addition
-    setTags([...tags, tag]);
-  };
+          default:
+            const resCreate = await createProduct(payload);
+            if (resCreate.code === 200) router.push('/dashboard/product');
+            return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [payload, id]
+  );
 
-  const handleDelete = (i: number) => {
-    // Add logic for handling tag deletion
-    const newTags = [...tags];
-    newTags.splice(i, 1);
-    setTags(newTags);
-  };
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const {value} = event.target;
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {value} = event.target;
+  //   // // Remove non-digit characters from the input value
+  //   // const numericValue = value.replace(/\D/g, '');
 
-    // // Remove non-digit characters from the input value
-    // const numericValue = value.replace(/\D/g, '');
+  //   // // Format the numeric value
+  //   // const formatted = numericValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 
-    // // Format the numeric value
-    // const formatted = numericValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-
-    setPayload({...payload, price: value});
-  };
+  //   setPayload({...payload, price: value});
+  // };
 
   const getListTag = async () => {
     const response = await fetch(
@@ -136,74 +131,25 @@ export default function ProductForm(
     [selectedSpecs, setSelectedSpecs]
   );
 
-  const handleGetDetail = async () => {
-    // const data = await getDetailCategoryTwo({productId});
-    // setPayload({
-    //   ...payload,
-    //   company_brand_id: data.company_brand_id,
-    //   category_level_1_id: data.category_level_1_id,
-    //   name: data.name,
-    //   price: data.price.split('.').join(''),
-    //   status: data.status,
-    //   image: null,
-    // });
-    // setTags(data.tags.map((el: string) => ({id: el, text: el})));
-    // setSpecs((prev) => {
-    //   let updatedData = [...prev];
-    //   updatedData.map((obj) => {
-    //     if (data.specs) {
-    //       let found = data.specs.find(
-    //         (el: {[key: string]: any}) => obj.id === el.id
-    //       );
-    //       if (found) obj.checked = true;
-    //       return obj;
-    //     }
-    //   });
-    //   setSelectedSpecs((prev) => {
-    //     return data.specs.map((el: SelectedSpec) => {
-    //       const found = specs.find((key) => key.id === el.id);
-    //       if (found) {
-    //         return {
-    //           id: el.id,
-    //           checked: true,
-    //           name: found.name,
-    //           value: el.value,
-    //         };
-    //       }
-    //       return {
-    //         id: el.id,
-    //         checked: true,
-    //         name: '',
-    //         value: el.value,
-    //       };
-    //     });
-    //   });
-    //   return updatedData;
-    // });
-    // setPreviewImg(data.image);
-    // setComparison(data.comparison);
-    // setFetchSpecs(true);
+  const callDetailProduct = async (id: string) => {
+    const {product, competitors, variants} = await getDetailProduct(id);
+    setPayload((prev) => ({
+      ...prev,
+      name: product.name,
+      brand_unique_id: product.brand_unique_id,
+      is_active: product.is_active,
+    }));
+    setVariant(variants);
+    setComparison(competitors);
   };
   useEffect(() => {
-    // setFetchSpecs(false);
-    // getListSpec();
-    // getListTag();
-    // getListBrand(type === 'addProduct' || type === 'detailProduct' ? 0 : 1);
+    callListBrand();
   }, []);
-
   useEffect(() => {
-    // if (
-    //   (type === 'detailProduct' || type === 'detailComparison') &&
-    //   specs.length > 0 &&
-    //   !fetchSpecs
-    // ) {
-    //   handleGetDetail();
-    // }
-  }, [specs]);
-
-  useEffect(() => {
-    // if (payload.company_brand_id) getListCategoryOne(payload.company_brand_id);
-  }, [payload.company_brand_id]);
+    if (id) {
+      callDetailProduct(id);
+    }
+  }, [brand]);
 
   return (
     <>
@@ -227,15 +173,18 @@ export default function ProductForm(
             name='brand'
             className='h-full  rounded-[10px] border-[1.5px] border-[#b5b5b5] w-[80%] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setPayload({...payload, company_brand_id: e.target.value})
+              setPayload({...payload, brand_unique_id: e.target.value})
             }
-            value={payload.company_brand_id}
+            value={payload.brand_unique_id}
           >
             <option value='' disabled>
               Select the brand
             </option>
-            {brands.map((brand) => (
-              <option key={`${brand.id}_${brand.name}`} value={brand.id}>
+            {brand.map((brand) => (
+              <option
+                key={`${brand.unique_id}_${brand.name}`}
+                value={brand.unique_id}
+              >
                 {brand.name}
               </option>
             ))}
@@ -268,14 +217,14 @@ export default function ProductForm(
             name='series'
             className='h-full w-full rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPayload({...payload, category_level_1_id: e.target.value})
+              setPayload({...payload, name: e.target.value})
             }
-            value={payload.category_level_1_id}
+            value={payload.name}
             // disabled={!payload.company_brand_id}
           />
         </div>
 
-        {type === 'detailProduct' && (
+        {type === 'edit' && (
           <>
             <div className='col-span-3'>
               <div className='h-[2px] bg-[#dfdfdf] w-full my-[20px]'></div>
@@ -289,11 +238,11 @@ export default function ProductForm(
             <div className='col-span-3 flex gap-[20px] '>
               <button
                 className='flex justify-center items-center py-[10px] px-[21px] rounded-[12px] bg-[#dfdfdf] text-[16px] w-[30%] gap-[15px] whitespace-nowrap'
-                onClick={() =>
-                  router.push(
-                    `/dashboard/product/${productId}/addComparison?category_level_1_product_id=${payload.category_level_1_id}`
-                  )
-                }
+                // onClick={() =>
+                //   router.push(
+                //     `/dashboard/product/${productId}/addComparison?category_level_1_product_id=${payload.category_level_1_id}`
+                //   )
+                // }
               >
                 <Image
                   src={CirclePlus}
@@ -318,28 +267,30 @@ export default function ProductForm(
             <div className='col-span-3 overflow-scroll'>
               <Table
                 listTitle={[
-                  'Brand',
                   'Name',
-                  'Sub-series name',
+                  // 'Comparison',
                   'Status',
-                  // 'Created by and date',
+                  'Date created',
                   'Image',
+                  'Detail',
+                  'Option',
                 ]}
                 listKey={[
-                  'company_brand_name',
-                  'category_level_1_name',
-                  'category_level_2_name',
-                  'status',
+                  'name',
+                  'is_active',
+                  'created_at',
                   'image',
+                  'detail',
+                  'option',
                 ]}
-                data={comparison}
-                type={'comparison'}
-                productId={productId}
+                data={variant}
+                type={'product'}
+                id={null}
               />
             </div>
           </>
         )}
-        {type === 'detailProduct' && (
+        {type === 'edit' && (
           <>
             <div className='col-span-3'>
               <div className='h-[2px] bg-[#dfdfdf] w-full my-[20px]'></div>
@@ -353,11 +304,11 @@ export default function ProductForm(
             <div className='col-span-3 flex gap-[20px] '>
               <button
                 className='flex justify-center items-center py-[10px] px-[21px] rounded-[12px] bg-[#dfdfdf] text-[16px] w-[30%] gap-[15px] whitespace-nowrap'
-                onClick={() =>
-                  router.push(
-                    `/dashboard/product/${productId}/addComparison?category_level_1_product_id=${payload.category_level_1_id}`
-                  )
-                }
+                // onClick={() =>
+                //   router.push(
+                //     `/dashboard/product/${productId}/addComparison?category_level_1_product_id=${payload.category_level_1_id}`
+                //   )
+                // }
               >
                 <Image
                   src={CirclePlus}
@@ -382,23 +333,28 @@ export default function ProductForm(
             <div className='col-span-3 overflow-scroll'>
               <Table
                 listTitle={[
+                  'Main Comparison',
                   'Brand',
                   'Name',
-                  'Sub-series name',
                   'Status',
-                  // 'Created by and date',
+                  'Date created',
                   'Image',
+                  'Detail',
+                  'Option',
                 ]}
                 listKey={[
-                  'company_brand_name',
-                  'category_level_1_name',
-                  'category_level_2_name',
-                  'status',
+                  'is_primary',
+                  'brand',
+                  'name',
+                  'is_active',
+                  'created_at',
                   'image',
+                  'detail',
+                  'option',
                 ]}
                 data={comparison}
-                type={'comparison'}
-                productId={productId}
+                type={'product'}
+                id={null}
               />
             </div>
           </>
@@ -413,9 +369,9 @@ export default function ProductForm(
             <label className='switch'>
               <input
                 type='checkbox'
-                checked={payload.status === 1 ? true : false}
+                checked={payload.is_active === 1 ? true : false}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setPayload({...payload, status: e.target.checked ? 1 : 0})
+                  setPayload({...payload, is_active: e.target.checked ? 1 : 0})
                 }
               />
               <span className='slider round'></span>
@@ -433,33 +389,8 @@ export default function ProductForm(
             </button>
             <button
               className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-              onClick={async () => {
-                if (type === 'detailProduct' || type === 'detailComparison') {
-                  const data = await updateCategoryTwo({
-                    category_level_1_id: payload.category_level_1_id,
-                    category_level_2_id: productId,
-                    name: payload.name,
-                    price: payload.price,
-                    status: payload.status,
-                    image: payload.image,
-                    specs: selectedSpecs,
-                    tags: tags,
-                    category_level_1_product_id: category_level_1_product_id,
-                  });
-                  if (data.code === 200) router.push('/dashboard/product');
-                } else {
-                  const data = await createCategoryTwo({
-                    category_level_1_id: payload.category_level_1_id,
-                    name: payload.name,
-                    price: payload.price,
-                    status: payload.status,
-                    image: payload.image,
-                    specs: selectedSpecs,
-                    tags: tags,
-                    category_level_1_product_id: category_level_1_product_id,
-                  });
-                  if (data.code === 200) router.push('/dashboard/product');
-                }
+              onClick={() => {
+                handleSubmitProduct(type, payload, id);
               }}
             >
               Done
@@ -473,9 +404,7 @@ export default function ProductForm(
           content={modalProps.content}
           data={payload}
           setData={setPayload}
-          is_competitor={
-            type === 'addProduct' || type === 'detailProduct' ? false : true
-          }
+          is_competitor={type === 'create' || type === 'edit' ? false : true}
         />
       )}
     </>

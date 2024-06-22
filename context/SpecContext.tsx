@@ -8,6 +8,7 @@ import {
 } from 'react';
 import {Spec, SelectedSpec} from '@/types/spec';
 import Cookies from 'js-cookie';
+import {API_ROUTES} from '@/consts';
 interface ContextProps {
   specs: Spec[];
   setSpecs: Dispatch<SetStateAction<Spec[]>>;
@@ -44,16 +45,13 @@ export function SpecParamContextProvider({
   const getListSpec = async () => {
     await setSpecs([]);
     await setSelectedSpecs([]);
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/spec-param`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(API_ROUTES.spec_category_list, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (response.ok) {
       const data = await response.json();
       setSpecs(

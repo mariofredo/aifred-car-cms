@@ -1,7 +1,6 @@
 'use client';
 import {Dispatch, SetStateAction, useCallback, useState} from 'react';
-import {useModal} from '@/context/ModalContext';
-import {useSpec} from '@/context/SpecContext';
+import {useModal, useSpec} from '@/context';
 import Cookies from 'js-cookie';
 export default function SpecForm({
   title,

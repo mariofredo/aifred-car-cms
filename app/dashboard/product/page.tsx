@@ -1,9 +1,23 @@
 'use client';
 import {Button, DefaultContainer, Select, Table} from '@/components';
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {CirclePlus} from '@/public';
 import {IoSearch} from 'react-icons/io5';
+import {useProduct} from '@/context';
+import {Product} from '@/types';
+import Link from 'next/link';
 export default function DashboardProduct() {
+  const {getListProduct} = useProduct();
+  const [product, setProduct] = useState<Product[]>([]);
+
+  const callListProduct = useCallback(async () => {
+    const {data} = await getListProduct();
+    setProduct(data);
+  }, [product]);
+
+  useEffect(() => {
+    callListProduct();
+  }, []);
   return (
     <DefaultContainer title='Product Library'>
       <div className='dc_ctr'>
@@ -13,14 +27,16 @@ export default function DashboardProduct() {
         </div>
         <div className='dc_table_ctr'>
           <div className='dc_action_ctr'>
-            <Button
-              bgColor='#DFDFDF'
-              text='Create New'
-              borderRadius='12px'
-              padding='10px 21px'
-              color='#3e3e3e'
-              image={CirclePlus}
-            />
+            <Link href={'/dashboard/product/create'}>
+              <Button
+                bgColor='#DFDFDF'
+                text='Create New'
+                borderRadius='12px'
+                padding='10px 21px'
+                color='#3e3e3e'
+                image={CirclePlus}
+              />
+            </Link>
             <div className='dc_search_ctr'>
               <IoSearch
                 color='#b5b5b5'
@@ -38,27 +54,24 @@ export default function DashboardProduct() {
             <Table
               listTitle={[
                 'Brand',
-                'Name',
-                'Sub-series name',
+                'SeriesName',
+                'Total Variant',
                 'Status',
-                // 'Created by and date',
-                'Image',
+                'Date created',
+                '',
+                'Detail',
+                'Option',
               ]}
-              data={[
-                {
-                  company_brand_name: 'Mitsubishi',
-                  category_level_1_name: 'Pajero',
-                  name: 'Dakkar Ultimate 4x4',
-                  status: 'Publish',
-                  image: '',
-                },
-              ]}
+              data={product}
               listKey={[
-                'company_brand_name',
-                'category_level_1_name',
-                'name',
-                'status',
-                'image',
+                'brand_name',
+                'series_name',
+                'total_variant',
+                'is_active',
+                'created_at',
+                'object_id',
+                'detail',
+                'option',
               ]}
               type={'product'}
               productId={null}

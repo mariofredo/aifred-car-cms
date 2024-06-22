@@ -1,6 +1,12 @@
 import type {Metadata} from 'next';
 import {Inter} from 'next/font/google';
-import {ModalContextProvider} from '@/context';
+import {
+  BrandContextProvider,
+  ModalContextProvider,
+  ProductContextProvider,
+  SpecParamContextProvider,
+  VariantContextProvider,
+} from '@/context';
 import '@/public/fonts/Manrope/manrope.scss';
 import '@/public/fonts/Montserrat/montserrat.scss';
 import './globals.css';
@@ -20,7 +26,15 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <ModalContextProvider>{children}</ModalContextProvider>
+        <VariantContextProvider>
+          <ProductContextProvider>
+            <BrandContextProvider>
+              <SpecParamContextProvider>
+                <ModalContextProvider>{children}</ModalContextProvider>
+              </SpecParamContextProvider>
+            </BrandContextProvider>
+          </ProductContextProvider>
+        </VariantContextProvider>
       </body>
     </html>
   );

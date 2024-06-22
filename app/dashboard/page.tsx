@@ -101,6 +101,24 @@ export default function DashboardHome() {
                       pointStyle: 'circle',
                     },
                   },
+                  // tooltip: {
+                  //   callbacks: {
+                  //     label: (context) => {
+                  //       if (context.dataset.data) {
+                  //         const total = (
+                  //           context.dataset.data as number[]
+                  //         ).reduce((total, num) => total + num, 0);
+                  //         const percentage =
+                  //           (
+                  //             (context.dataset.data[context.dataIndex] * 100) /
+                  //             total
+                  //           ).toFixed(1) + '%';
+                  //         return percentage;
+                  //       }
+                  //       return '0%';
+                  //     },
+                  //   },
+                  // },
                   datalabels: {
                     formatter(value, context) {
                       if (context.dataset.data) {
@@ -158,8 +176,6 @@ export default function DashboardHome() {
                   },
                   datalabels: {
                     formatter(value, context) {
-                      console.log(value, 'value');
-                      console.log(context, 'context');
                       if (context.dataset.data) {
                         const total = (context.dataset.data as number[]).reduce(
                           (total, num) => total + num,

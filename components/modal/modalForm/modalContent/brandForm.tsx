@@ -1,6 +1,5 @@
 'use client';
-import {useBrand} from '@/context/BrandContext';
-import {useModal} from '@/context/ModalContext';
+import {useModal, useBrand} from '@/context';
 import {useState} from 'react';
 import Cookies from 'js-cookie';
 export default function BrandForm({
@@ -88,7 +87,7 @@ export default function BrandForm({
           onClick={async () => {
             const data = await createBrand(payload);
             if (data.code === 200) {
-              await getListBrand(is_competitor ? 1 : 0);
+              // await getListBrand(is_competitor ? 1 : 0);
               setShowModal(false);
             }
           }}
