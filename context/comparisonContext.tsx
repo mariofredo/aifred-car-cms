@@ -8,14 +8,14 @@ import {
 } from 'react';
 
 import Cookies from 'js-cookie';
-import {SelectedSpec, Tag, Variant} from '@/types';
+import {SelectedSpec, Tag, Comparison} from '@/types';
 import {API_ROUTES} from '@/consts';
 interface ContextProps {
-  getListVariant: (productId: string) => Promise<{
+  getListComparison: (productId: string) => Promise<{
     [key: string]: any;
-    data: Variant[];
+    data: Comparison[];
   }>;
-  createVariant: (
+  createComparison: (
     productId: string,
     payload: {
       variant_name: string;
@@ -26,7 +26,7 @@ interface ContextProps {
       tag: Tag[];
     }
   ) => Promise<{[key: string]: any}>;
-  updateVariant: (
+  updateComparison: (
     productId: string,
     payload: {
       id: string;
@@ -38,31 +38,31 @@ interface ContextProps {
       tag: Tag[];
     }
   ) => Promise<{[key: string]: any}>;
-  getDetailVariant: (
+  getDetailComparison: (
     productId: string,
     variantId: string
   ) => Promise<{[key: string]: any}>;
-  deleteVariant: (object_id: string) => Promise<{[key: string]: any}>;
+  deleteComparison: (object_id: string) => Promise<{[key: string]: any}>;
 }
 
 const defaultValue: ContextProps = {
-  getListVariant: async (productId) => ({data: []}),
-  createVariant: async (productId, payload) => ({}),
-  updateVariant: async (productId, payload) => ({}),
-  getDetailVariant: async (productId, variantId) => ({}),
-  deleteVariant: async (object_id) => ({}),
+  getListComparison: async (productId) => ({data: []}),
+  createComparison: async (productId, payload) => ({}),
+  updateComparison: async (productId, payload) => ({}),
+  getDetailComparison: async (productId, variantId) => ({}),
+  deleteComparison: async (object_id) => ({}),
 };
 
-const VariantContext = createContext<ContextProps>(defaultValue);
+const ComparisonContext = createContext<ContextProps>(defaultValue);
 
-export function VariantContextProvider({
+export function ComparisonContextProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const token = Cookies.get('token');
 
-  const getListVariant = async (productId: string) => {
+  const getListComparison = async (productId: string) => {
     try {
       const response = await fetch(API_ROUTES.variant_list(productId), {
         method: 'GET',
@@ -78,7 +78,7 @@ export function VariantContextProvider({
       return data;
     } catch (error) {}
   };
-  const createVariant = async (
+  const createComparison = async (
     productId: string,
     payload: {
       variant_name: string;
@@ -121,7 +121,7 @@ export function VariantContextProvider({
       return data;
     } catch (error) {}
   };
-  const updateVariant = async (
+  const updateComparison = async (
     productId: string,
     payload: {
       id: string;
@@ -164,7 +164,7 @@ export function VariantContextProvider({
       return data;
     } catch (error) {}
   };
-  const getDetailVariant = async (id: string, variantId: string) => {
+  const getDetailComparison = async (id: string, variantId: string) => {
     try {
       const response = await fetch(API_ROUTES.variant_detail(id, variantId), {
         method: 'GET',
@@ -182,7 +182,7 @@ export function VariantContextProvider({
       console.log(error);
     }
   };
-  const deleteVariant = async (object_id: string) => {
+  const deleteComparison = async (object_id: string) => {
     try {
       const response = await fetch(API_ROUTES.variant_delete('1'), {
         method: 'POST',
@@ -202,15 +202,17 @@ export function VariantContextProvider({
     } catch (error) {}
   };
   const ctx = {
-    getListVariant,
-    createVariant,
-    getDetailVariant,
-    updateVariant,
-    deleteVariant,
+    getListComparison,
+    createComparison,
+    getDetailComparison,
+    updateComparison,
+    deleteComparison,
   };
   return (
-    <VariantContext.Provider value={ctx}>{children}</VariantContext.Provider>
+    <ComparisonContext.Provider value={ctx}>
+      {children}
+    </ComparisonContext.Provider>
   );
 }
 
-export const useVariant = () => useContext(VariantContext);
+export const useComparison = () => useContext(ComparisonContext);

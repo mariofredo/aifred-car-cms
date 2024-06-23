@@ -11,5 +11,15 @@ export const API_ROUTES = {
     base_url + `/product/${id}/variant/${variantId}`,
   variant_update: (id: string) => base_url + `/product/${id}/variant/update`,
   variant_delete: (id: string) => base_url + `/product/${id}/variant/delete`,
+  comparison_list: (id: string) => base_url + `/product/${id}/comparison`,
+  comparison_create: (id: string) =>
+    base_url + `/product/${id}/comparison/store`,
+  comparison_detail: (id: string, variantId: string) =>
+    base_url + `/product/${id}/comparison/${variantId}`,
+  comparison_update: (id: string) =>
+    base_url + `/product/${id}/comparison/update`,
+  comparison_delete: (id: string) =>
+    base_url + `/product/${id}/comparison/delete`,
+  tag_list: base_url + '/tag',
   spec_category_list: base_url + '/spec',
 };

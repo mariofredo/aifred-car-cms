@@ -6,7 +6,6 @@ import {SelectedSpec, Tag} from '@/types';
 import {ModalForm, TagInput} from '@/components';
 import {useModal, useSpec, useVariant} from '@/context';
 import {useParams, useRouter} from 'next/navigation';
-import Link from 'next/link';
 interface Payload {
   variant_name: string;
   price: number;
@@ -19,6 +18,7 @@ export default function VariantForm({type}: {type: string}) {
   const {createVariant, getDetailVariant, updateVariant} = useVariant();
   const {showModal, setShowModal} = useModal();
   const {
+    tagSuggestion,
     selectedSpecs,
     setSelectedSpecs,
     getListSpec,
@@ -26,6 +26,7 @@ export default function VariantForm({type}: {type: string}) {
     setSpecs,
     fetchSpecs,
     setFetchSpecs,
+    getListTag,
   } = useSpec();
   const [payload, setPayload] = useState<Payload>({
     variant_name: '',
@@ -78,17 +79,20 @@ export default function VariantForm({type}: {type: string}) {
       try {
         switch (type) {
           case 'edit':
-            // const resUpdate = await updateProduct({
-            //   id,
-            //   ...payload,
-            // });
-            // if (resUpdate.code === 200) router.push('/dashboard/product');
+            const resUpdate = await updateVariant(id, {
+              id: variantId,
+              ...payload,
+              spec: selectedSpecs,
+              tag: tags,
+            });
+            if (resUpdate.code === 200) router.push(`/dashboard/variant/${id}`);
             return;
 
           default:
             const resCreate = await createVariant(id, {
               ...payload,
               spec: selectedSpecs,
+              tag: tags,
             });
             if (resCreate.code === 200) router.push(`/dashboard/variant/${id}`);
             return;
@@ -102,16 +106,15 @@ export default function VariantForm({type}: {type: string}) {
   const callDetailVariant = useCallback(
     async (id: string, variantId: string) => {
       try {
-        const {specs, variant, tags} = await getDetailVariant(id, variantId);
-        console.log(variant, 'variant');
+        const data = await getDetailVariant(id, variantId);
         setPayload((prev) => ({
           ...prev,
-          variant_name: variant.name,
-          price: variant.price,
-          is_active: variant.is_active,
+          variant_name: data.variant.name,
+          price: data.variant.price,
+          is_active: data.variant.is_active,
         }));
         setTags(
-          tags.map((el: {[key: string]: any}) => ({
+          data.tags.map((el: {[key: string]: any}) => ({
             id: el.tag_id.toString(),
             className: '',
             text: el.name,
@@ -120,53 +123,61 @@ export default function VariantForm({type}: {type: string}) {
         setSpecs((prev) => {
           let updatedData = [...prev];
           updatedData.map((obj) => {
-            if (specs) {
-              let found = specs.find(
-                (el: {[key: string]: any}) => obj.id === el.id
+            if (data.specs) {
+              let found = data.specs.find(
+                (el: {[key: string]: any}) => obj.id === el.spec_id
               );
               if (found) obj.checked = true;
               return obj;
             }
           });
+          // console.log(specs, 'specs');
           setSelectedSpecs((prev) => {
-            return specs.map((el: SelectedSpec) => {
-              const found = specs.find((key: any) => key.id === el.id);
-              if (found) {
-                return {
-                  id: el.id,
-                  checked: true,
-                  name: found.name,
-                  value: el.value,
-                };
-              }
+            return data.specs.map((el: {[key: string]: any}) => {
+              // const found = specs.find((key: any) => key.id === el.spec_id);
+              // console.log(found, 'found');
+              // if (found) {
+              //   return {
+              //     id: el.spec_id,
+              //     checked: true,
+              //     name: found.name,
+              //     value: el.value,
+              //   };
+              // }
               return {
-                id: el.id,
+                id: el.spec_id,
                 checked: true,
-                name: '',
-                value: el.value,
+                name: el.name,
+                value: el.content,
               };
             });
           });
+          console.log(updatedData, 'updatedData');
           return updatedData;
         });
-        setPreviewImg(variant.image);
+        setPreviewImg(data.variant.image);
+        setFetchSpecs(true);
       } catch (error) {
         console.log(error);
       }
     },
-    []
+    [specs]
   );
 
   useEffect(() => {
+    setFetchSpecs(false);
     getListSpec();
+    getListTag();
   }, []);
   useEffect(() => {
-    if (variantId) callDetailVariant(id, variantId);
-  }, [variantId]);
+    if (variantId && specs.length > 0 && !fetchSpecs)
+      callDetailVariant(id, variantId);
+  }, [specs]);
   useEffect(() => {
     // console.log(payload, 'payload');
-    // console.log(selectedSpecs, 'spec');
-  }, [payload, selectedSpecs]);
+    // console.log(selectedSpecs, 'selectedspec');
+    // console.log(specs, 'specs');
+  }, [payload, selectedSpecs, specs]);
   return (
     <>
       <div className='grid grid-cols-3 gap-[30px]'>
@@ -224,23 +235,7 @@ export default function VariantForm({type}: {type: string}) {
               <div className='rounded-[10px] border-[1.5px] border-[#b5b5b5] p-[10px] w-full '>
                 <TagInput
                   tags={tags}
-                  suggestions={[
-                    {
-                      id: '1',
-                      className: '',
-                      text: 'Coklat',
-                    },
-                    {
-                      id: '2',
-                      className: '',
-                      text: 'Biru',
-                    },
-                    {
-                      id: '2',
-                      className: '',
-                      text: 'Cok',
-                    },
-                  ]}
+                  suggestions={tagSuggestion}
                   handleAddition={handleAddition}
                   handleDelete={handleDelete}
                 />

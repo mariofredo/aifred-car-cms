@@ -16,3 +16,12 @@ export interface Variant {
   created_at: Date;
   object_id: string;
 }
+
+export interface Comparison {
+  brand: string;
+  name: string;
+  is_active: number;
+  image: string | StaticImageData;
+  created_at: Date;
+  object_id: string;
+}
