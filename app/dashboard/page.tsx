@@ -52,6 +52,7 @@ export default function DashboardHome() {
               value: 'Hyundai',
             },
           ]}
+          value={null}
         />
         <Select
           options={[
@@ -64,6 +65,7 @@ export default function DashboardHome() {
               value: 'Hyundai',
             },
           ]}
+          value={null}
         />
         {/* <DateRange /> */}
       </div>

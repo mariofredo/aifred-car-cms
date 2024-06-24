@@ -1,22 +1,44 @@
 'use client';
 import React from 'react';
-import ReactSelect from 'react-select';
+import ReactSelect, {ActionMeta, SingleValue, GroupBase} from 'react-select';
 import '@/styles/select.scss';
+
 interface SelectProps {
-  options?: {label: string; value: string}[];
+  options?: {
+    label: string;
+    value: string;
+  }[];
   isClearable?: boolean;
   isSearchable?: boolean;
   label?: string;
+  name?: string;
+  value: {
+    label: string;
+    value: string;
+  } | null;
+  onChange?: (
+    newValue: SingleValue<{
+      label: string;
+      value: string;
+    }>,
+    actionMeta: ActionMeta<{
+      label: string;
+      value: string;
+    }>
+  ) => void;
 }
 export default function Select({
   options = [],
   isClearable = false,
   isSearchable = false,
   label = '',
+  name = '',
+  value,
+  onChange,
 }: SelectProps) {
   return (
     <div className='select_ctr'>
-      <div className='select_label'>{label}</div>
+      {label && <div className='select_label'>{label}</div>}
       <ReactSelect
         isClearable={isClearable}
         options={options}
@@ -36,6 +58,9 @@ export default function Select({
             return {...styles};
           },
         }}
+        name={name}
+        value={value}
+        onChange={onChange}
       />
     </div>
   );

@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 import {Product} from '@/types';
 import {API_ROUTES} from '@/consts';
 interface ContextProps {
-  getListProduct: () => Promise<{
+  getListProduct: (payload: any) => Promise<{
     [key: string]: any;
     data: Product[];
   }>;
@@ -31,7 +31,7 @@ interface ContextProps {
 }
 
 const defaultValue: ContextProps = {
-  getListProduct: async () => ({data: []}),
+  getListProduct: async (payload) => ({data: []}),
   createProduct: async (payload) => ({}),
   updateProduct: async (payload) => ({}),
   getDetailProduct: async (object_id) => ({}),
@@ -47,9 +47,21 @@ export function ProductContextProvider({
 }) {
   const token = Cookies.get('token');
 
-  const getListProduct = async () => {
+  const getListProduct = async (payload: any) => {
     try {
-      const response = await fetch(API_ROUTES.product_list, {
+      let query = '';
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          const element = payload[key];
+          if (Array.isArray(element)) {
+            const labelString = element?.map((item) => item.label).join(',');
+            const valueString = element?.map((item) => item.value).join(',');
+            query += `${key}_name=${labelString}&`;
+            query += `${key}=${valueString}&`;
+          } else query += `${key}=${element}&`;
+        }
+      }
+      const response = await fetch(API_ROUTES.product_list + `?${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +87,7 @@ export function ProductContextProvider({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         }

@@ -93,13 +93,15 @@ export function SpecParamContextProvider({
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
     });
     if (response.ok) {
       const data = await response.json();
       const result = await data.data.map(
-        (el: {object_id: string; name: string}) => ({
-          id: el.object_id,
+        (el: {object_id: string; name: string; id: number}) => ({
+          id: el.id.toString(),
+          object_id: el.object_id,
           className: '',
           text: el.name,
         })

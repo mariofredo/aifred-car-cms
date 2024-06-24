@@ -285,7 +285,7 @@ export default function ProductForm(
                 ]}
                 data={variant}
                 type={'product'}
-                id={null}
+                id={''}
               />
             </div>
           </>
@@ -354,7 +354,7 @@ export default function ProductForm(
                 ]}
                 data={comparison}
                 type={'product'}
-                id={null}
+                id={''}
               />
             </div>
           </>

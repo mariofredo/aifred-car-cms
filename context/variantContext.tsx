@@ -11,7 +11,10 @@ import Cookies from 'js-cookie';
 import {SelectedSpec, Tag, Variant} from '@/types';
 import {API_ROUTES} from '@/consts';
 interface ContextProps {
-  getListVariant: (productId: string) => Promise<{
+  getListVariant: (
+    productId: string,
+    payload: any
+  ) => Promise<{
     [key: string]: any;
     data: Variant[];
   }>;
@@ -46,7 +49,7 @@ interface ContextProps {
 }
 
 const defaultValue: ContextProps = {
-  getListVariant: async (productId) => ({data: []}),
+  getListVariant: async (productId, payload) => ({data: []}),
   createVariant: async (productId, payload) => ({}),
   updateVariant: async (productId, payload) => ({}),
   getDetailVariant: async (productId, variantId) => ({}),
@@ -62,15 +65,30 @@ export function VariantContextProvider({
 }) {
   const token = Cookies.get('token');
 
-  const getListVariant = async (productId: string) => {
+  const getListVariant = async (productId: string, payload: any) => {
     try {
-      const response = await fetch(API_ROUTES.variant_list(productId), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      let query = '';
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          const element = payload[key];
+          if (Array.isArray(element)) {
+            const labelString = element?.map((item) => item.label).join(',');
+            const valueString = element?.map((item) => item.value).join(',');
+            query += `${key}_name=${labelString}&`;
+            query += `${key}=${valueString}&`;
+          } else query += `${key}=${element}&`;
+        }
+      }
+      const response = await fetch(
+        API_ROUTES.variant_list(productId) + `?${query}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error('Error');
       }
@@ -110,7 +128,7 @@ export function VariantContextProvider({
         headers: {
           // 'Content-Type': 'application/json',
           // 'Content-Type': 'application/json',
-          // Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -153,7 +171,7 @@ export function VariantContextProvider({
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',
-          // Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });

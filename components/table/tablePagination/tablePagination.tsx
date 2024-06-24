@@ -6,8 +6,12 @@ export default function TablePaginationSupport({
   pagination,
   setPagination,
   limit,
+}: {
+  pagination: any;
+  setPagination: any;
+  limit: any;
 }) {
-  function getPaginationRange(currentPage, totalPages) {
+  function getPaginationRange(currentPage: any, totalPages: any) {
     const delta = 2; // Number of pages to show around the current page
     const range = [];
 
@@ -37,10 +41,10 @@ export default function TablePaginationSupport({
     Math.ceil(pagination.totalCount / limit) // create the totalPages
   );
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: any) => {
     if (page === '...') return;
     // Update the URL with the new page
-    setPagination((prev) => ({...prev, currentPage: page}));
+    setPagination((prev: any) => ({...prev, currentPage: page}));
   };
 
   return (

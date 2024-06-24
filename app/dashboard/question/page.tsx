@@ -1,11 +1,25 @@
 'use client';
 
 import {Button, DefaultContainer, Table} from '@/components';
+import {useQuestion} from '@/context';
 import {CirclePlus} from '@/public';
 import Link from 'next/link';
+import {useCallback, useEffect, useState} from 'react';
 import {IoSearch} from 'react-icons/io5';
 
 export default function DashboardQuestion() {
+  const {getListQuestion} = useQuestion();
+  const [question, setQuestion] = useState<[]>([]);
+
+  const callListVariant = useCallback(async () => {
+    const {data} = await getListQuestion();
+    setQuestion(data);
+  }, [question]);
+
+  useEffect(() => {
+    callListVariant();
+  }, []);
+
   return (
     <DefaultContainer title='Question List'>
       <div className='dc_ctr'>
@@ -38,30 +52,26 @@ export default function DashboardQuestion() {
             <Table
               listTitle={[
                 'Brand',
-                'Name',
-                'Sub-series name',
+                'Question Set Title',
+                'Total Question',
                 'Status',
-                // 'Created by and date',
-                'Image',
+                'Date created',
+                'Detail',
+                'Option',
               ]}
-              data={[
-                {
-                  company_brand_name: 'Mitsubishi',
-                  category_level_1_name: 'Pajero',
-                  name: 'Dakkar Ultimate 4x4',
-                  status: 'Publish',
-                  image: '',
-                },
-              ]}
+              data={question}
               listKey={[
-                'company_brand_name',
-                'category_level_1_name',
-                'name',
-                'status',
-                'image',
+                'brand_name',
+                'question_set_title',
+                'total_question',
+                'is_active',
+                'created_at',
+                'detail',
+                'option',
               ]}
               type={'question'}
-              productId={null}
+              subType='question'
+              id={''}
             />
           </div>
         </div>

@@ -42,10 +42,11 @@ export interface QuestionInput {
   question: {
     name: string;
     value: string;
+    type: string;
   };
   answer: {
     name: string;
     value: string;
   }[];
-  flow: {name: string; value: string}[];
+  tag: {name: string; value: string}[];
 }

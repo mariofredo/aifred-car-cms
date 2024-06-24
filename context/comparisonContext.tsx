@@ -10,46 +10,54 @@ import {
 import Cookies from 'js-cookie';
 import {SelectedSpec, Tag, Comparison} from '@/types';
 import {API_ROUTES} from '@/consts';
+import {StaticImageData} from 'next/image';
+
 interface ContextProps {
-  getListComparison: (productId: string) => Promise<{
+  getListComparison: (
+    productId: string,
+    payload: any
+  ) => Promise<{
     [key: string]: any;
     data: Comparison[];
   }>;
   createComparison: (
     productId: string,
     payload: {
+      product_name: string;
       variant_name: string;
       price: number;
-      is_active: number;
-      image: File | null;
       spec: SelectedSpec[];
-      tag: Tag[];
+      image: File | null;
+      is_active: number;
     }
   ) => Promise<{[key: string]: any}>;
   updateComparison: (
     productId: string,
     payload: {
       id: string;
+      product_name: string;
       variant_name: string;
       price: number;
-      is_active: number;
-      image: File | null;
       spec: SelectedSpec[];
-      tag: Tag[];
+      image: File | null;
+      is_active: number;
     }
   ) => Promise<{[key: string]: any}>;
   getDetailComparison: (
     productId: string,
-    variantId: string
+    comparisonId: string
   ) => Promise<{[key: string]: any}>;
-  deleteComparison: (object_id: string) => Promise<{[key: string]: any}>;
+  deleteComparison: (
+    id: string,
+    object_id: string
+  ) => Promise<{[key: string]: any}>;
 }
 
 const defaultValue: ContextProps = {
-  getListComparison: async (productId) => ({data: []}),
+  getListComparison: async (productId, payload) => ({data: []}),
   createComparison: async (productId, payload) => ({}),
   updateComparison: async (productId, payload) => ({}),
-  getDetailComparison: async (productId, variantId) => ({}),
+  getDetailComparison: async (productId, comparisonId) => ({}),
   deleteComparison: async (object_id) => ({}),
 };
 
@@ -62,15 +70,30 @@ export function ComparisonContextProvider({
 }) {
   const token = Cookies.get('token');
 
-  const getListComparison = async (productId: string) => {
+  const getListComparison = async (productId: string, payload: any) => {
     try {
-      const response = await fetch(API_ROUTES.variant_list(productId), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      let query = '';
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          const element = payload[key];
+          if (Array.isArray(element)) {
+            const labelString = element?.map((item) => item.label).join(',');
+            const valueString = element?.map((item) => item.value).join(',');
+            query += `${key}_name=${labelString}&`;
+            query += `${key}=${valueString}&`;
+          } else query += `${key}=${element}&`;
+        }
+      }
+      const response = await fetch(
+        API_ROUTES.comparison_list(productId) + `?${query}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error('Error');
       }
@@ -81,17 +104,19 @@ export function ComparisonContextProvider({
   const createComparison = async (
     productId: string,
     payload: {
+      product_name: string;
       variant_name: string;
       price: number;
-      is_active: number;
-      image: File | null;
       spec: SelectedSpec[];
-      tag: Tag[];
+      image: File | null;
+      is_active: number;
     }
   ) => {
     try {
-      const {is_active, variant_name, price, image, spec, tag} = payload;
+      const {is_active, variant_name, price, image, spec, product_name} =
+        payload;
       const formData = new FormData();
+      formData.append('product_name', product_name);
       formData.append('variant_name', variant_name);
       formData.append('price', price.toString());
       formData.append('is_active', is_active.toString());
@@ -99,18 +124,15 @@ export function ComparisonContextProvider({
         formData.append(`spec_id[${i}]`, item.id.toString());
         formData.append(`spec_content[${i}]`, item.value.toString());
       });
-      tag.forEach((item, i) => {
-        formData.append(`tags[${i}]`, item.id);
-      });
       if (image) formData.append('image', image);
       else formData.append('image', '');
       // console.log(payload, 'payload');
-      const response = await fetch(API_ROUTES.variant_create(productId), {
+      const response = await fetch(API_ROUTES.comparison_create(productId), {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',
           // 'Content-Type': 'application/json',
-          // Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -125,18 +147,20 @@ export function ComparisonContextProvider({
     productId: string,
     payload: {
       id: string;
+      product_name: string;
       variant_name: string;
       price: number;
-      is_active: number;
-      image: File | null;
       spec: SelectedSpec[];
-      tag: Tag[];
+      image: File | null;
+      is_active: number;
     }
   ) => {
     try {
-      const {is_active, variant_name, price, image, spec, id, tag} = payload;
+      const {product_name, is_active, variant_name, price, image, spec, id} =
+        payload;
       const formData = new FormData();
       formData.append('id', id);
+      formData.append('product_name', product_name);
       formData.append('variant_name', variant_name);
       formData.append('price', price.toString());
       formData.append('is_active', is_active.toString());
@@ -144,16 +168,13 @@ export function ComparisonContextProvider({
         formData.append(`spec_id[${i}]`, item.id.toString());
         formData.append(`spec_content[${i}]`, item.value.toString());
       });
-      tag.forEach((item, i) => {
-        formData.append(`tags[${i}]`, item.id);
-      });
       if (image) formData.append('image', image);
       else formData.append('image', '');
-      const response = await fetch(API_ROUTES.variant_update(productId), {
+      const response = await fetch(API_ROUTES.comparison_update(productId), {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',
-          // Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -164,15 +185,18 @@ export function ComparisonContextProvider({
       return data;
     } catch (error) {}
   };
-  const getDetailComparison = async (id: string, variantId: string) => {
+  const getDetailComparison = async (id: string, comparisonId: string) => {
     try {
-      const response = await fetch(API_ROUTES.variant_detail(id, variantId), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        API_ROUTES.comparison_detail(id, comparisonId),
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error('Error');
       }
@@ -182,9 +206,9 @@ export function ComparisonContextProvider({
       console.log(error);
     }
   };
-  const deleteComparison = async (object_id: string) => {
+  const deleteComparison = async (id: string, object_id: string) => {
     try {
-      const response = await fetch(API_ROUTES.variant_delete('1'), {
+      const response = await fetch(API_ROUTES.comparison_delete(id), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

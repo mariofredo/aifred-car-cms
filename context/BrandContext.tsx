@@ -17,7 +17,7 @@ interface ContextProps {
   }>;
   createBrand: (payload: {
     name: string;
-    is_competitor: number;
+    is_active: number;
   }) => Promise<{code: number}>;
 }
 
@@ -44,15 +44,13 @@ export function BrandContextProvider({children}: {children: React.ReactNode}) {
     });
     if (response.ok) {
       const data = await response.json();
+      setBrands(data.data);
       return data;
     }
   };
-  const createBrand = async (payload: {
-    name: string;
-    is_competitor: number;
-  }) => {
+  const createBrand = async (payload: {name: string; is_active: number}) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/company-brand/create`,
+      `${process.env.NEXT_PUBLIC_API_URL}/brand/store`,
       {
         method: 'POST',
         headers: {

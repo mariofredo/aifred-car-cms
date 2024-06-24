@@ -15,7 +15,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const handleLogin = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,9 +23,14 @@ export default function LoginForm() {
         body: JSON.stringify(payload),
       });
       if (response.ok) {
-        const data = await response.json();
-        if (data.code === 200) {
-          await Cookie.set('token', data.data);
+        const {code, data} = await response.json();
+        if (code === 200) {
+          Cookie.set('token', data.token, {
+            expires: new Date(data.expired_at),
+          });
+          Cookie.set('username', data.username, {
+            expires: new Date(data.expired_at),
+          });
           router.push('/dashboard');
         }
       }
@@ -42,6 +47,7 @@ export default function LoginForm() {
         name='username'
         placeholder='Email ID'
         className='email_style'
+        value={payload.username}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setPayload({...payload, [e.target.name]: e.target.value})
         }
@@ -55,6 +61,7 @@ export default function LoginForm() {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setPayload({...payload, [e.target.name]: e.target.value})
           }
+          value={payload.password}
         />
         {showPassword ? (
           <IoMdEye

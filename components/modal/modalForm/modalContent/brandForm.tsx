@@ -14,7 +14,8 @@ export default function BrandForm({
   const {createBrand, getListBrand} = useBrand();
   const [payload, setPayload] = useState({
     name: '',
-    is_competitor: is_competitor ? 1 : 0,
+    // is_competitor: is_competitor ? 1 : 0,
+    is_active: 1,
   });
 
   return (

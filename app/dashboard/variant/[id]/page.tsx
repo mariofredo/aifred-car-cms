@@ -1,5 +1,5 @@
 'use client';
-import {useCallback, useEffect, useState} from 'react';
+import {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {
   BackButton,
   Button,
@@ -14,7 +14,9 @@ import {useParams} from 'next/navigation';
 import {CirclePlus} from '@/public';
 import Link from 'next/link';
 import {IoSearch} from 'react-icons/io5';
-
+interface Payload {
+  keyword: string;
+}
 export default function page() {
   const {id}: {id: string} = useParams();
   const [pagination, setPagination] = useState({
@@ -24,18 +26,28 @@ export default function page() {
   });
   const {getListVariant} = useVariant();
   const [variant, setVariant] = useState<Variant[]>([]);
-
+  const [payload, setPayload] = useState<Payload>({
+    keyword: '',
+  });
   const callListVariant = useCallback(
     async (id: string) => {
-      const {data} = await getListVariant(id);
+      const {data, total_data} = await getListVariant(id, {
+        page: pagination.currentPage,
+        limit: pagination.limit,
+        ...payload,
+      });
       setVariant(data);
+      setPagination((prev) => ({
+        ...prev,
+        totalCount: total_data,
+      }));
     },
-    [variant]
+    [variant, pagination, payload]
   );
 
   useEffect(() => {
     callListVariant(id);
-  }, []);
+  }, [pagination.currentPage]);
 
   return (
     <div className='flex flex-col gap-[15px]'>
@@ -69,8 +81,12 @@ export default function page() {
               />
               <input
                 type='text'
-                name='search'
+                name='keyword'
                 placeholder='Search name or sub-series'
+                value={payload.keyword}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setPayload((prev) => ({...prev, keyword: e.target.value}))
+                }
               />
             </div>
           </div>
