@@ -1,3 +1,4 @@
+import {StaticImport} from 'next/dist/shared/lib/get-img-props';
 import {StaticImageData} from 'next/image';
 
 export interface SpecCar {
@@ -11,7 +12,7 @@ export interface Car {
   product_level_1_name?: string;
   product_level_2_id?: number;
   product_level_2_name?: string;
-  image?: null | StaticImageData | string;
+  image: string | StaticImport;
   price?: null | string;
   specs?: SpecCar[];
 }
