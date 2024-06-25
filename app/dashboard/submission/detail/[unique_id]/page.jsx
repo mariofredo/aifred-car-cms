@@ -45,7 +45,7 @@ export default function page() {
     return <div>Loading...</div>;
   }
 
-  const questionDetails = submissionDetail.question_details.map((detail, index) => ({
+  const questionDetails = submissionDetail.question_details?.map((detail, index) => ({
     number: index + 1,
     question: detail.question,
     answer: detail.answer,

@@ -388,6 +388,7 @@ export default function ProductForm(
               className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
               onClick={() => {
                 handleSubmitProduct(type, payload, id);
+                callListBrand();
               }}
             >
               Done
@@ -402,6 +403,7 @@ export default function ProductForm(
           data={payload}
           setData={setPayload}
           is_competitor={type === 'create' || type === 'edit' ? false : true}
+          action={callListBrand}
         />
       )}
     </>
