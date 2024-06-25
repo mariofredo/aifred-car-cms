@@ -71,7 +71,7 @@ export default function Table({
       type: string,
       subType: string,
       data: {[key: string]: any}[],
-      listKey: string[]
+      listKey: string[],
     ) => {
       switch (type) {
         case 'question':

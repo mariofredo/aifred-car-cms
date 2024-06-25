@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import {ContactIcon, MailIcon, UserIcon} from '@/public';
 import {DefaultContainer, TableHome, Card} from '@/components';
+import Link from 'next/link';
 import '@/styles/submissionDetail.scss';
 
 export default function page() {
@@ -35,9 +36,10 @@ export default function page() {
       <div className='sd_content_container'>
         <div className='w-full flex justify-between'>
           <p className='content_title'>Questions Details</p>
+          <Link href={`/dashboard/submission/`}>
           <button className='back_button'>
             <p>Back</p>
-          </button>
+          </button></Link>
         </div>
         <TableHome
           tableName={[
