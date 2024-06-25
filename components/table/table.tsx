@@ -8,7 +8,7 @@ import Link from 'next/link';
 import {useCallback} from 'react';
 import {formatDate} from '@/utils';
 import '@/styles/table.scss';
-import {useProduct} from '@/context';
+import {useModal, useProduct} from '@/context';
 import {useComparison} from '@/context/comparisonContext';
 export default function Table({
   listTitle = [],
@@ -30,18 +30,19 @@ export default function Table({
   const router = useRouter();
   const {deleteComparison, getListComparison} = useComparison();
   const {deleteProduct, getListProduct} = useProduct();
+  const {setFilterModal} = useModal();
   const handleOnClick = useCallback(
     async (obj: {[key: string]: any}, subType: string) => {
       switch (subType) {
         case 'comparison':
           const resDeleteComparison = await deleteComparison(id, obj.object_id);
-          if (resDeleteComparison.code === 200) await getListComparison(id);
+          if (resDeleteComparison.code === 200) await getListComparison(id, {});
           return;
         case '':
           return;
         default:
           const resDeleteProduct = await deleteProduct(obj.object_id);
-          if (resDeleteProduct.code === 200) await getListProduct();
+          if (resDeleteProduct.code === 200) await getListProduct({});
           return;
       }
     },
@@ -59,7 +60,7 @@ export default function Table({
         case 'variant':
           return router.push(`/dashboard/variant/${id}/edit/${obj.object_id}`);
         default:
-          return router.push(`/dashboard/product/${id}`);
+          return router.push(`/dashboard/product/${obj.object_id}`);
       }
     },
     [subType]
@@ -219,6 +220,7 @@ export default function Table({
                   src={SliderIcon}
                   className='w-[20px] h-[20px]'
                   alt='slider_icon'
+                  onClick={() => setFilterModal((prev) => !prev)}
                 />
               </th>
             ) : (

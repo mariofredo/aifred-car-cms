@@ -93,8 +93,12 @@ export function QuestionContextProvider({
         type: item.question.type,
         question_item_content: item.question.value,
         ordinal: i + 1,
-        question_choose_content: item.answer.map((ans) => ans.value),
+        question_item_unique_id: item.question.unique_id,
+        question_choice_content: item.answer.map((ans) => ans.value),
         tag_id: item.tag.map((tag) => tag.value),
+        question_item_choice_unique_id: item.answer.map((ans) =>
+          ans.unique_id.toString()
+        ),
       }));
       const response = await fetch(API_ROUTES.question_update, {
         method: 'POST',
