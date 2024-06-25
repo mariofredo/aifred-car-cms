@@ -29,10 +29,10 @@ export default function LoginForm() {
       if (response.ok) {
         const { code, data } = await response.json();
         if (code === 200) {
-          Cookie.set('token', data.token, {
+          Cookie.set('token_aifred_neo_cms', data.token, {
             expires: new Date(data.expired_at),
           });
-          Cookie.set('username', data.username, {
+          Cookie.set('username_aifred_neo_cms', data.username, {
             expires: new Date(data.expired_at),
           });
           router.push('/dashboard');

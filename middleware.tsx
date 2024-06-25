@@ -3,7 +3,7 @@ import {NextResponse, NextRequest} from 'next/server';
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const cookies: RequestCookies = request.cookies;
-  const access_token = cookies.get('token');
+  const access_token = cookies.get('token_aifred_neo_cms');
   if (
     !access_token &&
     request.nextUrl.pathname !== '/login' &&
