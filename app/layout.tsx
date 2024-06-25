@@ -1,9 +1,17 @@
 import type {Metadata} from 'next';
 import {Inter} from 'next/font/google';
-import {ModalContextProvider} from '@/context';
+import {
+  BrandContextProvider,
+  ModalContextProvider,
+  ProductContextProvider,
+  QuestionContextProvider,
+  SpecParamContextProvider,
+  VariantContextProvider,
+} from '@/context';
 import '@/public/fonts/Manrope/manrope.scss';
 import '@/public/fonts/Montserrat/montserrat.scss';
 import './globals.css';
+import {ComparisonContextProvider} from '@/context/comparisonContext';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -20,7 +28,19 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <ModalContextProvider>{children}</ModalContextProvider>
+        <QuestionContextProvider>
+          <ComparisonContextProvider>
+            <VariantContextProvider>
+              <ProductContextProvider>
+                <BrandContextProvider>
+                  <SpecParamContextProvider>
+                    <ModalContextProvider>{children}</ModalContextProvider>
+                  </SpecParamContextProvider>
+                </BrandContextProvider>
+              </ProductContextProvider>
+            </VariantContextProvider>
+          </ComparisonContextProvider>
+        </QuestionContextProvider>
       </body>
     </html>
   );

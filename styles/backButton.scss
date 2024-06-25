@@ -1,0 +1,17 @@
+.back_button {
+  display: flex;
+  padding: 10.942px 41.579px;
+  align-items: center;
+  gap: 10.942px;
+
+  border-radius: 10.942px;
+  background: var(--sub1, #dfdfdf);
+  p {
+    color: var(--unselect, #3e3e3e);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13.13px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: -0.657px;
+  }
+}

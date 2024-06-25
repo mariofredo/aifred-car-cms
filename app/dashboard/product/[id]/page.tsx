@@ -6,7 +6,7 @@ export default function DashboardProductDetail() {
   return (
     <DefaultContainer title={'Edit Product'}>
       <Suspense fallback={<>Loading...</>}>
-        <ProductForm type={'detailProduct'} params={{}} />
+        <ProductForm type={'edit'} params={{}} />
       </Suspense>
     </DefaultContainer>
   );

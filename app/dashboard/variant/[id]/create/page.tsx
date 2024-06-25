@@ -7,7 +7,7 @@ export default function DashboardVariantCreate() {
   return (
     <DefaultContainer title='Add New Variant'>
       <Suspense>
-        <VariantForm />
+        <VariantForm type='create' />
       </Suspense>
     </DefaultContainer>
   );

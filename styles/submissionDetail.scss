@@ -1,23 +1,82 @@
 .sd_about {
-    background: #f6f6f6;
-    border-radius: 10px;
-    width: 100%;
+  background: #f6f6f6;
+  border-radius: 10px;
+  width: 100%;
+  display: flex;
+  gap: 50px;
+  padding: 15px 20px;
+  .sd_about_title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #3e3e3e;
+  }
+  .sd_about_content {
     display: flex;
-    gap: 50px;
-    padding: 15px 20px;
-    .sd_about_title {
-      font-size: 20px;
-      font-weight: 600;
+    align-items: center;
+    color: #b5b5b5;
+    gap: 5px;
+    font-weight: 500;
+    .highlight {
       color: #3e3e3e;
     }
-    .sd_about_content {
-      display: flex;
-      align-items: center;
-      color: #b5b5b5;
-      gap: 5px;
+  }
+}
+
+.sd_content_container {
+  display: flex;
+  padding: 20px 19.401px;
+  flex-direction: column;
+  gap: 10px;
+
+  border-radius: 9.7px;
+  background: var(--Hovering, #f6f6f6);
+
+  .content_title {
+    color: var(--unselect, #3e3e3e);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 104%; /* 33.28px */
+    letter-spacing: -1.6px;
+  }
+
+  .back_button {
+    display: flex;
+    padding: 10.942px 41.579px;
+    align-items: center;
+    gap: 10.942px;
+
+    border-radius: 10.942px;
+    background: var(--sub1, #dfdfdf);
+    p {
+      color: var(--unselect, #3e3e3e);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13.13px;
+      font-style: normal;
       font-weight: 500;
-      .highlight {
-        color: #3e3e3e;
-      }
+      line-height: 104%; /* 13.655px */
+      letter-spacing: -0.657px;
     }
   }
+}
+
+.sd_content_container_row {
+  display: flex;
+  padding: 20px 19.401px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: 9.7px;
+  background: var(--Hovering, #f6f6f6);
+  .choosen_text {
+    color: var(--unselect, #3e3e3e);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 104%; /* 33.28px */
+    letter-spacing: -1.6px;
+  }
+}

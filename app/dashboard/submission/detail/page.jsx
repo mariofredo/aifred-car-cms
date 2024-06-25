@@ -1,11 +1,12 @@
+'use client';
 import Image from 'next/image';
 import {ContactIcon, MailIcon, UserIcon} from '@/public';
-import {Select, DefaultContainer, TableHome, Card} from '@/components';
+import {DefaultContainer, TableHome, Card} from '@/components';
 import '@/styles/submissionDetail.scss';
 
 export default function page() {
   return (
-    <div>
+    <div className='flex flex-col gap-[15px]'>
       <DefaultContainer title={'Submission Detail'} />
       <div className='sd_about'>
         <div className='sd_about_title'>About</div>
@@ -31,38 +32,80 @@ export default function page() {
           </p>
         </div>
       </div>
-      <div>
-        <div>
-          <p>Questions Details</p>
-          <button>back</button>
+      <div className='sd_content_container'>
+        <div className='w-full flex justify-between'>
+          <p className='content_title'>Questions Details</p>
+          <button className='back_button'>
+            <p>Back</p>
+          </button>
         </div>
         <TableHome
-          tableName={[{name: 'COMPLETED DURATION', colSpan: 2}]}
-          tableValue={[
+          tableName={[
             {
-              name: 'Complete',
-              value: '02:56',
+              name: 'No',
+              colSpan: 1,
             },
             {
-              name: 'Fastest',
-              value: '02:56',
+              name: 'Question',
+              colSpan: 1,
             },
             {
-              name: 'Average',
-              value: '02:56',
+              name: 'Answer',
+              colSpan: 1,
             },
             {
-              name: 'Slowest',
-              value: '02:56',
+              name: 'Tag',
+              colSpan: 1,
+            },
+            {
+              name: 'Duration',
+              colSpan: 1,
             },
           ]}
-          tableKey={['name', 'value']}
+          tableValue={[
+            {
+              number: 'Question 1',
+              question: '00:02',
+              answer: '00:43',
+              tag: '02:43',
+              duration: '00:02',
+            },
+            {
+              number: 'Question 2',
+              question: '00:02',
+              answer: '00:43',
+              tag: '02:43',
+              duration: '00:02',
+            },
+            {
+              number: 'Question 3',
+              question: '00:02',
+              answer: '00:43',
+              tag: '02:43',
+              duration: '00:02',
+            },
+            {
+              number: 'Question 4',
+              question: '00:02',
+              answer: '00:43',
+              tag: '02:43',
+              duration: '00:02',
+            },
+            {
+              number: 'Question 5',
+              question: '00:02',
+              answer: '00:43',
+              tag: '02:43',
+              duration: '00:02',
+            },
+          ]}
+          tableKey={['number', 'question', 'answer', 'tag', 'duration']}
           tHeadBg={'#474747'}
         />
       </div>
-      <div>
+      <div className='sd_content_container_row'>
         <div>
-          <p>Choosen Product</p>
+          <p className='choosen_text'>Choosen Product</p>
         </div>
         <div>
           <Card

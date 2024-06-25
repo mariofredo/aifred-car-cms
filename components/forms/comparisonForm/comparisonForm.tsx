@@ -1,12 +1,47 @@
 'use client';
 import {CirclePlus} from '@/public';
-import Image from 'next/image';
-import React, {useState} from 'react';
-import {Tag} from '@/types';
+import Image, {StaticImageData} from 'next/image';
+import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
+import {SelectedSpec, Tag} from '@/types';
 import {ModalForm, TagInput} from '@/components';
-import {useModal} from '@/context';
-export default function ProductLvl2Form() {
+import {useModal, useSpec} from '@/context';
+import {useParams} from 'next/navigation';
+import {useComparison} from '@/context/comparisonContext';
+import {useRouter} from 'next/navigation';
+interface Payload {
+  product_name: string;
+  variant_name: string;
+  price: number;
+  spec: SelectedSpec[];
+  image: File | null;
+  is_active: number;
+}
+export default function ComparisonForm({type}: {type: string}) {
+  const {id, comparisonId}: {id: string; comparisonId: string} = useParams();
+  const router = useRouter();
+  const {getDetailComparison, createComparison, updateComparison} =
+    useComparison();
   const {showModal, setShowModal} = useModal();
+  const [payload, setPayload] = useState<Payload>({
+    product_name: '',
+    variant_name: '',
+    price: 0,
+    spec: [],
+    image: null,
+    is_active: 0,
+  });
+  const [previewImg, setPreviewImg] = useState<string>('');
+  const {
+    tagSuggestion,
+    selectedSpecs,
+    setSelectedSpecs,
+    getListSpec,
+    specs,
+    setSpecs,
+    fetchSpecs,
+    setFetchSpecs,
+    getListTag,
+  } = useSpec();
   const [tags, setTags] = useState<Tag[]>([]);
   const KeyCodes = {
     comma: 188,
@@ -26,6 +61,117 @@ export default function ProductLvl2Form() {
     newTags.splice(i, 1);
     setTags(newTags);
   };
+  const handleSelectedSpecChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+      setSelectedSpecs((prev) => {
+        const updatedData = [...prev];
+        updatedData[idx] = {
+          ...updatedData[idx],
+          value: e.target.value,
+        };
+        return updatedData;
+      });
+    },
+    [selectedSpecs, setSelectedSpecs]
+  );
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = e.target;
+    setPayload((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleSubmitComparison = useCallback(
+    async (type: string, payload: Payload, id: string) => {
+      try {
+        switch (type) {
+          case 'edit':
+            const resUpdate = await updateComparison(id, {
+              id: comparisonId,
+              ...payload,
+              spec: selectedSpecs,
+            });
+            if (resUpdate.code === 200)
+              router.push(`/dashboard/comparison/${id}`);
+            return;
+
+          default:
+            const resCreate = await createComparison(id, {
+              ...payload,
+              spec: selectedSpecs,
+            });
+            if (resCreate.code === 200)
+              router.push(`/dashboard/comparison/${id}`);
+            return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [payload, id, comparisonId, selectedSpecs, specs]
+  );
+  const callDetailVariant = useCallback(
+    async (id: string, comparisonId: string) => {
+      try {
+        const data = await getDetailComparison(id, comparisonId);
+        setPayload((prev) => ({
+          ...prev,
+          product_name: data.product_competitor.brand,
+          variant_name: data.product_competitor.name,
+          price: data.product_competitor.price,
+          is_active: data.product_competitor.is_active,
+        }));
+        setSpecs((prev) => {
+          let updatedData = [...prev];
+          updatedData.map((obj) => {
+            if (data.specs) {
+              let found = data.specs.find(
+                (el: {[key: string]: any}) => obj.id === el.spec_id
+              );
+              if (found) obj.checked = true;
+              return obj;
+            }
+          });
+          // console.log(specs, 'specs');
+          setSelectedSpecs((prev) => {
+            return data.specs.map((el: {[key: string]: any}) => {
+              // const found = specs.find((key: any) => key.id === el.spec_id);
+              // console.log(found, 'found');
+              // if (found) {
+              //   return {
+              //     id: el.spec_id,
+              //     checked: true,
+              //     name: found.name,
+              //     value: el.value,
+              //   };
+              // }
+              return {
+                id: el.spec_id,
+                checked: true,
+                name: el.name,
+                value: el.content,
+              };
+            });
+          });
+          return updatedData;
+        });
+        setPreviewImg(data.product_competitor.image);
+        setFetchSpecs(true);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [specs]
+  );
+  useEffect(() => {
+    setFetchSpecs(false);
+    getListSpec();
+    getListTag();
+  }, []);
+  useEffect(() => {
+    if (comparisonId && specs.length > 0 && !fetchSpecs)
+      callDetailVariant(id, comparisonId);
+  }, [specs]);
   return (
     <>
       <div className='grid grid-cols-3 gap-[30px]'>
@@ -47,12 +193,10 @@ export default function ProductLvl2Form() {
         </div>
         <div className='col-span-2 flex gap-[20px] '>
           <input
-            name='brand'
+            name='product_name'
             className='h-full  rounded-[10px] border-[1.5px] border-[#b5b5b5] w-full px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
-            // onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            //   setPayload({...payload, company_brand_id: e.target.value})
-            // }
-            // value={payload.company_brand_id}
+            onChange={handleChange}
+            value={payload.product_name}
           />
         </div>
         <div className='col-span-1 flex flex-col justify-center'>
@@ -65,12 +209,10 @@ export default function ProductLvl2Form() {
         </div>
         <div className='col-span-2 flex gap-[20px] '>
           <input
-            name='brand'
+            name='variant_name'
             className='h-full  rounded-[10px] border-[1.5px] border-[#b5b5b5] w-full px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
-            // onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            //   setPayload({...payload, company_brand_id: e.target.value})
-            // }
-            // value={payload.company_brand_id}
+            onChange={handleChange}
+            value={payload.variant_name}
           />
         </div>
 
@@ -88,8 +230,8 @@ export default function ProductLvl2Form() {
             name='price'
             className='h-full w-full px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
             min={0}
-            // onChange={handleChange}
-            // value={payload.price}
+            onChange={handleChange}
+            value={payload.price}
           />
         </div>
 
@@ -121,26 +263,22 @@ export default function ProductLvl2Form() {
           </button>
         </div>
         <div className='col-span-3 flex gap-[20px] flex-col'>
-          {/* {selectedSpecs.map((el, idx) => ( */}
-          <div
-            // key={idx}
-            className='w-full flex gap-[20px]'
-          >
-            <div className='h-full w-[25%] rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'>
-              {/* {el.name} */}
-              Type
+          {selectedSpecs.map((el, idx) => (
+            <div key={idx} className='w-full flex gap-[20px]'>
+              <div className='h-full w-[25%] rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'>
+                {el.name}
+              </div>
+              <input
+                type='text'
+                name={`spec_${el.id}`}
+                value={selectedSpecs[idx].value}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleSelectedSpecChange(e, idx)
+                }
+                className='h-full w-[75%] px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
+              />
             </div>
-            <input
-              type='text'
-              // name={`spec_${el.id}`}
-              // value={selectedSpecs[idx].value}
-              // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              //   handleSelectedSpecChange(e, idx)
-              // }
-              className='h-full w-[75%] px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
-            />
-          </div>
-          {/* ))} */}
+          ))}
         </div>
 
         <div className='col-span-3'>
@@ -156,10 +294,10 @@ export default function ProductLvl2Form() {
             <div className='flex gap-[20px]'>
               <button
                 className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-                // onClick={() => {
-                //   setPreviewImg('');
-                //   setPayload({...payload, image: null});
-                // }}
+                onClick={() => {
+                  setPreviewImg('');
+                  setPayload({...payload, image: null});
+                }}
               >
                 Remove
               </button>
@@ -168,25 +306,25 @@ export default function ProductLvl2Form() {
                   type='file'
                   className='opacity-0 absolute top-0 left-0 w-full h-full'
                   accept='image/*'
-                  // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  //   if (e.target.files && e.target.files.length > 0) {
-                  //     setPayload({...payload, image: e.target.files[0]});
-                  //     const imageUrl = URL.createObjectURL(e.target.files[0]);
-                  //     setPreviewImg(imageUrl);
-                  //   }
-                  // }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setPayload({...payload, image: e.target.files[0]});
+                      const imageUrl = URL.createObjectURL(e.target.files[0]);
+                      setPreviewImg(imageUrl);
+                    }
+                  }}
                 />
                 Upload
               </div>
             </div>
           </div>
-          {/* {previewImg && (
+          {previewImg && (
             <img
               src={previewImg}
               alt='previewImg'
               className='w-[300px] h-[200px]'
             />
-          )} */}
+          )}
         </div>
 
         <div className='col-span-3'>
@@ -198,10 +336,10 @@ export default function ProductLvl2Form() {
             <label className='switch'>
               <input
                 type='checkbox'
-                // checked={payload.status === 1 ? true : false}
-                // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                //   setPayload({...payload, status: e.target.checked ? 1 : 0})
-                // }
+                checked={payload.is_active === 1 ? true : false}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPayload({...payload, is_active: e.target.checked ? 1 : 0})
+                }
               />
               <span className='slider round'></span>
             </label>
@@ -212,40 +350,15 @@ export default function ProductLvl2Form() {
           <div className='flex gap-[20px] mt-[30px]'>
             <button
               className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-              // onClick={() => router.push('/dashboard/product')}
+              onClick={() => router.push(`/dashboard/comparison/${id}`)}
             >
               Cancel
             </button>
             <button
               className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-              // onClick={async () => {
-              //   if (type === 'detailProduct' || type === 'detailComparison') {
-              //     const data = await updateCategoryTwo({
-              //       category_level_1_id: payload.category_level_1_id,
-              //       category_level_2_id: productId,
-              //       name: payload.name,
-              //       price: payload.price,
-              //       status: payload.status,
-              //       image: payload.image,
-              //       specs: selectedSpecs,
-              //       tags: tags,
-              //       category_level_1_product_id: category_level_1_product_id,
-              //     });
-              //     if (data.code === 200) router.push('/dashboard/product');
-              //   } else {
-              //     const data = await createCategoryTwo({
-              //       category_level_1_id: payload.category_level_1_id,
-              //       name: payload.name,
-              //       price: payload.price,
-              //       status: payload.status,
-              //       image: payload.image,
-              //       specs: selectedSpecs,
-              //       tags: tags,
-              //       category_level_1_product_id: category_level_1_product_id,
-              //     });
-              //     if (data.code === 200) router.push('/dashboard/product');
-              //   }
-              // }}
+              onClick={async () => {
+                handleSubmitComparison(type, payload, id);
+              }}
             >
               Done
             </button>

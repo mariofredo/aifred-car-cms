@@ -15,8 +15,8 @@ export const MENU_ITEMS = [
   },
   {
     title: 'Product',
-    path: '',
-    type: 'list',
+    path: '/dashboard/product',
+    type: 'normal',
     icon: '',
     subMenu: [
       {
@@ -29,15 +29,31 @@ export const MENU_ITEMS = [
       },
     ],
   },
+  // {
+  //   title: 'Product',
+  //   path: '',
+  //   type: 'list',
+  //   icon: '',
+  //   subMenu: [
+  //     {
+  //       subMenuTitle: 'Add Product',
+  //       path: '/dashboard/product/create',
+  //     },
+  //     {
+  //       subMenuTitle: 'Product Library',
+  //       path: '/dashboard/product',
+  //     },
+  //   ],
+  // },
   {
     title: 'Question',
-    path: '',
+    path: '/dashboard/question',
     icon: '',
-    type: 'list',
+    type: 'normal',
     subMenu: [
       {
         subMenuTitle: 'Add Question',
-        path: '/dashboard/question/addQuestion',
+        path: '/dashboard/question/create',
       },
       {
         subMenuTitle: 'Question Library',
@@ -45,6 +61,22 @@ export const MENU_ITEMS = [
       },
     ],
   },
+  // {
+  //   title: 'Question',
+  //   path: '',
+  //   icon: '',
+  //   type: 'list',
+  //   subMenu: [
+  //     {
+  //       subMenuTitle: 'Add Question',
+  //       path: '/dashboard/question/create',
+  //     },
+  //     {
+  //       subMenuTitle: 'Question Library',
+  //       path: '/dashboard/question',
+  //     },
+  //   ],
+  // },
   // {
   //   title: 'Plans',
   //   path: '/dashboard/plans',

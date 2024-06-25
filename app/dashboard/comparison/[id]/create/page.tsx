@@ -1,10 +1,10 @@
 'use client';
-import {DefaultContainer, ProductLvl2Form} from '@/components';
+import {ComparisonForm, DefaultContainer} from '@/components';
 
 export default function DashboardComparisonCreate() {
   return (
     <DefaultContainer title='Add Comparison Product'>
-      <ProductLvl2Form />
+      <ComparisonForm type='create' />
     </DefaultContainer>
   );
 }

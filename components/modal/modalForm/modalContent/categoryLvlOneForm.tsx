@@ -1,7 +1,5 @@
 'use client';
-import {useBrand} from '@/context/BrandContext';
-import {useCategory} from '@/context/CategoryContext';
-import {useModal} from '@/context/ModalContext';
+import {useModal, useBrand} from '@/context';
 import {useState} from 'react';
 import Cookies from 'js-cookie';
 export default function CategoryLvlOneForm({
@@ -14,7 +12,6 @@ export default function CategoryLvlOneForm({
   const token = Cookies.get('token');
   const {setShowModal} = useModal();
   const {brands, getListBrand} = useBrand();
-  const {createCategoryOne, getListCategoryOne} = useCategory();
   const [payload, setPayload] = useState({
     name: '',
     company_brand_id: data.company_brand_id,
@@ -45,9 +42,9 @@ export default function CategoryLvlOneForm({
         <button
           className='btn_done'
           onClick={async () => {
-            const data = await createCategoryOne(payload);
+            // const data = await createCategoryOne(payload);
             if (data.code === 200) {
-              await getListCategoryOne(payload.company_brand_id);
+              // await getListCategoryOne(payload.company_brand_id);
               setShowModal(false);
             }
           }}

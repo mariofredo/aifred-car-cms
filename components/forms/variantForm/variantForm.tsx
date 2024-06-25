@@ -1,12 +1,40 @@
 'use client';
 import {CirclePlus} from '@/public';
 import Image from 'next/image';
-import React, {useState} from 'react';
-import {Tag} from '@/types';
+import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
+import {SelectedSpec, Tag} from '@/types';
 import {ModalForm, TagInput} from '@/components';
-import {useModal} from '@/context';
-export default function VariantForm() {
+import {useModal, useSpec, useVariant} from '@/context';
+import {useParams, useRouter} from 'next/navigation';
+interface Payload {
+  variant_name: string;
+  price: number;
+  image: File | null;
+  is_active: number;
+}
+export default function VariantForm({type}: {type: string}) {
+  const {id, variantId}: {id: string; variantId: string} = useParams();
+  const router = useRouter();
+  const {createVariant, getDetailVariant, updateVariant} = useVariant();
   const {showModal, setShowModal} = useModal();
+  const {
+    tagSuggestion,
+    selectedSpecs,
+    setSelectedSpecs,
+    getListSpec,
+    specs,
+    setSpecs,
+    fetchSpecs,
+    setFetchSpecs,
+    getListTag,
+  } = useSpec();
+  const [payload, setPayload] = useState<Payload>({
+    variant_name: '',
+    price: 0,
+    image: null,
+    is_active: 0,
+  });
+  const [previewImg, setPreviewImg] = useState<string>('');
   const [tags, setTags] = useState<Tag[]>([]);
   const KeyCodes = {
     comma: 188,
@@ -26,6 +54,130 @@ export default function VariantForm() {
     newTags.splice(i, 1);
     setTags(newTags);
   };
+  const handleSelectedSpecChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+      setSelectedSpecs((prev) => {
+        const updatedData = [...prev];
+        updatedData[idx] = {
+          ...updatedData[idx],
+          value: e.target.value,
+        };
+        return updatedData;
+      });
+    },
+    [selectedSpecs, setSelectedSpecs]
+  );
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = e.target;
+    setPayload((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleSubmitVariant = useCallback(
+    async (type: string, payload: Payload, id: string) => {
+      try {
+        switch (type) {
+          case 'edit':
+            const resUpdate = await updateVariant(id, {
+              id: variantId,
+              ...payload,
+              spec: selectedSpecs,
+              tag: tags,
+            });
+            if (resUpdate.code === 200) router.push(`/dashboard/variant/${id}`);
+            return;
+
+          default:
+            const resCreate = await createVariant(id, {
+              ...payload,
+              spec: selectedSpecs,
+              tag: tags,
+            });
+            if (resCreate.code === 200) router.push(`/dashboard/variant/${id}`);
+            return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [payload, id, variantId, selectedSpecs, specs]
+  );
+  const callDetailVariant = useCallback(
+    async (id: string, variantId: string) => {
+      try {
+        const data = await getDetailVariant(id, variantId);
+        setPayload((prev) => ({
+          ...prev,
+          variant_name: data.variant.name,
+          price: data.variant.price,
+          is_active: data.variant.is_active,
+        }));
+        setTags(
+          data.tags.map((el: {[key: string]: any}) => ({
+            id: el.tag_id.toString(),
+            className: '',
+            text: el.name,
+          }))
+        );
+        setSpecs((prev) => {
+          let updatedData = [...prev];
+          updatedData.map((obj) => {
+            if (data.specs) {
+              let found = data.specs.find(
+                (el: {[key: string]: any}) => obj.id === el.spec_id
+              );
+              if (found) obj.checked = true;
+              return obj;
+            }
+          });
+          // console.log(specs, 'specs');
+          setSelectedSpecs((prev) => {
+            return data.specs.map((el: {[key: string]: any}) => {
+              // const found = specs.find((key: any) => key.id === el.spec_id);
+              // console.log(found, 'found');
+              // if (found) {
+              //   return {
+              //     id: el.spec_id,
+              //     checked: true,
+              //     name: found.name,
+              //     value: el.value,
+              //   };
+              // }
+              return {
+                id: el.spec_id,
+                checked: true,
+                name: el.name,
+                value: el.content,
+              };
+            });
+          });
+          console.log(updatedData, 'updatedData');
+          return updatedData;
+        });
+        setPreviewImg(data.variant.image);
+        setFetchSpecs(true);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [specs]
+  );
+
+  useEffect(() => {
+    setFetchSpecs(false);
+    getListSpec();
+    getListTag();
+  }, []);
+  useEffect(() => {
+    if (variantId && specs.length > 0 && !fetchSpecs)
+      callDetailVariant(id, variantId);
+  }, [specs]);
+  useEffect(() => {
+    // console.log(payload, 'payload');
+    // console.log(selectedSpecs, 'selectedspec');
+    // console.log(specs, 'specs');
+  }, [payload, selectedSpecs, specs]);
   return (
     <>
       <div className='grid grid-cols-3 gap-[30px]'>
@@ -47,12 +199,10 @@ export default function VariantForm() {
         </div>
         <div className='col-span-2 flex gap-[20px] '>
           <input
-            name='brand'
+            name='variant_name'
             className='h-full  rounded-[10px] border-[1.5px] border-[#b5b5b5] w-full px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
-            // onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            //   setPayload({...payload, company_brand_id: e.target.value})
-            // }
-            // value={payload.company_brand_id}
+            onChange={handleChange}
+            value={payload.variant_name}
           />
         </div>
 
@@ -70,8 +220,8 @@ export default function VariantForm() {
             name='price'
             className='h-full w-full px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
             min={0}
-            // onChange={handleChange}
-            // value={payload.price}
+            onChange={handleChange}
+            value={payload.price}
           />
         </div>
         {
@@ -85,23 +235,7 @@ export default function VariantForm() {
               <div className='rounded-[10px] border-[1.5px] border-[#b5b5b5] p-[10px] w-full '>
                 <TagInput
                   tags={tags}
-                  suggestions={[
-                    {
-                      id: '1',
-                      className: '',
-                      text: 'Coklat',
-                    },
-                    {
-                      id: '2',
-                      className: '',
-                      text: 'Biru',
-                    },
-                    {
-                      id: '2',
-                      className: '',
-                      text: 'Cok',
-                    },
-                  ]}
+                  suggestions={tagSuggestion}
                   handleAddition={handleAddition}
                   handleDelete={handleDelete}
                 />
@@ -137,26 +271,22 @@ export default function VariantForm() {
           </button>
         </div>
         <div className='col-span-3 flex gap-[20px] flex-col'>
-          {/* {selectedSpecs.map((el, idx) => ( */}
-          <div
-            // key={idx}
-            className='w-full flex gap-[20px]'
-          >
-            <div className='h-full w-[25%] rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'>
-              {/* {el.name} */}
-              Type
+          {selectedSpecs.map((el, idx) => (
+            <div key={idx} className='w-full flex gap-[20px]'>
+              <div className='h-full w-[25%] rounded-[10px] border-[1.5px] border-[#b5b5b5] px-[15px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'>
+                {el.name}
+              </div>
+              <input
+                type='text'
+                name={`spec_${el.id}`}
+                value={selectedSpecs[idx].value}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleSelectedSpecChange(e, idx)
+                }
+                className='h-full w-[75%] px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
+              />
             </div>
-            <input
-              type='text'
-              // name={`spec_${el.id}`}
-              // value={selectedSpecs[idx].value}
-              // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              //   handleSelectedSpecChange(e, idx)
-              // }
-              className='h-full w-[75%] px-[15px] py-[10px] rounded-[10px] border-[1.5px] border-[#b5b5b5] text-[24px] text-[#3e3e3e] font-semibold'
-            />
-          </div>
-          {/* ))} */}
+          ))}
         </div>
 
         <div className='col-span-3'>
@@ -172,10 +302,10 @@ export default function VariantForm() {
             <div className='flex gap-[20px]'>
               <button
                 className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-                // onClick={() => {
-                //   setPreviewImg('');
-                //   setPayload({...payload, image: null});
-                // }}
+                onClick={() => {
+                  setPreviewImg('');
+                  setPayload({...payload, image: null});
+                }}
               >
                 Remove
               </button>
@@ -184,25 +314,25 @@ export default function VariantForm() {
                   type='file'
                   className='opacity-0 absolute top-0 left-0 w-full h-full'
                   accept='image/*'
-                  // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  //   if (e.target.files && e.target.files.length > 0) {
-                  //     setPayload({...payload, image: e.target.files[0]});
-                  //     const imageUrl = URL.createObjectURL(e.target.files[0]);
-                  //     setPreviewImg(imageUrl);
-                  //   }
-                  // }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setPayload({...payload, image: e.target.files[0]});
+                      const imageUrl = URL.createObjectURL(e.target.files[0]);
+                      setPreviewImg(imageUrl);
+                    }
+                  }}
                 />
                 Upload
               </div>
             </div>
           </div>
-          {/* {previewImg && (
+          {previewImg && (
             <img
               src={previewImg}
               alt='previewImg'
               className='w-[300px] h-[200px]'
             />
-          )} */}
+          )}
         </div>
 
         <div className='col-span-3'>
@@ -214,10 +344,11 @@ export default function VariantForm() {
             <label className='switch'>
               <input
                 type='checkbox'
-                // checked={payload.status === 1 ? true : false}
-                // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                //   setPayload({...payload, status: e.target.checked ? 1 : 0})
-                // }
+                name='is_active'
+                checked={payload.is_active === 1 ? true : false}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPayload({...payload, is_active: e.target.checked ? 1 : 0})
+                }
               />
               <span className='slider round'></span>
             </label>
@@ -228,40 +359,15 @@ export default function VariantForm() {
           <div className='flex gap-[20px] mt-[30px]'>
             <button
               className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-              // onClick={() => router.push('/dashboard/product')}
+              onClick={() => router.push(`/dashboard/variant/${id}`)}
             >
               Cancel
             </button>
             <button
               className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-              // onClick={async () => {
-              //   if (type === 'detailProduct' || type === 'detailComparison') {
-              //     const data = await updateCategoryTwo({
-              //       category_level_1_id: payload.category_level_1_id,
-              //       category_level_2_id: productId,
-              //       name: payload.name,
-              //       price: payload.price,
-              //       status: payload.status,
-              //       image: payload.image,
-              //       specs: selectedSpecs,
-              //       tags: tags,
-              //       category_level_1_product_id: category_level_1_product_id,
-              //     });
-              //     if (data.code === 200) router.push('/dashboard/product');
-              //   } else {
-              //     const data = await createCategoryTwo({
-              //       category_level_1_id: payload.category_level_1_id,
-              //       name: payload.name,
-              //       price: payload.price,
-              //       status: payload.status,
-              //       image: payload.image,
-              //       specs: selectedSpecs,
-              //       tags: tags,
-              //       category_level_1_product_id: category_level_1_product_id,
-              //     });
-              //     if (data.code === 200) router.push('/dashboard/product');
-              //   }
-              // }}
+              onClick={async () => {
+                handleSubmitVariant(type, payload, id);
+              }}
             >
               Done
             </button>

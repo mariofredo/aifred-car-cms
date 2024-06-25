@@ -1,0 +1,35 @@
+.table_pagination_container {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  gap: 10px;
+  .table_pagination_content,
+  .table_pagination_chevron_right,
+  .table_pagination_chevron_left {
+    display: flex;
+    width: 24.468px;
+    height: 24.468px;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .table_pagination_content {
+    &.active {
+      border-radius: 7px;
+    }
+    .table_pagination_content_text {
+      color: #000;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      &.active {
+        color: #f31d1e;
+      }
+    }
+  }
+}
