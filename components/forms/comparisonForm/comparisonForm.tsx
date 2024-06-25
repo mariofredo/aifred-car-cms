@@ -108,7 +108,7 @@ export default function ComparisonForm({type}: {type: string}) {
         console.log(error);
       }
     },
-    [payload, id, comparisonId, selectedSpecs, specs]
+    [payload, id, comparisonId, selectedSpecs, specs, type]
   );
   const callDetailVariant = useCallback(
     async (id: string, comparisonId: string) => {
@@ -118,7 +118,7 @@ export default function ComparisonForm({type}: {type: string}) {
           ...prev,
           product_name: data.product_competitor.brand,
           variant_name: data.product_competitor.name,
-          price: data.product_competitor.price,
+          price: data.product_competitor.price || 0,
           is_active: data.product_competitor.is_active,
         }));
         setSpecs((prev) => {

@@ -19,8 +19,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(`/dashboard/product`, request.url));
     else if (request.nextUrl.pathname === '/') {
       return NextResponse.redirect(new URL(`/dashboard/product`, request.url));
-    } else if (request.nextUrl.pathname === '/dashboard')
-      return NextResponse.redirect(new URL(`/dashboard/product`, request.url));
+    }
   }
 }
 export const config = {

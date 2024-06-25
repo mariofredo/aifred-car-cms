@@ -181,9 +181,12 @@ export function ComparisonContextProvider({
       if (!response.ok) {
         throw new Error('Error');
       }
+
       const data = await response.json();
       return data;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error, 'error');
+    }
   };
   const getDetailComparison = async (id: string, comparisonId: string) => {
     try {
