@@ -46,6 +46,35 @@ export default function page() {
     }
   };
 
+  const deleteSubmission = async (unique_id) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/submission/delete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ id: unique_id }),
+        }
+      );
+      if (response.ok) {
+        console.log('Submission deleted successfully');
+        // Remove the deleted submission from the state
+        setSubmissions((prevSubmissions) => 
+          prevSubmissions.filter(submission => submission.unique_id !== unique_id)
+        );
+        // Optionally, refetch the data
+        fetchData();
+      } else {
+        console.error('Failed to delete submission:', response.status, await response.text());
+      }
+    } catch (error) {
+      console.error('Failed to delete submission:', error);
+    }
+  };
+
   const handleRenderCompleteStatus = useCallback((status) => {
     switch (status) {
       case 'complete':
@@ -110,11 +139,8 @@ export default function page() {
                     >
                       <button className='purple_btn'>Details</button>
                     </Link>
-                    <Link
-                      href={`/dashboard/submission/detail/${submission.unique_id}`}
-                    >
-                      <button className='red_btn'>Delete</button>
-                    </Link>
+                    <button className='red_btn' onClick={() => deleteSubmission(submission.unique_id)}
+                    >Delete</button>
                   </>
                 ),
               }))}
