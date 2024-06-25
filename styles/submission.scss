@@ -21,4 +21,21 @@
     overflow-x: scroll;
     width: 100%;
   }
+  .purple_btn{
+    background: rgba(101, 57, 228, 0.58);
+    color:#fff;
+    width:110px;
+    display: block;
+    border-radius: 20px;
+    margin-bottom: 5px;
+
+  }
+  .red_btn{
+    background: rgba(228, 57, 57, 0.58);
+    color:#fff;
+    width:110px;
+    display: block;
+    border-radius: 20px;
+
+  }
 }
