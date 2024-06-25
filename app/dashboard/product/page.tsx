@@ -251,7 +251,7 @@ export default function DashboardProduct() {
             <Table
               listTitle={[
                 'Brand',
-                'SeriesName',
+                'Series',
                 'Total Variant',
                 'Status',
                 'Date created',

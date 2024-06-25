@@ -7,6 +7,7 @@ export default function ModalForm({
   data,
   setData,
   is_competitor,
+  action,
 }: {
   title: string;
   content: string;
@@ -15,12 +16,17 @@ export default function ModalForm({
   };
   setData: Dispatch<SetStateAction<any>>;
   is_competitor: boolean;
+  action?: () => void;
 }) {
   return (
     <div className='modal_form_backdrop'>
       <div className='modal_form_ctr'>
         {content === 'brand' ? (
-          <BrandForm title={title} is_competitor={is_competitor} />
+          <BrandForm
+            title={title}
+            is_competitor={is_competitor}
+            action={action}
+          />
         ) : content === 'spec' ? (
           <SpecForm title={title} data={data} setData={setData} />
         ) : (
