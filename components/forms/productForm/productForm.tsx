@@ -2,16 +2,13 @@
 import {CirclePlus} from '@/public';
 import Image from 'next/image';
 import {useCallback, useEffect, useState} from 'react';
-import {WithContext as ReactTags} from 'react-tag-input';
 import {IoSearch} from 'react-icons/io5';
 import {Table, ModalForm} from '@/components';
-import {useModal, useBrand} from '@/context';
-import {useParams, useRouter, useSearchParams} from 'next/navigation';
-import {useSpec} from '@/context/specContext';
-import {Tag, SelectedSpec, Brand} from '@/types';
+import {useModal, useBrand, useProduct, useSpec} from '@/context';
+import {useParams, useRouter} from 'next/navigation';
+import {Tag, Brand} from '@/types';
 import Cookie from 'js-cookie';
 import '@/styles/productForm.scss';
-import {useProduct} from '@/context';
 interface ProductFormProps {
   type: string;
   params: {[key: string]: any};
