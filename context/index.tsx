@@ -5,3 +5,4 @@ export * from './specContext';
 export * from './productContext';
 export * from './variantContext';
 export * from './questionContext';
+export * from './comparisonContext';
