@@ -7,11 +7,11 @@ import {
   QuestionContextProvider,
   SpecParamContextProvider,
   VariantContextProvider,
+  ComparisonContextProvider,
 } from '@/context';
 import '@/public/fonts/Manrope/manrope.scss';
 import '@/public/fonts/Montserrat/montserrat.scss';
 import './globals.css';
-import {ComparisonContextProvider} from '@/context/comparisonContext';
 
 const inter = Inter({subsets: ['latin']});
 

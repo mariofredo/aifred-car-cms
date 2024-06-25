@@ -30,7 +30,11 @@ const defaultValue: ContextProps = {
 
 const BrandContext = createContext<ContextProps>(defaultValue);
 
-export function BrandContextProvider({children}: {children: React.ReactNode}) {
+export const BrandContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const token = Cookies.get('token');
   const [brands, setBrands] = useState<Brand[]>([]);
 
@@ -72,6 +76,6 @@ export function BrandContextProvider({children}: {children: React.ReactNode}) {
     createBrand,
   };
   return <BrandContext.Provider value={ctx}>{children}</BrandContext.Provider>;
-}
+};
 
 export const useBrand = () => useContext(BrandContext);
