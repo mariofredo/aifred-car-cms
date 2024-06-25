@@ -1,0 +1,40 @@
+.di_ctrs {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .di_label {
+    color: var(--Text, #474747);
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 104%; /* 10.4px */
+    letter-spacing: -0.5px;
+    padding: 0px 5px;
+    background: var(--Hovering, #f6f6f6);
+
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: -5px;
+    transition: 0.2s ease all;
+  }
+  .date_input {
+    // display: flex;
+    width: 100%;
+    padding: 8px 10px;
+    align-items: center;
+    gap: 138px;
+
+    border-radius: 8px;
+    border: 1px solid var(--sub2, #b5b5b5);
+  }
+
+  &:focus-within .di_label {
+    left: 0px;
+    top: -15px; /* Adjust this to position the label above the input */
+    font-size: 12px; /* Adjust this to make the label smaller */
+    background: var(--Hovering, #f6f6f6);
+    padding: 0 5px;
+  }
+}

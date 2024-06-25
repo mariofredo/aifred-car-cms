@@ -1,19 +1,39 @@
 'use client';
-import {Button, DefaultContainer, Table, TablePagination} from '@/components';
+import {
+  Button,
+  DefaultContainer,
+  FilterModal,
+  Table,
+  TablePagination,
+} from '@/components';
+import {useModal} from '@/context';
 import {useComparison} from '@/context/comparisonContext';
 import {CirclePlus} from '@/public';
 import {Comparison} from '@/types';
 import Link from 'next/link';
 import {useParams} from 'next/navigation';
-import {ChangeEvent, useCallback, useEffect, useState} from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {IoSearch} from 'react-icons/io5';
 
 interface Payload {
   keyword: string;
+  order_by_brand: string;
+  order_by_series: string;
+  date_created_start: string;
+  date_created_end: string;
+  is_active: number;
 }
 export default function DashboardComparisonList() {
   const {id}: {id: string} = useParams();
   const {getListComparison} = useComparison();
+  const {filterModal, setFilterModal} = useModal();
   const [comparison, setComparison] = useState<Comparison[]>([]);
   const [pagination, setPagination] = useState({
     limit: 10,
@@ -22,14 +42,16 @@ export default function DashboardComparisonList() {
   });
   const [payload, setPayload] = useState<Payload>({
     keyword: '',
+    order_by_brand: '',
+    order_by_series: '',
+    date_created_start: '',
+    date_created_end: '',
+    is_active: 1,
   });
-  const callListVariant = useCallback(
-    async (id: string) => {
-      const {data, total_data} = await getListComparison(id, {
-        page: pagination.currentPage,
-        limit: pagination.limit,
-        ...payload,
-      });
+
+  const callListComparison = useCallback(
+    async (id: string, payload: any) => {
+      const {data, total_data} = await getListComparison(id, payload);
       setComparison(data);
       setPagination((prev) => ({
         ...prev,
@@ -38,12 +60,99 @@ export default function DashboardComparisonList() {
     },
     [comparison, pagination, payload]
   );
-
+  const handleRenderFilter = useMemo(
+    () =>
+      filterModal && (
+        <FilterModal
+          list={[
+            {
+              title: 'Brand',
+              type: 'button',
+              data: [
+                {
+                  label: 'A to Z',
+                  value: 'asc',
+                  name: 'order_by_brand',
+                },
+                {
+                  label: 'Z to A',
+                  value: 'desc',
+                  name: 'order_by_brand',
+                },
+              ],
+            },
+            {
+              title: 'Series Name',
+              type: 'button',
+              data: [
+                {
+                  label: 'A to Z',
+                  value: 'asc',
+                  name: 'order_by_series',
+                },
+                {
+                  label: 'Z to A',
+                  value: 'desc',
+                  name: 'order_by_series',
+                },
+              ],
+            },
+            {
+              title: 'Activity By Date',
+              type: 'date',
+              data: [
+                {
+                  label: 'from',
+                  name: 'date_created_start',
+                },
+                {
+                  label: 'until',
+                  name: 'date_created_end',
+                },
+              ],
+            },
+            {
+              title: 'Status',
+              type: 'status_single',
+              data: [
+                {
+                  label: 'Publish',
+                  value: 1,
+                  name: 'is_active',
+                },
+                {
+                  label: 'Unpublish',
+                  value: 0,
+                  name: 'is_active',
+                },
+              ],
+            },
+          ]}
+          setFilterModal={setFilterModal}
+          payload={payload}
+          setPayload={setPayload}
+          action={() => {
+            setFilterModal(false);
+            callListComparison(id, {
+              page: pagination.currentPage,
+              limit: pagination.limit,
+              ...payload,
+            });
+          }}
+        />
+      ),
+    [payload, filterModal, pagination, id]
+  );
   useEffect(() => {
-    callListVariant(id);
+    callListComparison(id, {
+      page: pagination.currentPage,
+      limit: pagination.limit,
+      ...payload,
+    });
   }, [pagination.currentPage]);
   return (
     <DefaultContainer title='Comparison List'>
+      {handleRenderFilter}
       <div className='dc_ctr'>
         <div className='dc_table_ctr'>
           <div className='dc_action_ctr'>
@@ -57,7 +166,17 @@ export default function DashboardComparisonList() {
                 image={CirclePlus}
               />
             </Link>
-            <div className='dc_search_ctr'>
+            <form
+              className='dc_search_ctr'
+              onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                callListComparison(id, {
+                  page: pagination.currentPage,
+                  limit: pagination.limit,
+                  ...payload,
+                });
+              }}
+            >
               <IoSearch
                 color='#b5b5b5'
                 // className='w-[20px] h-[20px] absolute top-[50%] left-[15px] transform translate-y-[-50%]'
@@ -72,7 +191,7 @@ export default function DashboardComparisonList() {
                   setPayload((prev) => ({...prev, keyword: e.target.value}))
                 }
               />
-            </div>
+            </form>
           </div>
           <div className='dc_table'>
             <Table

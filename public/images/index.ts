@@ -21,3 +21,4 @@ export {default as ChevronLeftGrey} from './chevron_left_grey.svg';
 export {default as ChevronRightBlack} from './chevron_right_black.svg';
 export {default as ChevronRightGrey} from './chevron_right_grey.svg';
 export {default as TrashIcon} from './trash_icon.svg';
+export {default as FilterChevronUp} from './filter_modal_chevron_up.svg';

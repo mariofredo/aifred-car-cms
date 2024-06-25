@@ -32,11 +32,13 @@ export default function QuestionContainer({
         name: `input_q${1}`,
         value: '',
         type: 'single',
+        unique_id: '',
       },
       answer: [
         {
           name: `input_a${1}_num1`,
           value: '',
+          unique_id: '',
         },
       ],
       tag: [
@@ -61,11 +63,13 @@ export default function QuestionContainer({
           name: `input_q${i + 1}`,
           value: '',
           type: 'single',
+          unique_id: '',
         },
         answer: [
           {
             name: `input_a${i + 1}_num1`,
             value: '',
+            unique_id: '',
           },
         ],
         tag: [
@@ -89,11 +93,13 @@ export default function QuestionContainer({
           name: `input_q${length + 1}`,
           value: '',
           type: 'single',
+          unique_id: '',
         },
         answer: [
           {
             name: `input_a${length + 1}_num1`,
             value: '',
+            unique_id: '',
           },
         ],
         tag: [
@@ -129,26 +135,28 @@ export default function QuestionContainer({
       const {data} = await getDetailQuestion(id);
       setPayload((prev) => ({
         ...prev,
-        brand_unique_id: data.question_object_id,
+        brand_unique_id: data.brand_unique_id,
         question_set_title: data.question_set_title,
+        is_active: data.is_active,
       }));
-      // const detailData = data.question_items.map(
-      //   (el: ListQuestionItem, i: number) => ({
-      //     question: {
-      //       name: `input_q${i + 1}`,
-      //       value: el.question,
-      //     },
-      //     answer: el.answer.map((key, i2) => ({
-      //       name: `input_a${i + 1}_num${i2 + 1}`,
-      //       value: key.answer_tag_id,
-      //     })),
-      //     tag: el.answer.map((key, i3) => ({
-      //       name: `input_t${i + 1}_num${i3 + 1}`,
-      //       value: key.next_question_id,
-      //     })),
-      //   })
-      // );
-      // setQuestions(detailData);
+      const detailData = data.question_items.map((el: any, i: number) => ({
+        question: {
+          name: `input_q${i + 1}`,
+          value: el.question_item_content,
+          type: el.question_item_type,
+          unique_id: el.question_item_unique_id,
+        },
+        answer: el.question_item_choices.map((key: any, i2: number) => ({
+          name: `input_a${i + 1}_num${i2 + 1}`,
+          value: key.question_item_choice_content,
+          unique_id: key.question_item_choice_unique_id,
+        })),
+        tag: el.question_item_choices.map((key: any, i3: number) => ({
+          name: `input_t${i + 1}_num${i3 + 1}`,
+          value: key.question_item_choice_tag_id || '',
+        })),
+      }));
+      setQuestions(detailData);
       setShowHeader(false);
     },
     [questions, setQuestions]
@@ -165,6 +173,7 @@ export default function QuestionContainer({
             {
               name: `input_a${idx + 1}_num${length + 1}`,
               value: '',
+              unique_id: '',
             },
           ],
           tag: [
@@ -189,6 +198,7 @@ export default function QuestionContainer({
           el.answer = el.answer.map((ans, i2) => ({
             name: `input_a${i1 + 1}_num${i2}`,
             value: ans.value,
+            unique_id: ans.unique_id,
           }));
           el.tag = el.tag.map((tag, i2) => ({
             name: `input_t${i1 + 1}_num${i2}`,
@@ -198,6 +208,7 @@ export default function QuestionContainer({
             name: `input_q${i1 + 1}`,
             value: el.question.value,
             type: el.question.type,
+            unique_id: el.question.unique_id,
           };
           return el;
         });
@@ -223,6 +234,7 @@ export default function QuestionContainer({
         question.answer = question.answer.map((ans, i2) => ({
           name: `input_a${idx + 1}_num${i2}`,
           value: ans.value,
+          unique_id: ans.unique_id,
         }));
         question.tag = question.tag.map((tag, i2) => ({
           name: `input_t${idx + 1}_num${i2}`,
@@ -280,18 +292,16 @@ export default function QuestionContainer({
   );
   const callCreateQuestion = useCallback(
     async (question: QuestionInput[], payload: any) => {
-      createQuestion(question, payload);
+      const {code} = await createQuestion(question, payload);
 
-      // if (response.ok) {
-      //   const data = await response.json();
-      //   if (data.code === 200) router.push('/dashboard/question');
-      // }
+      if (code === 200) router.push('/dashboard/question');
     },
     [questions, payload]
   );
   const callUpdateQuestion = useCallback(
     async (question: QuestionInput[], payload: any) => {
-      updateQuestion(question, payload);
+      const {code} = await updateQuestion(question, payload);
+      if (code === 200) router.push('/dashboard/question');
     },
     [questions]
   );
@@ -303,9 +313,7 @@ export default function QuestionContainer({
       handleSetQuestionsDetail(id);
     }
   }, []);
-  useEffect(() => {
-    console.log(payload, 'payload');
-  }, [payload]);
+
   return (
     <div className='qc_ctr'>
       <div className='qc_title'>Add Question</div>
@@ -544,7 +552,7 @@ export default function QuestionContainer({
                 className='flex justify-center items-center'
                 onClick={() => {
                   if (type === 'detailQuestion') {
-                    updateQuestion(questions, {id, ...payload});
+                    callUpdateQuestion(questions, {id, ...payload});
                   } else callCreateQuestion(questions, payload);
                 }}
               >

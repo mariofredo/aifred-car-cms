@@ -43,10 +43,12 @@ export interface QuestionInput {
     name: string;
     value: string;
     type: string;
+    unique_id: string;
   };
   answer: {
     name: string;
     value: string;
+    unique_id: string;
   }[];
   tag: {name: string; value: string}[];
 }
