@@ -6,6 +6,7 @@ import {SPFK} from '@/public';
 import {IoMdEye, IoMdEyeOff} from 'react-icons/io';
 import {useRouter} from 'next/navigation';
 import Cookie from 'js-cookie';
+
 export default function LoginForm() {
   const router = useRouter();
   const [payload, setPayload] = useState({
@@ -13,8 +14,10 @@ export default function LoginForm() {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const handleLogin = useCallback(
-    async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const [error, setError] = useState('');
+
+  const handleLogin = useCallback(async () => {
+    try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth`, {
         method: 'POST',
         headers: {
@@ -22,21 +25,32 @@ export default function LoginForm() {
         },
         body: JSON.stringify(payload),
       });
+
       if (response.ok) {
-        const {code, data} = await response.json();
+        const { code, data } = await response.json();
         if (code === 200) {
-          Cookie.set('token', data.token, {
+          Cookie.set('token_aifred_neo_cms', data.token, {
             expires: new Date(data.expired_at),
           });
-          Cookie.set('username', data.username, {
+          Cookie.set('username_aifred_neo_cms', data.username, {
             expires: new Date(data.expired_at),
           });
           router.push('/dashboard');
         }
+      } else {
+        const errorResponse = await response.json();
+        if (errorResponse.message === 'Email and password do not match') {
+          setError('Email and password do not match. Please try again.');
+        } else {
+          setError('Email and password do not match. Please try again.');
+        }
       }
-    },
-    [payload, setPayload]
-  );
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Failed to log in. Please try again later.');
+    }
+  }, [payload, router]);
+
   return (
     <div className='login_form'>
       <div className='login_img_ctr'>
@@ -84,11 +98,8 @@ export default function LoginForm() {
           Forgot Password?
         </Link>
       </div>
-      <button
-        onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleLogin(e)}
-      >
-        Login
-      </button>
+      {error && <p className='error_message'>{error}</p>}
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }

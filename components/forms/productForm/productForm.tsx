@@ -24,7 +24,7 @@ export default function ProductForm(
 ) {
   const router = useRouter();
   const {id}: {id: string} = useParams();
-  const token = Cookie.get('token')?.toString();
+  const token = Cookie.get('token_aifred_neo_cms')?.toString();
   const {showModal, setShowModal} = useModal();
   const {productId} = params;
   const {createProduct, getDetailProduct, updateProduct} = useProduct();
@@ -388,6 +388,7 @@ export default function ProductForm(
               className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
               onClick={() => {
                 handleSubmitProduct(type, payload, id);
+                callListBrand();
               }}
             >
               Done
@@ -402,6 +403,7 @@ export default function ProductForm(
           data={payload}
           setData={setPayload}
           is_competitor={type === 'create' || type === 'edit' ? false : true}
+          action={callListBrand}
         />
       )}
     </>

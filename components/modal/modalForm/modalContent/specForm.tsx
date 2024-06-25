@@ -11,7 +11,7 @@ export default function SpecForm({
   data: {[key: string]: any};
   setData: Dispatch<SetStateAction<any>>;
 }) {
-  const token = Cookies.get('token')?.toString();
+  const token = Cookies.get('token_aifred_neo_cms')?.toString();
   const {setShowModal} = useModal();
   const {
     specs,

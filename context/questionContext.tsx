@@ -42,7 +42,7 @@ export function QuestionContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const token = Cookies.get('token');
+  const token = Cookies.get('token_aifred_neo_cms');
 
   const getListQuestion = async () => {
     try {

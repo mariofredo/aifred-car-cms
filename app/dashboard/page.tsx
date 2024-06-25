@@ -1,5 +1,5 @@
 'use client';
-import {useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {
   Card,
   DateRange,
@@ -33,14 +33,145 @@ ChartJS.register(
   Legend,
   ChartDataLabels
 );
-
+import Cookies from 'js-cookie';
 export default function DashboardHome() {
-  const [dataRespondent, setDataRespondent] = useState();
+  const [summaryRespondent, setSummaryRespondent] = useState({
+    total: 0,
+    completed: 0,
+    uncompleted: 0,
+  });
+  const [summaryCompleted, setSummaryCompleted] = useState({
+    total: 0,
+    saved: 0,
+    unsaved: 0,
+  });
+  const [totalAnswersPerQuestion, setTotalAnswersPerQuestion] = useState([]);
+  const [
+    summaryAnsweredQuestionsDuration,
+    setSummaryAnsweredQuestionsDuration,
+  ] = useState([]);
+  const [mostSelectedProduct, setMostSelectedProduct] = useState([]);
   const [dataTotalCompleted, setTotalCompleted] = useState();
+  const getSummaryRespondents = useCallback(async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-respondents`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: 'qs2',
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setSummaryRespondent(data);
+    return data;
+  }, []);
+
+  const getSummaryCompleted = useCallback(async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-completed`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: 'qs2',
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setSummaryCompleted(data);
+    return data;
+  }, []);
+
+  const getTotalAnswersPerQuestion = useCallback(async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/total-answers-per-question`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: 'qs2',
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setTotalAnswersPerQuestion(data);
+    return data;
+  }, []);
+
+  const getSummaryAnsweredQuestionDuration = useCallback(async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-answered-questions-duration`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: 'qs2',
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setSummaryAnsweredQuestionsDuration(data);
+    return data;
+  }, []);
+  const getMostSelectedProduct = useCallback(async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/most-selected-products`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: 'qs2',
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setMostSelectedProduct(data);
+    return data;
+  }, []);
+
+  useEffect(() => {
+    getSummaryRespondents();
+    getSummaryCompleted();
+    getTotalAnswersPerQuestion();
+    getSummaryAnsweredQuestionDuration();
+    getMostSelectedProduct();
+  }, []);
   return (
     <div className='dashboard_home_ctr'>
-      <HomeHeader />
-      <div className='dashboard_home_filter'>
+      {/* <HomeHeader /> */}
+      {/* <div className='dashboard_home_filter'>
         <Select
           options={[
             {
@@ -67,28 +198,34 @@ export default function DashboardHome() {
           ]}
           value={null}
         />
-        {/* <DateRange /> */}
-      </div>
+      </div> */}
       <div className='dashboard_box'>
         <div className='grid grid-cols-4 gap-[50px]'>
           <div className='dashboard_info'>
             <p className='dashboard_info_title'>Total Respondents</p>
-            <p className='dashboard_info_value'>1479</p>
+            <p className='dashboard_info_value'>{summaryRespondent.total}</p>
           </div>
           <div className='dashboard_info'>
             <p className='dashboard_info_title'>Completed</p>
-            <p className='dashboard_info_value'>379</p>
+            <p className='dashboard_info_value'>
+              {summaryRespondent.completed}
+            </p>
           </div>
           <div className='dashboard_info'>
             <p className='dashboard_info_title'>Uncompleted</p>
-            <p className='dashboard_info_value'>1100</p>
+            <p className='dashboard_info_value'>
+              {summaryRespondent.uncompleted}
+            </p>
           </div>
           <div className='dashboard_info'>
             <Pie
               data={{
                 datasets: [
                   {
-                    data: [379, 1100],
+                    data: [
+                      summaryRespondent.completed,
+                      summaryRespondent.uncompleted,
+                    ],
                     backgroundColor: ['#18BE1F', '#E2E1E1'],
                   },
                 ],
@@ -145,23 +282,25 @@ export default function DashboardHome() {
       <div className='dashboard_box'>
         <div className='grid grid-cols-4 gap-[50px]'>
           <div className='dashboard_info'>
-            <p className='dashboard_info_title'>Total Respondents</p>
-            <p className='dashboard_info_value'>1479</p>
+            <p className='dashboard_info_title'>Total Complete</p>
+            <p className='dashboard_info_value'>{summaryCompleted.total}</p>
           </div>
           <div className='dashboard_info'>
-            <p className='dashboard_info_title'>Completed</p>
-            <p className='dashboard_info_value'>379</p>
+            <p className='dashboard_info_title'>Total Saved Recommendations</p>
+            <p className='dashboard_info_value'>{summaryCompleted.saved}</p>
           </div>
           <div className='dashboard_info'>
-            <p className='dashboard_info_title'>Uncompleted</p>
-            <p className='dashboard_info_value'>1100</p>
+            <p className='dashboard_info_title'>
+              Total Unsaved Recommendations
+            </p>
+            <p className='dashboard_info_value'>{summaryCompleted.unsaved}</p>
           </div>
           <div className='dashboard_info'>
             <Pie
               data={{
                 datasets: [
                   {
-                    data: [379, 1100],
+                    data: [summaryCompleted.saved, summaryCompleted.unsaved],
                     backgroundColor: ['#18BE1F', '#E2E1E1'],
                   },
                 ],
@@ -197,7 +336,7 @@ export default function DashboardHome() {
           </div>
         </div>
       </div>
-      <div className='grid grid-cols-4 gap-[20px]'>
+      {/* <div className='grid grid-cols-4 gap-[20px]'>
         <div className='col-span-1 dashboard_box'>
           <TableHome
             tableName={[{name: 'COMPLETED DURATION', colSpan: 2}]}
@@ -261,17 +400,17 @@ export default function DashboardHome() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Total Answers per Question</p>
           <Bar
             data={{
-              labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'],
+              labels: totalAnswersPerQuestion.map((_, idx) => `Q${idx}`),
               datasets: [
                 {
                   label: 'Test',
-                  data: [1, 30, 40, 60, 100],
+                  data: totalAnswersPerQuestion.map((item: any) => item.total),
                   backgroundColor: '#E0150A',
                 },
               ],
@@ -308,76 +447,36 @@ export default function DashboardHome() {
                 colSpan: 1,
               },
             ]}
-            tableValue={[
-              {
-                name: 'Question 1',
-                fastest: '00:02',
-                average: '00:43',
-                slowest: '02:43',
-              },
-              {
-                name: 'Question 2',
-                fastest: '00:02',
-                average: '00:43',
-                slowest: '02:43',
-              },
-              {
-                name: 'Question 3',
-                fastest: '00:02',
-                average: '00:43',
-                slowest: '02:43',
-              },
-              {
-                name: 'Question 4',
-                fastest: '00:02',
-                average: '00:43',
-                slowest: '02:43',
-              },
-              {
-                name: 'Question 5',
-                fastest: '00:02',
-                average: '00:43',
-                slowest: '02:43',
-              },
-            ]}
+            tableValue={summaryAnsweredQuestionsDuration.map(
+              (item: any, idx) => ({
+                name: `Question ${idx + 1}`,
+                ...item,
+              })
+            )}
             tableKey={['name', 'fastest', 'average', 'slowest']}
           />
         </div>
       </div>
       <div className='dashboard_box'>
         <div className='dashboard_info'>
-          <p className='dashboard_text_title'>Summary of Answered Questions</p>
+          <p className='dashboard_text_title'>Most Selected Product</p>
           <div className='grid grid-cols-5 gap-[20px]'>
-            <Card
-              brand_name='Mitsubishi'
-              product_level_1_name='Pajero Dakkar'
-              product_level_2_name='Ultimate 4x4 AT'
-              price={'Rp 200.000.000'}
-            />
-            <Card
-              brand_name='Mitsubishi'
-              product_level_1_name='Pajero Dakkar'
-              product_level_2_name='Ultimate 4x4 AT'
-              price={'Rp 200.000.000'}
-            />
-            <Card
-              brand_name='Mitsubishi'
-              product_level_1_name='Pajero Dakkar'
-              product_level_2_name='Ultimate 4x4 AT'
-              price={'Rp 200.000.000'}
-            />
-            <Card
-              brand_name='Mitsubishi'
-              product_level_1_name='Pajero Dakkar'
-              product_level_2_name='Ultimate 4x4 AT'
-              price={'Rp 200.000.000'}
-            />
-            <Card
-              brand_name='Mitsubishi'
-              product_level_1_name='Pajero Dakkar'
-              product_level_2_name='Ultimate 4x4 AT'
-              price={'Rp 200.000.000'}
-            />
+            {mostSelectedProduct.map((item: any, idx: number) => (
+              <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
+                <Card
+                  // brand_name='Mitsubishi'
+                  product_level_1_name={item.product_name}
+                  product_level_2_name={item.variant_name}
+                  price={item.price}
+                  image={item.image}
+                />
+                <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
+                  <span className='font-bold text-[24px] '>#{idx + 1}</span>
+                  <span className=''>Choosen</span>
+                  <span className='font-bold'>{item.total}</span>X
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

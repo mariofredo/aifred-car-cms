@@ -11,7 +11,6 @@ import React from 'react';
 import '@/styles/card.scss';
 import Image, {StaticImageData} from 'next/image';
 import {Car} from '@/types';
-import {CarOne} from '@/public/images';
 export default function Card({
   image,
   price,
@@ -24,12 +23,7 @@ export default function Card({
   return (
     <div className='card_ctr'>
       <div className='card_image_ctr'>
-        <Image
-          src={image || CarOne}
-          alt={'card_img'}
-          width={100}
-          height={100}
-        />
+        <Image src={image} alt={'card_img'} width={100} height={100} />
       </div>
       <div className='card_body'>
         <div className='card_title'>

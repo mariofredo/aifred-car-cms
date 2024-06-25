@@ -4,12 +4,14 @@ import {useState} from 'react';
 import Cookies from 'js-cookie';
 export default function BrandForm({
   title,
+  action,
   is_competitor,
 }: {
   title: string;
+  action?: () => void;
   is_competitor: boolean;
 }) {
-  const token = Cookies.get('token');
+  const token = Cookies.get('token_aifred_neo_cms');
   const {setShowModal} = useModal();
   const {createBrand, getListBrand} = useBrand();
   const [payload, setPayload] = useState({
@@ -84,14 +86,16 @@ export default function BrandForm({
           Cancel
         </button>
         <button
-          className='btn_done'
+          className={`btn_done ${!payload.name && 'cursor-not-allowed'}`}
           onClick={async () => {
             const data = await createBrand(payload);
             if (data.code === 200) {
               // await getListBrand(is_competitor ? 1 : 0);
+              action && action();
               setShowModal(false);
             }
           }}
+          disabled={!payload.name}
         >
           Done
         </button>
