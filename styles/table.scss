@@ -2,6 +2,7 @@ table {
   width: 100%;
   font-weight: 400;
   table-layout: fixed;
+  border-collapse: collapse;
   thead {
     tr {
       th {
@@ -16,6 +17,7 @@ table {
   tbody {
     background: #fff;
     tr {
+      border-bottom: 1px solid #f6f6f6;
       td {
         width: 200px;
         color: #3e3e3e;
@@ -36,6 +38,9 @@ table {
         .table_date {
           color: #b5b5b5;
         }
+      }
+      &:nth-last-child(-n + 1) {
+        border-bottom: none;
       }
     }
   }

@@ -1,5 +1,5 @@
 'use client';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {Select, DefaultContainer, Table, TablePagination} from '@/components';
 import Cookies from 'js-cookie';
 import '@/styles/submission.scss';
@@ -21,17 +21,18 @@ export default function page() {
       setLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/submission?page=${pagination.currentPage}&limit=${pagination.limit}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-        });
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setSubmissions(data.data);
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
           totalCount: data.total_data,
         }));
@@ -44,6 +45,25 @@ export default function page() {
       setLoading(false);
     }
   };
+
+  const handleRenderCompleteStatus = useCallback((status) => {
+    switch (status) {
+      case 'complete':
+        return (
+          <div>
+            <p className='complete_text'>Complete</p>
+          </div>
+        );
+      case 'not complete':
+        return (
+          <div>
+            <p className='not_complete_text'>Not Complete</p>
+          </div>
+        );
+      default:
+        return '-';
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -73,22 +93,28 @@ export default function page() {
                 'Email',
                 'Action',
               ]}
-              data={submissions.map(submission => ({
+              data={submissions.map((submission) => ({
                 unique_id: submission.unique_id,
                 brand_name: submission.brand_name,
                 created_at: submission.created_at,
                 duration: submission.duration,
-                complete_status: submission.complete_status,
+                complete_status: handleRenderCompleteStatus(
+                  submission.complete_status
+                ),
                 name: submission.name,
                 email: submission.email,
                 action: (
                   <>
-                  <Link href={`/dashboard/submission/detail/${submission.unique_id}`}>
-                    <button className="purple_btn">Details</button>
-                  </Link>
-                  <Link href={`/dashboard/submission/detail/${submission.unique_id}`}>
-                    <button className="red_btn">Delete</button>
-                  </Link>
+                    <Link
+                      href={`/dashboard/submission/detail/${submission.unique_id}`}
+                    >
+                      <button className='purple_btn'>Details</button>
+                    </Link>
+                    <Link
+                      href={`/dashboard/submission/detail/${submission.unique_id}`}
+                    >
+                      <button className='red_btn'>Delete</button>
+                    </Link>
                   </>
                 ),
               }))}
