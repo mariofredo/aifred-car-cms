@@ -10,6 +10,8 @@
   font-family: 'Montserrat-Regular';
   padding: 2.5% 0;
   .login_form {
+    width:100%;
+    max-width: 320px;
     display: flex;
     flex-direction: column;
     background: #f6f6f6;
@@ -66,5 +68,9 @@
       font-weight: 600;
       font-size: 16px;
     }
+  }
+  .error_message{
+    color: red;
+    font-size: 12px;
   }
 }
