@@ -14,7 +14,7 @@ export default function page() {
 
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const token = Cookies.get('token');
+  const token = Cookies.get('token_aifred_neo_cms');
 
   const fetchData = async () => {
     try {
@@ -56,19 +56,25 @@ export default function page() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ id: unique_id }),
+          body: JSON.stringify({id: unique_id}),
         }
       );
       if (response.ok) {
         console.log('Submission deleted successfully');
         // Remove the deleted submission from the state
-        setSubmissions((prevSubmissions) => 
-          prevSubmissions.filter(submission => submission.unique_id !== unique_id)
+        setSubmissions((prevSubmissions) =>
+          prevSubmissions.filter(
+            (submission) => submission.unique_id !== unique_id
+          )
         );
         // Optionally, refetch the data
         fetchData();
       } else {
-        console.error('Failed to delete submission:', response.status, await response.text());
+        console.error(
+          'Failed to delete submission:',
+          response.status,
+          await response.text()
+        );
       }
     } catch (error) {
       console.error('Failed to delete submission:', error);
@@ -101,10 +107,11 @@ export default function page() {
   return (
     <div className='flex flex-col gap-[15px]'>
       <DefaultContainer title={'Submission'} />
-      <div className='flex gap-[23px]'>
+      {/* To Be Done */}
+      {/* <div className='flex gap-[23px]'>
         <Select label={'SERIES'} />
         <Select label={'VARIANT'} />
-      </div>
+      </div> */}
       <div className='submission_container'>
         <p className='submission_table_header'>Submission List</p>
         <div className='submission_table_ctrs'>
@@ -139,8 +146,12 @@ export default function page() {
                     >
                       <button className='purple_btn'>Details</button>
                     </Link>
-                    <button className='red_btn' onClick={() => deleteSubmission(submission.unique_id)}
-                    >Delete</button>
+                    <button
+                      className='red_btn'
+                      onClick={() => deleteSubmission(submission.unique_id)}
+                    >
+                      Delete
+                    </button>
                   </>
                 ),
               }))}

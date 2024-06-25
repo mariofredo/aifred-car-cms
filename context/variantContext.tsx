@@ -63,7 +63,7 @@ export function VariantContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const token = Cookies.get('token');
+  const token = Cookies.get('token_aifred_neo_cms');
 
   const getListVariant = async (productId: string, payload: any) => {
     try {

@@ -35,7 +35,7 @@ export const BrandContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const token = Cookies.get('token');
+  const token = Cookies.get('token_aifred_neo_cms');
   const [brands, setBrands] = useState<Brand[]>([]);
 
   const getListBrand = async () => {

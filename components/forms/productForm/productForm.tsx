@@ -24,7 +24,7 @@ export default function ProductForm(
 ) {
   const router = useRouter();
   const {id}: {id: string} = useParams();
-  const token = Cookie.get('token')?.toString();
+  const token = Cookie.get('token_aifred_neo_cms')?.toString();
   const {showModal, setShowModal} = useModal();
   const {productId} = params;
   const {createProduct, getDetailProduct, updateProduct} = useProduct();

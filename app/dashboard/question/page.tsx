@@ -35,7 +35,7 @@ export default function DashboardQuestion() {
                 image={CirclePlus}
               />
             </Link>
-            <div className='dc_search_ctr'>
+            {/* <div className='dc_search_ctr'>
               <IoSearch
                 color='#b5b5b5'
                 // className='w-[20px] h-[20px] absolute top-[50%] left-[15px] transform translate-y-[-50%]'
@@ -46,7 +46,7 @@ export default function DashboardQuestion() {
                 name='search'
                 placeholder='Search name or sub-series'
               />
-            </div>
+            </div> */}
           </div>
           <div className='dc_table'>
             <Table
