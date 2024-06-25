@@ -61,7 +61,7 @@ export default function page() {
           <Image src={UserIcon} width={20} height={20} alt='profile_icon' />
           <p>PIC</p>
           <p>
-            Mr. <span className='highlight'>{submissionDetail.name}</span>
+            <span className='highlight'>{submissionDetail.name}</span>
           </p>
         </div>
         <div className='sd_about_content'>
@@ -123,6 +123,7 @@ export default function page() {
         </div>
         <div>
           <Card
+            image={submissionDetail.choosen_product.image}
             brand_name='Mitsubishi'
             product_level_1_name={submissionDetail.choosen_product.product}
             product_level_2_name={submissionDetail.choosen_product.variant}
