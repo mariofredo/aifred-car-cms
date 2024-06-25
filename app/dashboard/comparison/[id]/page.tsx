@@ -1,12 +1,47 @@
 'use client';
-import {Button, DefaultContainer, Table} from '@/components';
+import {Button, DefaultContainer, Table, TablePagination} from '@/components';
+import {useComparison} from '@/context/comparisonContext';
 import {CirclePlus} from '@/public';
+import {Comparison} from '@/types';
 import Link from 'next/link';
 import {useParams} from 'next/navigation';
+import {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {IoSearch} from 'react-icons/io5';
 
+interface Payload {
+  keyword: string;
+}
 export default function DashboardComparisonList() {
-  const {id} = useParams();
+  const {id}: {id: string} = useParams();
+  const {getListComparison} = useComparison();
+  const [comparison, setComparison] = useState<Comparison[]>([]);
+  const [pagination, setPagination] = useState({
+    limit: 10,
+    currentPage: 1,
+    totalCount: 0,
+  });
+  const [payload, setPayload] = useState<Payload>({
+    keyword: '',
+  });
+  const callListVariant = useCallback(
+    async (id: string) => {
+      const {data, total_data} = await getListComparison(id, {
+        page: pagination.currentPage,
+        limit: pagination.limit,
+        ...payload,
+      });
+      setComparison(data);
+      setPagination((prev) => ({
+        ...prev,
+        totalCount: total_data,
+      }));
+    },
+    [comparison, pagination, payload]
+  );
+
+  useEffect(() => {
+    callListVariant(id);
+  }, [pagination.currentPage]);
   return (
     <DefaultContainer title='Comparison List'>
       <div className='dc_ctr'>
@@ -30,8 +65,12 @@ export default function DashboardComparisonList() {
               />
               <input
                 type='text'
-                name='search'
+                name='keyword'
                 placeholder='Search name or sub-series'
+                value={payload.keyword}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setPayload((prev) => ({...prev, keyword: e.target.value}))
+                }
               />
             </div>
           </div>
@@ -40,31 +79,32 @@ export default function DashboardComparisonList() {
               listTitle={[
                 'Brand',
                 'Name',
-                'Sub-series name',
                 'Status',
-                // 'Created by and date',
+                'Date Created',
                 'Image',
+                'Detail',
+                'Option',
               ]}
-              data={[
-                {
-                  company_brand_name: 'Mitsubishi',
-                  category_level_1_name: 'Pajero',
-                  name: 'Dakkar Ultimate 4x4',
-                  status: 'Publish',
-                  image: '',
-                },
-              ]}
+              data={comparison}
               listKey={[
-                'company_brand_name',
-                'category_level_1_name',
+                'brand',
                 'name',
-                'status',
+                'is_active',
+                'created_at',
                 'image',
+                'detail',
+                'option',
               ]}
               type={'product'}
-              productId={null}
+              subType={'comparison'}
+              id={id}
             />
           </div>
+          <TablePagination
+            pagination={pagination}
+            setPagination={setPagination}
+            limit={pagination.limit}
+          />
         </div>
       </div>
     </DefaultContainer>

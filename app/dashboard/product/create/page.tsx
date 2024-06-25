@@ -6,7 +6,7 @@ export default function AddProduct() {
   return (
     <DefaultContainer title='Add Product'>
       <Suspense fallback={<>Loading...</>}>
-        <ProductForm type={'addProduct'} params={{}} />
+        <ProductForm type={'create'} params={{}} />
       </Suspense>
     </DefaultContainer>
   );

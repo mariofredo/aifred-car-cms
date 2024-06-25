@@ -16,6 +16,9 @@
     gap: 20px;
   }
   .dc_table_ctr {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     padding: 14.5px;
     background: #f6f6f6;
     border-radius: 10px;

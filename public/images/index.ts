@@ -20,3 +20,4 @@ export {default as ChevronLeftBlack} from './chevron_left_black.svg';
 export {default as ChevronLeftGrey} from './chevron_left_grey.svg';
 export {default as ChevronRightBlack} from './chevron_right_black.svg';
 export {default as ChevronRightGrey} from './chevron_right_grey.svg';
+export {default as TrashIcon} from './trash_icon.svg';

@@ -1,3 +1,4 @@
+'use client';
 import {LoginForm} from '@/components';
 import '@/styles/login.scss';
 export default function Login() {
