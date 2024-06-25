@@ -59,7 +59,7 @@ export default function DashboardHome() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
           question_unique_id: 'qs2',
@@ -81,7 +81,7 @@ export default function DashboardHome() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
           question_unique_id: 'qs2',
@@ -103,7 +103,7 @@ export default function DashboardHome() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
           question_unique_id: 'qs2',
@@ -125,7 +125,7 @@ export default function DashboardHome() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
           question_unique_id: 'qs2',
@@ -146,7 +146,7 @@ export default function DashboardHome() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
           question_unique_id: 'qs2',
