@@ -406,10 +406,10 @@ export default function DashboardHome() {
           <p className='dashboard_text_title'>Total Answers per Question</p>
           <Bar
             data={{
-              labels: totalAnswersPerQuestion.map((_, idx) => `Q${idx}`),
+              labels: totalAnswersPerQuestion.map((_, idx) => `Q${idx + 1}`),
               datasets: [
                 {
-                  label: 'Test',
+                  label: 'Total Answers per Question',
                   data: totalAnswersPerQuestion.map((item: any) => item.total),
                   backgroundColor: '#E0150A',
                 },
