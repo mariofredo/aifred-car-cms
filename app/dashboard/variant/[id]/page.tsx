@@ -18,10 +18,19 @@ import {
 // import '@/styles/variant.scss';
 import {useModal, useVariant} from '@/context';
 import {Variant} from '@/types';
-import {useParams} from 'next/navigation';
-import {CirclePlus} from '@/public';
+import {useParams, useRouter} from 'next/navigation';
+import {
+  CirclePlus,
+  NoImage,
+  PencilIcon,
+  ReturnIcon,
+  SliderIcon,
+  TrashIcon,
+} from '@/public';
 import Link from 'next/link';
 import {IoSearch} from 'react-icons/io5';
+import {formatDate} from '@/utils';
+import Image from 'next/image';
 interface Payload {
   keyword_variant: string;
   is_active_variant: number;
@@ -31,6 +40,7 @@ interface Payload {
 }
 export default function page() {
   const {id}: {id: string} = useParams();
+  const router = useRouter();
   const [pagination, setPagination] = useState({
     limit: 10,
     currentPage: 1,
@@ -38,7 +48,7 @@ export default function page() {
   });
   const {filterModal, setFilterModal} = useModal();
 
-  const {getListVariant} = useVariant();
+  const {getListVariant, deleteVariant} = useVariant();
   const [variant, setVariant] = useState<Variant[]>([]);
   const [payload, setPayload] = useState<Payload>({
     keyword_variant: '',
@@ -58,7 +68,18 @@ export default function page() {
     },
     [variant, pagination, payload]
   );
-
+  const callDeleteVariant = useCallback(
+    async (productId: string, variantId: string) => {
+      const {code} = await deleteVariant(productId, variantId);
+      if (code === 200)
+        callListVariant(id, {
+          page: pagination.currentPage,
+          limit: pagination.limit,
+          ...payload,
+        });
+    },
+    [payload, id, pagination]
+  );
   const handleRenderFilter = useMemo(
     () =>
       filterModal && (
@@ -197,17 +218,102 @@ export default function page() {
                 'Status',
                 'Date Created',
                 'Image',
-                'Detail',
-                'Option',
+                <div className='flex justify-center'>
+                  <Image
+                    src={ReturnIcon}
+                    className='w-[20px] h-[15px]'
+                    alt='return_icon'
+                  />
+                </div>,
+                <div className='flex justify-center'>
+                  <Image
+                    src={SliderIcon}
+                    alt='trash_icon'
+                    className='w-[20px] h-[20px]'
+                    onClick={() => setFilterModal((prev) => !prev)}
+                  />
+                </div>,
               ]}
-              data={variant}
+              data={variant.map((item) => ({
+                ...item,
+                is_active: (
+                  <span
+                    className={`table_status ${
+                      item.is_active === 1 ? 'publish' : 'draft'
+                    }`}
+                  >
+                    {item.is_active ? 'Publish' : 'Draft'}
+                  </span>
+                ),
+                image: (
+                  <Image
+                    src={item.image || NoImage}
+                    width={150}
+                    height={100}
+                    alt={`gambar`}
+                    className='rounded-md'
+                  />
+                ),
+                created_at: formatDate(item.created_at),
+                action: (
+                  <div className='flex flex-col gap-[10px]'>
+                    <Link
+                      href={`/dashboard/variant/${item.object_id}`}
+                      className='w-full'
+                    >
+                      <Button
+                        borderRadius='5px'
+                        bgColor='rgba(101, 57, 228, 0.58)'
+                        color='#fff'
+                        text='Variant List'
+                        width='100%'
+                        padding='3.5px'
+                      />
+                    </Link>
+                    <Link href={`/dashboard/comparison/${item.object_id}`}>
+                      <Button
+                        borderRadius='5px'
+                        bgColor='rgba(228, 57, 57, 0.58)'
+                        color='#fff'
+                        text='Comparison List'
+                        width='100%'
+                        padding='3.5px'
+                      />
+                    </Link>
+                  </div>
+                ),
+                detail: (
+                  <div className='flex justify-center'>
+                    <Image
+                      src={PencilIcon}
+                      className='w-[20px] h-[20px] cursor-pointer'
+                      alt='return_icon'
+                      onClick={() =>
+                        router.push(
+                          `/dashboard/variant/${id}/edit/${item.object_id}`
+                        )
+                      }
+                    />
+                  </div>
+                ),
+                delete: (
+                  <div className='flex justify-center'>
+                    <Image
+                      src={TrashIcon}
+                      className='w-[20px] h-[20px] cursor-pointer'
+                      alt='trash_icon'
+                      onClick={() => callDeleteVariant(id, item.object_id)}
+                    />
+                  </div>
+                ),
+              }))}
               listKey={[
                 'name',
                 'is_active',
                 'created_at',
                 'image',
                 'detail',
-                'option',
+                'delete',
               ]}
               type={'product'}
               subType='variant'
