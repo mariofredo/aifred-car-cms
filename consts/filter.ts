@@ -1,4 +1,4 @@
-const FILTER_PRODUCT_DETAIL = {
+export const FILTER_PRODUCT_DETAIL = {
   variant: [
     {
       title: 'Variant Name',
@@ -55,12 +55,12 @@ const FILTER_PRODUCT_DETAIL = {
         {
           label: 'A to Z',
           value: 'asc',
-          name: 'order_by_brand_competitor',
+          name: 'order_by_brand',
         },
         {
           label: 'Z to A',
           value: 'desc',
-          name: 'order_by_brand_competitor',
+          name: 'order_by_brand',
         },
       ],
     },
@@ -71,12 +71,12 @@ const FILTER_PRODUCT_DETAIL = {
         {
           label: 'A to Z',
           value: 'asc',
-          name: 'order_by_series_competitor',
+          name: 'order_by_series',
         },
         {
           label: 'Z to A',
           value: 'desc',
-          name: 'order_by_series_competitor',
+          name: 'order_by_series',
         },
       ],
     },
@@ -86,11 +86,11 @@ const FILTER_PRODUCT_DETAIL = {
       data: [
         {
           label: 'from',
-          name: 'date_created_start_competitor',
+          name: 'date_created_start',
         },
         {
           label: 'until',
-          name: 'date_created_end_competitor',
+          name: 'date_created_end',
         },
       ],
     },
@@ -101,7 +101,7 @@ const FILTER_PRODUCT_DETAIL = {
         {
           label: 'Publish',
           value: 1,
-          name: 'is_active_competitor',
+          name: 'is_active',
         },
         {
           label: 'Unpublish',
