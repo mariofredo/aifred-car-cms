@@ -32,7 +32,7 @@ interface Payload {
 }
 export default function DashboardComparisonList() {
   const {id}: {id: string} = useParams();
-  const {getListComparison} = useComparison();
+  const {getListComparison, deleteComparison} = useComparison();
   const {filterModal, setFilterModal} = useModal();
   const [comparison, setComparison] = useState<Comparison[]>([]);
   const [pagination, setPagination] = useState({
@@ -59,6 +59,18 @@ export default function DashboardComparisonList() {
       }));
     },
     [comparison, pagination, payload]
+  );
+  const callDeleteComparison = useCallback(
+    async (productId: string, comparisonId: string) => {
+      const {code} = await deleteComparison(productId, comparisonId);
+      if (code === 200)
+        callListComparison(productId, {
+          page: pagination.currentPage,
+          limit: pagination.limit,
+          ...payload,
+        });
+    },
+    [payload, id, pagination]
   );
   const handleRenderFilter = useMemo(
     () =>

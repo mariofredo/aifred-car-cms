@@ -48,7 +48,7 @@ interface ContextProps {
     comparisonId: string
   ) => Promise<{[key: string]: any}>;
   deleteComparison: (
-    id: string,
+    productId: string,
     object_id: string
   ) => Promise<{[key: string]: any}>;
 }
@@ -58,7 +58,7 @@ const defaultValue: ContextProps = {
   createComparison: async (productId, payload) => ({}),
   updateComparison: async (productId, payload) => ({}),
   getDetailComparison: async (productId, comparisonId) => ({}),
-  deleteComparison: async (object_id) => ({}),
+  deleteComparison: async (productId, object_id) => ({}),
 };
 
 const ComparisonContext = createContext<ContextProps>(defaultValue);
@@ -209,9 +209,9 @@ export function ComparisonContextProvider({
       console.log(error);
     }
   };
-  const deleteComparison = async (id: string, object_id: string) => {
+  const deleteComparison = async (productId: string, object_id: string) => {
     try {
-      const response = await fetch(API_ROUTES.comparison_delete(id), {
+      const response = await fetch(API_ROUTES.comparison_delete(productId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
