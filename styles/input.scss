@@ -1,0 +1,34 @@
+.input_ctrs {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  label {
+    color: var(--unselect, #3e3e3e);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 104%; /* 15.6px */
+    letter-spacing: -0.75px;
+    text-transform: uppercase;
+  }
+  input {
+    display: flex;
+    width: 402.667px;
+    padding: 10px 15px;
+    align-items: center;
+    gap: 184px;
+
+    border-radius: 10.667px;
+    border: 1.333px solid var(--sub2, #b5b5b5);
+
+    color: var(--unselect, #3e3e3e);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 104%; /* 24.96px */
+    letter-spacing: -1.2px;
+  }
+}
