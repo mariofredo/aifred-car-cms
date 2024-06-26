@@ -21,7 +21,7 @@ export default function page() {
     [payload]
   );
   return (
-    <DefaultContainer title='My Account'>
+    <DefaultContainer title='Edit User Details'>
       <div className='mb-[30px]'>
         <p className='title mt-[30px]'>Personal Information</p>
         <div className='flex flex-col gap-[30px] mt-[50px]'>
@@ -55,17 +55,6 @@ export default function page() {
         <div className='flex flex-col gap-[30px] mt-[50px]'>
           <div>
             <Input
-              label='USERNAME'
-              id='username'
-              type='text'
-              name='username'
-              onChange={handleChange}
-              value={payload.username}
-              placeholder='Enter username'
-            />
-          </div>
-          <div>
-            <Input
               label='E-MAIL ADDRESS'
               id='email'
               type='text'
@@ -86,6 +75,19 @@ export default function page() {
         />
       </div>
       <div className='col-span-1 flex flex-col gap-[10px]'>
+        <div className='flex gap-[20px] w-[200px] justify-between items-center'>
+          <div className='text-[24px] text-[#3e3e3e]'>Active</div>
+          <label className='switch'>
+            <input
+              type='checkbox'
+              checked={payload.is_active === 1}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPayload({...payload, is_active: e.target.checked ? 1 : 0})
+              }
+            />
+            <span className='slider round'></span>
+          </label>
+        </div>
         <div className='flex gap-[20px] mt-[30px] w-[400px]'>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
