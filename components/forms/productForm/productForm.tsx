@@ -1,14 +1,16 @@
 'use client';
-import {CirclePlus} from '@/public';
+import {CirclePlus, NoImage, PencilIcon, TrashIcon} from '@/public';
 import Image from 'next/image';
 import {useCallback, useEffect, useState} from 'react';
 import {IoSearch} from 'react-icons/io5';
-import {Table, ModalForm} from '@/components';
+import {Table, ModalForm, Button} from '@/components';
 import {useModal, useBrand, useProduct, useSpec} from '@/context';
 import {useParams, useRouter} from 'next/navigation';
-import {Tag, Brand} from '@/types';
+import {Tag, Brand, Variant} from '@/types';
 import Cookie from 'js-cookie';
 import '@/styles/productForm.scss';
+import Link from 'next/link';
+import {formatDate} from '@/utils';
 interface ProductFormProps {
   type: string;
   params: {[key: string]: any};
@@ -51,7 +53,7 @@ export default function ProductForm(
   const [previewImg, setPreviewImg] = useState<string>('');
   const [tags, setTags] = useState<Tag[]>([]);
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
-  const [variant, setVariant] = useState([]);
+  const [variant, setVariant] = useState<Variant[]>([]);
   const [comparison, setComparison] = useState([]);
 
   const callListBrand = useCallback(async () => {
@@ -280,7 +282,79 @@ export default function ProductForm(
                   'detail',
                   'option',
                 ]}
-                data={variant}
+                data={variant.map((item) => ({
+                  ...item,
+                  image: (
+                    <Image
+                      src={item.image || NoImage}
+                      width={150}
+                      height={100}
+                      alt={`gambar`}
+                      className='rounded-md'
+                    />
+                  ),
+                  is_active: (
+                    <span
+                      className={`table_status ${
+                        item.is_active === 1 ? 'publish' : 'draft'
+                      }`}
+                    >
+                      {item.is_active ? 'Publish' : 'Draft'}
+                    </span>
+                  ),
+                  created_at: formatDate(item.created_at),
+                  action: (
+                    <div className='flex flex-col gap-[10px]'>
+                      <Link
+                        href={`/dashboard/variant/${item.object_id}`}
+                        className='w-full'
+                      >
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(101, 57, 228, 0.58)'
+                          color='#fff'
+                          text='Variant List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                      <Link href={`/dashboard/comparison/${item.object_id}`}>
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(228, 57, 57, 0.58)'
+                          color='#fff'
+                          text='Comparison List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                    </div>
+                  ),
+                  detail: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={PencilIcon}
+                        className='w-[20px] h-[20px]'
+                        alt='return_icon'
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/variant/${id}/${item.object_id}`
+                          )
+                        }
+                      />
+                    </div>
+                  ),
+                  delete: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={TrashIcon}
+                        className='w-[20px] h-[20px]'
+                        alt='trash_icon'
+                        // onClick={() => callDeleteVariant(id, item.object_id)}
+                      />
+                    </div>
+                  ),
+                }))}
                 type={'product'}
                 id={''}
               />

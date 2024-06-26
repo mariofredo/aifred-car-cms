@@ -45,7 +45,10 @@ interface ContextProps {
     productId: string,
     variantId: string
   ) => Promise<{[key: string]: any}>;
-  deleteVariant: (object_id: string) => Promise<{[key: string]: any}>;
+  deleteVariant: (
+    productId: string,
+    variantId: string
+  ) => Promise<{[key: string]: any}>;
 }
 
 const defaultValue: ContextProps = {
@@ -53,7 +56,7 @@ const defaultValue: ContextProps = {
   createVariant: async (productId, payload) => ({}),
   updateVariant: async (productId, payload) => ({}),
   getDetailVariant: async (productId, variantId) => ({}),
-  deleteVariant: async (object_id) => ({}),
+  deleteVariant: async (productId, variantId) => ({}),
 };
 
 const VariantContext = createContext<ContextProps>(defaultValue);
@@ -200,16 +203,16 @@ export function VariantContextProvider({
       console.log(error);
     }
   };
-  const deleteVariant = async (object_id: string) => {
+  const deleteVariant = async (productId: string, variantId: string) => {
     try {
-      const response = await fetch(API_ROUTES.variant_delete('1'), {
+      const response = await fetch(API_ROUTES.variant_delete(productId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          id: object_id,
+          id: variantId,
         }),
       });
       if (!response.ok) {

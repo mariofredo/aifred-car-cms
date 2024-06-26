@@ -1,12 +1,12 @@
 table {
   width: 100%;
   font-weight: 400;
-  table-layout: fixed;
+  // table-layout: fixed;
   border-collapse: collapse;
   thead {
     tr {
       th {
-        width: 200px;
+        min-width: 100px;
         color: #3e3e3e;
         text-align: left;
         font-size: 16px;
@@ -19,7 +19,7 @@ table {
     tr {
       border-bottom: 1px solid #f6f6f6;
       td {
-        width: 200px;
+        // width: 200px;
         color: #3e3e3e;
         text-align: left;
         font-size: 12px;
