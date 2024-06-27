@@ -6,7 +6,7 @@ import {
   useContext,
   useState,
 } from 'react';
-import {Brand} from '@/types';
+import {Brand, LoadingBrand} from '@/types';
 import Cookies from 'js-cookie';
 interface ContextProps {
   brands: Brand[];
@@ -19,6 +19,8 @@ interface ContextProps {
     name: string;
     is_active: number;
   }) => Promise<{code: number}>;
+  isLoadingBrand: LoadingBrand;
+  setIsLoadingBrand: Dispatch<SetStateAction<LoadingBrand>>;
 }
 
 const defaultValue: ContextProps = {
@@ -26,6 +28,8 @@ const defaultValue: ContextProps = {
   setBrands: () => {},
   getListBrand: async () => ({data: []}),
   createBrand: async (payload) => ({code: 200}),
+  isLoadingBrand: {loadingList: false, loadingCreate: false},
+  setIsLoadingBrand: () => {},
 };
 
 const BrandContext = createContext<ContextProps>(defaultValue);
@@ -35,9 +39,12 @@ export const BrandContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-
   const token = Cookies.get('token_aifred_neo_cms');
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [isLoadingBrand, setIsLoadingBrand] = useState<LoadingBrand>({
+    loadingList: false,
+    loadingCreate: false,
+  });
 
   const getListBrand = async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/brand`, {
@@ -75,6 +82,8 @@ export const BrandContextProvider = ({
     setBrands,
     getListBrand,
     createBrand,
+    isLoadingBrand,
+    setIsLoadingBrand,
   };
   return <BrandContext.Provider value={ctx}>{children}</BrandContext.Provider>;
 };

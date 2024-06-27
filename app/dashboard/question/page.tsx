@@ -3,21 +3,22 @@
 import {Button, DefaultContainer, Table} from '@/components';
 import {useQuestion} from '@/context';
 import {CirclePlus} from '@/public';
+import {Question} from '@/types';
 import Link from 'next/link';
 import {useCallback, useEffect, useState} from 'react';
 import {IoSearch} from 'react-icons/io5';
 
 export default function DashboardQuestion() {
   const {getListQuestion} = useQuestion();
-  const [question, setQuestion] = useState<[]>([]);
+  const [question, setQuestion] = useState<Question[]>([]);
 
-  const callListVariant = useCallback(async () => {
+  const callListQuestion = useCallback(async () => {
     const {data} = await getListQuestion();
     setQuestion(data);
   }, [question]);
 
   useEffect(() => {
-    callListVariant();
+    callListQuestion();
   }, []);
 
   return (

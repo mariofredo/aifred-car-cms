@@ -33,8 +33,44 @@ ChartJS.register(
   Legend,
   ChartDataLabels
 );
+import {Range} from 'react-date-range';
 import Cookies from 'js-cookie';
+import {useBrand, useQuestion} from '@/context';
+import {SingleValue} from 'react-select';
+import {Question} from '@/types';
+interface Payload {
+  brand_unique_id: SingleValue<{
+    label: string;
+    value: string;
+  }>;
+  question_unique_id: SingleValue<{
+    label: string;
+    value: string;
+  }>;
+  date_range_home: Range;
+}
 export default function DashboardHome() {
+  const {getListBrand} = useBrand();
+  const {getListQuestion} = useQuestion();
+  const [payload, setPayload] = useState<Payload>({
+    brand_unique_id: {
+      label: '',
+      value: '',
+    },
+    question_unique_id: {
+      label: '',
+      value: '',
+    },
+    date_range_home: {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'date_range_home',
+    },
+  });
+  const [brand, setBrand] = useState<{label: string; value: string}[]>([]);
+  const [question, setQuestion] = useState<{label: string; value: string}[]>(
+    []
+  );
   const [summaryRespondent, setSummaryRespondent] = useState({
     total: 0,
     completed: 0,
@@ -213,6 +249,21 @@ export default function DashboardHome() {
     setMostSelectedProduct(data);
     return data;
   }, []);
+  const callListBrand = useCallback(async () => {
+    const {data} = await getListBrand();
+    setBrand(data.map((item) => ({label: item.name, value: item.unique_id})));
+  }, [brand]);
+
+  const callListQuestion = useCallback(async () => {
+    const {data} = await getListQuestion();
+    setQuestion(
+      data.map((item: Question) => ({
+        ...item,
+        label: item.question_set_title,
+        value: item.unique_id,
+      }))
+    );
+  }, [question]);
 
   useEffect(() => {
     getSummaryRespondents();
@@ -222,38 +273,49 @@ export default function DashboardHome() {
     getMostSelectedProduct();
     getCompletedDuration();
     getTotalRespondentsPerPeriod();
+    callListBrand();
   }, []);
+
+  useEffect(() => {
+    if (payload.brand_unique_id) callListQuestion();
+  }, [payload.brand_unique_id]);
   return (
     <div className='dashboard_home_ctr'>
       {/* <HomeHeader /> */}
-      {/* <div className='dashboard_home_filter'>
+      <div className='dashboard_home_filter'>
         <Select
-          options={[
-            {
-              label: 'Mitsubishi',
-              value: 'Mitsubishi',
-            },
-            {
-              label: 'Hyundai',
-              value: 'Hyundai',
-            },
-          ]}
-          value={null}
+          options={brand}
+          value={payload.brand_unique_id}
+          isSearchable
+          isClearable
+          label='BRAND'
+          name='brand_unique_id'
+          onChange={(newValue) => {
+            setPayload((prev) => ({...prev, brand_unique_id: newValue}));
+          }}
         />
         <Select
-          options={[
-            {
-              label: 'Mitsubishi',
-              value: 'Mitsubishi',
-            },
-            {
-              label: 'Hyundai',
-              value: 'Hyundai',
-            },
-          ]}
+          options={question}
           value={null}
+          isSearchable
+          isClearable
+          label='QUESTION SET'
+          name='question_unique_id'
+          onChange={(newValue) => {
+            setPayload((prev) => ({...prev, question_unique_id: newValue}));
+          }}
         />
-      </div> */}Payload
+        <DateRange
+          dateRange={[payload.date_range_home]}
+          onChange={(item) => {
+            setPayload((prev) => ({
+              ...prev,
+              date_range_home: item['date_range_home'],
+            }));
+          }}
+          label='PERIOD'
+        />
+      </div>
       <div className='dashboard_box'>
         <div className='grid grid-cols-4 gap-[50px]'>
           <div className='dashboard_info'>
@@ -449,6 +511,11 @@ export default function DashboardHome() {
                     labels: {
                       usePointStyle: true,
                       pointStyle: 'circle',
+                    },
+                  },
+                  datalabels: {
+                    font: {
+                      size: 0,
                     },
                   },
                 },
