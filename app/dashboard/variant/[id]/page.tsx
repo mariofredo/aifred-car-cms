@@ -135,6 +135,24 @@ export default function page() {
           setFilterModal={setFilterModal}
           payload={payload}
           setPayload={setPayload}
+          onReset={() => {
+            setPayload({
+              keyword_variant: '',
+              order_by_name_variant: '',
+              is_active_variant: 1,
+              date_created_start_variant: '',
+              date_created_end_variant: '',
+            });
+            callListVariant(id, {
+              page: pagination.currentPage,
+              limit: pagination.limit,
+              keyword_variant: '',
+              order_by_name_variant: '',
+              is_active_variant: 1,
+              date_created_start_variant: '',
+              date_created_end_variant: '',
+            });
+          }}
           action={() => {
             setFilterModal(false);
             callListVariant(id, {

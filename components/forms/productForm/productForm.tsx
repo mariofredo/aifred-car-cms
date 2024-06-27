@@ -181,6 +181,47 @@ export default function ProductForm(
               : FILTER_PRODUCT_DETAIL.competitor
           }
           setFilterModal={setFilterModal}
+          onReset={() => {
+            filterType === 'variant'
+              ? () => {
+                  setPayloadVariant({
+                    keyword_variant: '',
+                    order_by_name_variant: '',
+                    is_active_variant: 1,
+                    date_created_start_variant: '',
+                    date_created_end_variant: '',
+                  });
+                  callListVariant(id, {
+                    page: paginationVariant.currentPage,
+                    limit: paginationVariant.limit,
+                    keyword_variant: '',
+                    order_by_name_variant: '',
+                    is_active_variant: 1,
+                    date_created_start_variant: '',
+                    date_created_end_variant: '',
+                  });
+                }
+              : () => {
+                  setPayloadComparison({
+                    keyword: '',
+                    order_by_brand: '',
+                    order_by_series: '',
+                    date_created_start: '',
+                    date_created_end: '',
+                    is_active: 1,
+                  });
+                  callListComparison(id, {
+                    page: paginationComparison.currentPage,
+                    limit: paginationComparison.limit,
+                    keyword: '',
+                    order_by_brand: '',
+                    order_by_series: '',
+                    date_created_start: '',
+                    date_created_end: '',
+                    is_active: 1,
+                  });
+                };
+          }}
           payload={
             filterType === 'variant' ? payloadVariant : payloadComparison
           }
