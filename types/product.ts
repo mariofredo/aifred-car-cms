@@ -24,4 +24,5 @@ export interface Comparison {
   image: string | StaticImageData;
   created_at: Date;
   object_id: string;
+  is_primary: number;
 }

@@ -63,9 +63,7 @@ export default function ProductForm(
 ) {
   const router = useRouter();
   const {id}: {id: string} = useParams();
-  const token = Cookie.get('token_aifred_neo_cms')?.toString();
   const {showModal, setShowModal, filterModal, setFilterModal} = useModal();
-  const {productId} = params;
   const {createProduct, getDetailProduct, updateProduct} = useProduct();
   const {getListVariant, deleteVariant} = useVariant();
   const {getListComparison, deleteComparison} = useComparison();
@@ -89,7 +87,6 @@ export default function ProductForm(
     name: '',
     is_active: 0,
   });
-  const [previewImg, setPreviewImg] = useState<string>('');
   const [filterType, setFilterType] = useState<string>('');
   const [variant, setVariant] = useState<Variant[]>([]);
   const [comparison, setComparison] = useState<Comparison[]>([]);
@@ -446,7 +443,10 @@ export default function ProductForm(
                       src={SliderIcon}
                       alt='slider_icon'
                       className='w-[20px] h-[20px] cursor-pointer'
-                      onClick={() => setFilterModal((prev) => !prev)}
+                      onClick={() => {
+                        setFilterModal((prev) => !prev);
+                        setFilterType('variant');
+                      }}
                     />
                   </div>,
                 ]}
@@ -611,7 +611,10 @@ export default function ProductForm(
                       src={SliderIcon}
                       alt='trash_icon'
                       className='w-[20px] h-[20px]'
-                      onClick={() => setFilterModal((prev) => !prev)}
+                      onClick={() => {
+                        setFilterModal((prev) => !prev);
+                        setFilterType('comparison');
+                      }}
                     />
                   </div>,
                 ]}
