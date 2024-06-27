@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 import {SelectedSpec, Tag, Comparison} from '@/types';
 import {API_ROUTES} from '@/consts';
 import {StaticImageData} from 'next/image';
+import {id} from 'date-fns/locale';
 
 interface ContextProps {
   getListComparison: (
@@ -51,6 +52,10 @@ interface ContextProps {
     productId: string,
     object_id: string
   ) => Promise<{[key: string]: any}>;
+  updateMainComparison: (
+    productId: string,
+    comparisonId: string
+  ) => Promise<{[key: string]: any}>;
 }
 
 const defaultValue: ContextProps = {
@@ -59,6 +64,7 @@ const defaultValue: ContextProps = {
   updateComparison: async (productId, payload) => ({}),
   getDetailComparison: async (productId, comparisonId) => ({}),
   deleteComparison: async (productId, object_id) => ({}),
+  updateMainComparison: async (productId, comparisonId) => ({}),
 };
 
 const ComparisonContext = createContext<ContextProps>(defaultValue);
@@ -228,12 +234,40 @@ export function ComparisonContextProvider({
       return data;
     } catch (error) {}
   };
+  const updateMainComparison = async (
+    productId: string,
+    comparisonId: string
+  ) => {
+    try {
+      const response = await fetch(
+        API_ROUTES.comparison_update_main_comparison(productId),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            id: comparisonId,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const ctx = {
     getListComparison,
     createComparison,
     getDetailComparison,
     updateComparison,
     deleteComparison,
+    updateMainComparison,
   };
   return (
     <ComparisonContext.Provider value={ctx}>
