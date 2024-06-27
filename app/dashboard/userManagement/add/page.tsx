@@ -1,7 +1,7 @@
 'use client';
 import {ChangeEvent, useCallback, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {Button, DefaultContainer, Input} from '@/components';
+import {DefaultContainer, Input, InputPassword} from '@/components';
 import '@/styles/userManagement.scss';
 
 export default function page() {
@@ -21,7 +21,7 @@ export default function page() {
     [payload]
   );
   return (
-    <DefaultContainer title='User Details'>
+    <DefaultContainer title='Add New User'>
       <div className='mb-[30px]'>
         <p className='title mt-[30px]'>Personal Information</p>
         <div className='flex flex-col gap-[30px] mt-[50px]'>
@@ -75,15 +75,32 @@ export default function page() {
               placeholder='Enter email'
             />
           </div>
+          <div>
+            <ul className='password_kriteria'>
+              <p>Kriteria password:</p>
+              <li>Password must have at least 8 characters</li>
+              <li>Have at least 1 letter (a, b, c...)</li>
+              <li>Have at least 1 number (1, 2, 3...)</li>
+              <li>Include both Upper case and Lower case characters</li>
+            </ul>
+          </div>
+          <div>
+            <InputPassword
+              label={'NEW PASSWORD'}
+              value={'AIJSDBCIASDBCIA'}
+              name={''}
+              onChange={() => {}}
+            />
+          </div>
+          <div>
+            <InputPassword
+              label={'CONFIRM NEW PASSWORD'}
+              value={'ACABSDHCBAISDB'}
+              name={''}
+              onChange={() => {}}
+            />
+          </div>
         </div>
-      </div>
-      <div>
-        <Button
-          text='Change Password'
-          bgColor='#DFDFDF'
-          padding='10px 21px'
-          borderRadius='12px'
-        />
       </div>
       <div className='col-span-1 flex flex-col gap-[10px]'>
         <div className='flex gap-[20px] w-[200px] justify-between items-center'>

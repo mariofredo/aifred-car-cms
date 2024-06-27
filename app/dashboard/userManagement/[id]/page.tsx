@@ -1,11 +1,17 @@
 'use client';
-import {ChangeEvent, useCallback, useState} from 'react';
+import {ChangeEvent, useCallback, useMemo, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {Button, DefaultContainer, Input} from '@/components';
+import {
+  Button,
+  DefaultContainer,
+  Input,
+  ModalChangePassword,
+} from '@/components';
 import '@/styles/userManagement.scss';
 
 export default function page() {
   const router = useRouter();
+  const [modal, setModal] = useState(false);
   const [payload, setPayload] = useState({
     name: '',
     phone_number: '',
@@ -20,8 +26,15 @@ export default function page() {
     },
     [payload]
   );
+
+  const handleRenderModal = useMemo(
+    () => modal && <ModalChangePassword />,
+    [modal]
+  );
+
   return (
     <DefaultContainer title='Edit User Details'>
+      {handleRenderModal}
       <div className='mb-[30px]'>
         <p className='title mt-[30px]'>Personal Information</p>
         <div className='flex flex-col gap-[30px] mt-[50px]'>
@@ -72,6 +85,7 @@ export default function page() {
           bgColor='#DFDFDF'
           padding='10px 21px'
           borderRadius='12px'
+          onClick={() => setModal(true)}
         />
       </div>
       <div className='col-span-1 flex flex-col gap-[10px]'>

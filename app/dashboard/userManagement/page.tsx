@@ -236,10 +236,6 @@ export default function page() {
     [filterModal, payload, pagination]
   );
 
-  useEffect(() => {
-    console.log(filterModal, 'filterModal');
-  }, [filterModal]);
-
   return (
     <DefaultContainer title='User Management'>
       {handleRenderFilter}
