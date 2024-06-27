@@ -20,6 +20,8 @@ export const API_ROUTES = {
     base_url + `/product/${id}/competitor/update`,
   comparison_delete: (id: string) =>
     base_url + `/product/${id}/competitor/delete`,
+  comparison_update_main_comparison: (id: string) =>
+    base_url + `/product/${id}/competitor/main-comparison`,
   tag_list: base_url + '/tag',
   spec_category_list: base_url + '/spec',
   question_list: base_url + '/question',

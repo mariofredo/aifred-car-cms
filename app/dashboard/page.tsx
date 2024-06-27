@@ -51,7 +51,18 @@ export default function DashboardHome() {
     setSummaryAnsweredQuestionsDuration,
   ] = useState([]);
   const [mostSelectedProduct, setMostSelectedProduct] = useState([]);
-  const [dataTotalCompleted, setTotalCompleted] = useState();
+  const [completedDuration, setCompletedDuration] = useState({
+    fastest: '00:00',
+    average: '00:00',
+    slowest: '00:00',
+  });
+  const [totalRespondentsPerPeriod, setTotalRespondentsPerPeriod] = useState<{
+    completed: {[key: string]: any};
+    uncompleted: {[key: string]: any};
+  }>({
+    completed: {},
+    uncompleted: {},
+  });
   const getSummaryRespondents = useCallback(async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-respondents`,
@@ -95,6 +106,27 @@ export default function DashboardHome() {
     setSummaryCompleted(data);
     return data;
   }, []);
+  const getCompletedDuration = useCallback(async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/completed-duration`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: 'qs2',
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setCompletedDuration(data);
+    return data;
+  }, []);
 
   const getTotalAnswersPerQuestion = useCallback(async () => {
     const response = await fetch(
@@ -115,6 +147,27 @@ export default function DashboardHome() {
     }
     const {data} = await response.json();
     setTotalAnswersPerQuestion(data);
+    return data;
+  }, []);
+  const getTotalRespondentsPerPeriod = useCallback(async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/total-respondents-per-period`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: 'qs2',
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setTotalRespondentsPerPeriod(data);
     return data;
   }, []);
 
@@ -167,6 +220,8 @@ export default function DashboardHome() {
     getTotalAnswersPerQuestion();
     getSummaryAnsweredQuestionDuration();
     getMostSelectedProduct();
+    getCompletedDuration();
+    getTotalRespondentsPerPeriod();
   }, []);
   return (
     <div className='dashboard_home_ctr'>
@@ -336,26 +391,22 @@ export default function DashboardHome() {
           </div>
         </div>
       </div>
-      {/* <div className='grid grid-cols-4 gap-[20px]'>
+      <div className='grid grid-cols-4 gap-[20px]'>
         <div className='col-span-1 dashboard_box'>
           <TableHome
             tableName={[{name: 'COMPLETED DURATION', colSpan: 2}]}
             tableValue={[
               {
-                name: 'Complete',
-                value: '02:56',
-              },
-              {
                 name: 'Fastest',
-                value: '02:56',
+                value: completedDuration.fastest,
               },
               {
                 name: 'Average',
-                value: '02:56',
+                value: completedDuration.average,
               },
               {
                 name: 'Slowest',
-                value: '02:56',
+                value: completedDuration.slowest,
               },
             ]}
             tableKey={['name', 'value']}
@@ -370,13 +421,21 @@ export default function DashboardHome() {
                 datasets: [
                   {
                     label: 'Total Completed Respondents',
-                    data: [10, 60, 40, 10, 30],
+                    data: Object.keys(totalRespondentsPerPeriod.completed).map(
+                      (item: string) =>
+                        totalRespondentsPerPeriod.completed[item]
+                    ),
                     borderColor: '#E0150A',
                     backgroundColor: '#E0150A',
                   },
                   {
                     label: 'Total Uncompleted Respondents',
-                    data: [40, 20, 10, 5, 10],
+                    data: Object.keys(
+                      totalRespondentsPerPeriod.uncompleted
+                    ).map(
+                      (item: string) =>
+                        totalRespondentsPerPeriod.uncompleted[item]
+                    ),
                     borderColor: '#F1CDC6',
                     backgroundColor: '#F1CDC6',
                   },
@@ -400,7 +459,7 @@ export default function DashboardHome() {
             />
           </div>
         </div>
-      </div> */}
+      </div>
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Total Answers per Question</p>
