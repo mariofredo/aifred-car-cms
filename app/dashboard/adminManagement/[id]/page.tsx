@@ -1,19 +1,22 @@
 'use client';
-import {ChangeEvent, useCallback, useState} from 'react';
+import {ChangeEvent, useCallback, useMemo, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import Cookies from 'js-cookie';
-import {DefaultContainer, Input, InputPassword} from '@/components';
+import {
+  Button,
+  DefaultContainer,
+  Input,
+  ModalChangePassword,
+} from '@/components';
 import '@/styles/userManagement.scss';
 
 export default function page() {
   const router = useRouter();
+  const [modal, setModal] = useState(false);
   const [payload, setPayload] = useState({
     name: '',
-    phone: '',
+    phone_number: '',
     username: '',
     email: '',
-    password: '',
-    password_confirmation: '',
     is_active: 1,
   });
   const handleChange = useCallback(
@@ -24,34 +27,26 @@ export default function page() {
     [payload]
   );
 
-  const handleAddNewUser = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user-management/store`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-      if (!response.ok) {
-        const {message} = await response.json();
-        throw new Error(message);
-      }
-      const {code} = await response.json();
-      if (code === 200) {
-        router.push('/dashboard/userManagement');
-      }
-    } catch (error) {
-      alert(error);
-    }
-  }, [payload]);
+  const handleRenderModal = useMemo(
+    () =>
+      modal && (
+        <ModalChangePassword
+          currentPassword={''}
+          newPassword={''}
+          confirmNewPassword={''}
+          onChangeCurrentPassword={() => {}}
+          onChangeNewPassword={() => {}}
+          onChangeConfirmNewPassword={() => {}}
+          onCancel={() => setModal(false)}
+          onDone={() => {}}
+        />
+      ),
+    [modal]
+  );
 
   return (
-    <DefaultContainer title='Add New User'>
+    <DefaultContainer title='Edit Admin Details'>
+      {handleRenderModal}
       <div className='mb-[30px]'>
         <p className='title mt-[30px]'>Personal Information</p>
         <div className='flex flex-col gap-[30px] mt-[50px]'>
@@ -69,11 +64,11 @@ export default function page() {
           <div>
             <Input
               label='PHONE NUMBER'
-              id='phone'
+              id='phone_number'
               type='text'
-              name='phone'
+              name='phone_number'
               onChange={handleChange}
-              value={payload.phone}
+              value={payload.phone_number}
               placeholder='Enter phone number'
             />
           </div>
@@ -85,17 +80,6 @@ export default function page() {
         <div className='flex flex-col gap-[30px] mt-[50px]'>
           <div>
             <Input
-              label='USERNAME'
-              id='username'
-              type='text'
-              name='username'
-              onChange={handleChange}
-              value={payload.username}
-              placeholder='Enter username'
-            />
-          </div>
-          <div>
-            <Input
               label='E-MAIL ADDRESS'
               id='email'
               type='text'
@@ -105,39 +89,16 @@ export default function page() {
               placeholder='Enter email'
             />
           </div>
-          <div>
-            <ul className='password_kriteria'>
-              <p>Kriteria password:</p>
-              <li>Password must have at least 8 characters</li>
-              <li>Have at least 1 letter (a, b, c...)</li>
-              <li>Have at least 1 number (1, 2, 3...)</li>
-              <li>Include both Upper case and Lower case characters</li>
-            </ul>
-          </div>
-          <div>
-            <InputPassword
-              label={'NEW PASSWORD'}
-              value={payload.password}
-              name={'password'}
-              onChange={(e) =>
-                setPayload({...payload, password: e.target.value})
-              }
-            />
-          </div>
-          <div>
-            <InputPassword
-              label={'CONFIRM NEW PASSWORD'}
-              value={payload.password_confirmation}
-              name={'password_confirmation'}
-              onChange={(e) =>
-                setPayload({
-                  ...payload,
-                  password_confirmation: e.target.value,
-                })
-              }
-            />
-          </div>
         </div>
+      </div>
+      <div>
+        <Button
+          text='Change Password'
+          bgColor='#DFDFDF'
+          padding='10px 21px'
+          borderRadius='12px'
+          onClick={() => setModal(true)}
+        />
       </div>
       <div className='col-span-1 flex flex-col gap-[10px]'>
         <div className='flex gap-[20px] w-[200px] justify-between items-center'>
@@ -162,13 +123,7 @@ export default function page() {
           </button>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-            onClick={handleAddNewUser}
-            disabled={Object.values(payload).includes('')}
-            style={{
-              cursor: Object.values(payload).includes('')
-                ? 'not-allowed'
-                : 'pointer',
-            }}
+            onClick={() => {}}
           >
             Done
           </button>

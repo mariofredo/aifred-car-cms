@@ -1,7 +1,6 @@
 'use client';
 import {ChangeEvent, useCallback, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import Cookies from 'js-cookie';
 import {DefaultContainer, Input, InputPassword} from '@/components';
 import '@/styles/userManagement.scss';
 
@@ -9,11 +8,9 @@ export default function page() {
   const router = useRouter();
   const [payload, setPayload] = useState({
     name: '',
-    phone: '',
+    phone_number: '',
     username: '',
     email: '',
-    password: '',
-    password_confirmation: '',
     is_active: 1,
   });
   const handleChange = useCallback(
@@ -23,35 +20,8 @@ export default function page() {
     },
     [payload]
   );
-
-  const handleAddNewUser = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user-management/store`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-      if (!response.ok) {
-        const {message} = await response.json();
-        throw new Error(message);
-      }
-      const {code} = await response.json();
-      if (code === 200) {
-        router.push('/dashboard/userManagement');
-      }
-    } catch (error) {
-      alert(error);
-    }
-  }, [payload]);
-
   return (
-    <DefaultContainer title='Add New User'>
+    <DefaultContainer title='Add New Admin'>
       <div className='mb-[30px]'>
         <p className='title mt-[30px]'>Personal Information</p>
         <div className='flex flex-col gap-[30px] mt-[50px]'>
@@ -69,11 +39,11 @@ export default function page() {
           <div>
             <Input
               label='PHONE NUMBER'
-              id='phone'
+              id='phone_number'
               type='text'
-              name='phone'
+              name='phone_number'
               onChange={handleChange}
-              value={payload.phone}
+              value={payload.phone_number}
               placeholder='Enter phone number'
             />
           </div>
@@ -117,24 +87,17 @@ export default function page() {
           <div>
             <InputPassword
               label={'NEW PASSWORD'}
-              value={payload.password}
-              name={'password'}
-              onChange={(e) =>
-                setPayload({...payload, password: e.target.value})
-              }
+              value={'AIJSDBCIASDBCIA'}
+              name={''}
+              onChange={() => {}}
             />
           </div>
           <div>
             <InputPassword
               label={'CONFIRM NEW PASSWORD'}
-              value={payload.password_confirmation}
-              name={'password_confirmation'}
-              onChange={(e) =>
-                setPayload({
-                  ...payload,
-                  password_confirmation: e.target.value,
-                })
-              }
+              value={'ACABSDHCBAISDB'}
+              name={''}
+              onChange={() => {}}
             />
           </div>
         </div>
@@ -162,13 +125,7 @@ export default function page() {
           </button>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-            onClick={handleAddNewUser}
-            disabled={Object.values(payload).includes('')}
-            style={{
-              cursor: Object.values(payload).includes('')
-                ? 'not-allowed'
-                : 'pointer',
-            }}
+            onClick={() => {}}
           >
             Done
           </button>

@@ -1,6 +1,7 @@
 'use client';
-import {ChangeEvent, useCallback, useMemo, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {ChangeEvent, useCallback, useEffect, useMemo, useState} from 'react';
+import {useParams, useRouter} from 'next/navigation';
+import Cookies from 'js-cookie';
 import {
   Button,
   DefaultContainer,
@@ -11,13 +12,19 @@ import '@/styles/userManagement.scss';
 
 export default function page() {
   const router = useRouter();
+  const {id} = useParams();
   const [modal, setModal] = useState(false);
   const [payload, setPayload] = useState({
     name: '',
-    phone_number: '',
+    phone: '',
     username: '',
     email: '',
     is_active: 1,
+  });
+  const [changePassword, setChangePassword] = useState({
+    old: '',
+    new: '',
+    confirm: '',
   });
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -27,10 +34,114 @@ export default function page() {
     [payload]
   );
 
+  const getUserData = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const {data} = await response.json();
+      setPayload(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [id]);
+
+  const handleEditUser = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/update`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            unique_id: id,
+            ...payload,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const {message} = await response.json();
+        throw new Error(message);
+      }
+      const {code} = await response.json();
+      if (code === 200) {
+        router.push('/dashboard/userManagement');
+      }
+    } catch (error) {
+      alert(error);
+    }
+  }, [id, payload]);
+
+  const handleChangePassword = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/change-password`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            unique_id: id,
+            password_old: changePassword.old,
+            password: changePassword.new,
+            password_confirmation: changePassword.confirm,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const {message} = await response.json();
+        throw new Error(message);
+      }
+      const {code} = await response.json();
+      if (code === 200) {
+        setModal(false);
+      }
+    } catch (error) {
+      alert(error);
+    }
+  }, [id, changePassword]);
+
   const handleRenderModal = useMemo(
-    () => modal && <ModalChangePassword />,
-    [modal]
+    () =>
+      modal && (
+        <ModalChangePassword
+          currentPassword={changePassword.old}
+          newPassword={changePassword.new}
+          confirmNewPassword={changePassword.confirm}
+          onChangeCurrentPassword={(e) =>
+            setChangePassword({...changePassword, old: e.target.value})
+          }
+          onChangeNewPassword={(e) =>
+            setChangePassword({...changePassword, new: e.target.value})
+          }
+          onChangeConfirmNewPassword={(e) =>
+            setChangePassword({...changePassword, confirm: e.target.value})
+          }
+          onCancel={() => setModal(false)}
+          onDone={handleChangePassword}
+        />
+      ),
+    [modal, changePassword]
   );
+
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   return (
     <DefaultContainer title='Edit User Details'>
@@ -52,11 +163,11 @@ export default function page() {
           <div>
             <Input
               label='PHONE NUMBER'
-              id='phone_number'
+              id='phone'
               type='text'
-              name='phone_number'
+              name='phone'
               onChange={handleChange}
-              value={payload.phone_number}
+              value={payload.phone}
               placeholder='Enter phone number'
             />
           </div>
@@ -111,7 +222,7 @@ export default function page() {
           </button>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-            onClick={() => {}}
+            onClick={handleEditUser}
           >
             Done
           </button>
