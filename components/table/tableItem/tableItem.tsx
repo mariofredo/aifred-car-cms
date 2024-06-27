@@ -1,5 +1,5 @@
 import {NoImage, PencilIcon, TrashIcon} from '@/public';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 import {Button} from '@/components';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -67,7 +67,7 @@ export default function TableItem({
               />
             </td>
           ) : key === 'created_at' ? (
-            <td>{formatDate(obj[key])}</td>
+            <td>{formatDateUI(obj[key])}</td>
           ) : key === 'object_id' ? (
             <td>
               <div className='flex flex-col gap-[10px]'>

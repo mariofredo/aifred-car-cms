@@ -28,4 +28,5 @@ export const API_ROUTES = {
   question_create: base_url + '/question/store',
   question_detail: (id: string) => base_url + `/question/${id}`,
   question_update: base_url + `/question/update`,
+  question_list_by_brand: base_url + `/question/get-by-brand`,
 };

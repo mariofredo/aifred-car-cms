@@ -39,7 +39,6 @@ export const BrandContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const token = Cookies.get('token_aifred_neo_cms');
   const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoadingBrand, setIsLoadingBrand] = useState<LoadingBrand>({
     loadingList: false,
@@ -51,7 +50,7 @@ export const BrandContextProvider = ({
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
       },
     });
     if (response.ok) {
@@ -67,7 +66,7 @@ export const BrandContextProvider = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify(payload),
       }

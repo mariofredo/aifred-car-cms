@@ -38,6 +38,7 @@ import Cookies from 'js-cookie';
 import {useBrand, useQuestion} from '@/context';
 import {SingleValue} from 'react-select';
 import {Question} from '@/types';
+import {formatDate} from '@/utils';
 interface Payload {
   brand_unique_id: SingleValue<{
     label: string;
@@ -51,7 +52,7 @@ interface Payload {
 }
 export default function DashboardHome() {
   const {getListBrand} = useBrand();
-  const {getListQuestion} = useQuestion();
+  const {getQuestionListByBrand} = useQuestion();
   const [payload, setPayload] = useState<Payload>({
     brand_unique_id: {
       label: '',
@@ -99,7 +100,7 @@ export default function DashboardHome() {
     completed: {},
     uncompleted: {},
   });
-  const getSummaryRespondents = useCallback(async () => {
+  const getSummaryRespondents = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-respondents`,
       {
@@ -109,7 +110,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -121,7 +124,7 @@ export default function DashboardHome() {
     return data;
   }, []);
 
-  const getSummaryCompleted = useCallback(async () => {
+  const getSummaryCompleted = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-completed`,
       {
@@ -131,7 +134,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -142,7 +147,7 @@ export default function DashboardHome() {
     setSummaryCompleted(data);
     return data;
   }, []);
-  const getCompletedDuration = useCallback(async () => {
+  const getCompletedDuration = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/completed-duration`,
       {
@@ -152,7 +157,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -164,7 +171,7 @@ export default function DashboardHome() {
     return data;
   }, []);
 
-  const getTotalAnswersPerQuestion = useCallback(async () => {
+  const getTotalAnswersPerQuestion = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/total-answers-per-question`,
       {
@@ -174,7 +181,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -185,7 +194,7 @@ export default function DashboardHome() {
     setTotalAnswersPerQuestion(data);
     return data;
   }, []);
-  const getTotalRespondentsPerPeriod = useCallback(async () => {
+  const getTotalRespondentsPerPeriod = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/total-respondents-per-period`,
       {
@@ -195,7 +204,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -207,28 +218,33 @@ export default function DashboardHome() {
     return data;
   }, []);
 
-  const getSummaryAnsweredQuestionDuration = useCallback(async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-answered-questions-duration`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
-        },
-        body: JSON.stringify({
-          question_unique_id: 'qs2',
-        }),
+  const getSummaryAnsweredQuestionDuration = useCallback(
+    async (payload: Payload) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-answered-questions-duration`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            question_unique_id: payload.question_unique_id?.value,
+            date_start: formatDate(payload.date_range_home.startDate),
+            date_end: formatDate(payload.date_range_home.endDate),
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
       }
-    );
-    if (!response.ok) {
-      throw new Error('Error');
-    }
-    const {data} = await response.json();
-    setSummaryAnsweredQuestionsDuration(data);
-    return data;
-  }, []);
-  const getMostSelectedProduct = useCallback(async () => {
+      const {data} = await response.json();
+      setSummaryAnsweredQuestionsDuration(data);
+      return data;
+    },
+    []
+  );
+  const getMostSelectedProduct = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/most-selected-products`,
       {
@@ -238,7 +254,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -250,34 +268,41 @@ export default function DashboardHome() {
     return data;
   }, []);
   const callListBrand = useCallback(async () => {
-    const {data} = await getListBrand();
-    setBrand(data.map((item) => ({label: item.name, value: item.unique_id})));
+    const {data} = await getListBrand(); // get brand list
+    setBrand(data.map((item) => ({label: item.name, value: item.unique_id}))); // set brand list
   }, [brand]);
 
-  const callListQuestion = useCallback(async () => {
-    const {data} = await getListQuestion();
-    setQuestion(
-      data.map((item: Question) => ({
-        ...item,
-        label: item.question_set_title,
-        value: item.unique_id,
-      }))
-    );
-  }, [question]);
-
+  const callListQuestion = useCallback(
+    async (brand_id: {label: string; value: string}) => {
+      const {data} = await getQuestionListByBrand(brand_id.value);
+      setQuestion(
+        data.map((item: Question) => ({
+          ...item,
+          label: item.question_set_title,
+          value: item.unique_id,
+        }))
+      );
+    },
+    [question]
+  );
   useEffect(() => {
-    getSummaryRespondents();
-    getSummaryCompleted();
-    getTotalAnswersPerQuestion();
-    getSummaryAnsweredQuestionDuration();
-    getMostSelectedProduct();
-    getCompletedDuration();
-    getTotalRespondentsPerPeriod();
     callListBrand();
   }, []);
+  useEffect(() => {
+    if (payload.question_unique_id?.value) {
+      getSummaryRespondents(payload);
+      getSummaryCompleted(payload);
+      getTotalAnswersPerQuestion(payload);
+      getSummaryAnsweredQuestionDuration(payload);
+      getMostSelectedProduct(payload);
+      getCompletedDuration(payload);
+      getTotalRespondentsPerPeriod(payload);
+    }
+  }, [payload]);
 
   useEffect(() => {
-    if (payload.brand_unique_id) callListQuestion();
+    if (payload.brand_unique_id?.value)
+      callListQuestion(payload.brand_unique_id);
   }, [payload.brand_unique_id]);
   return (
     <div className='dashboard_home_ctr'>
@@ -291,12 +316,16 @@ export default function DashboardHome() {
           label='BRAND'
           name='brand_unique_id'
           onChange={(newValue) => {
-            setPayload((prev) => ({...prev, brand_unique_id: newValue}));
+            setPayload((prev) => ({
+              ...prev,
+              brand_unique_id: newValue,
+              question_unique_id: {label: '', value: ''},
+            }));
           }}
         />
         <Select
           options={question}
-          value={null}
+          value={payload.question_unique_id}
           isSearchable
           isClearable
           label='QUESTION SET'
@@ -304,6 +333,7 @@ export default function DashboardHome() {
           onChange={(newValue) => {
             setPayload((prev) => ({...prev, question_unique_id: newValue}));
           }}
+          isDisabled={!payload.brand_unique_id?.value}
         />
         <DateRange
           dateRange={[payload.date_range_home]}

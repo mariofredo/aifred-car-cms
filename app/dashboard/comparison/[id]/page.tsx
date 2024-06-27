@@ -17,7 +17,7 @@ import {
   TrashIcon,
 } from '@/public';
 import {Comparison} from '@/types';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useParams} from 'next/navigation';
@@ -314,7 +314,7 @@ export default function DashboardComparisonList() {
                     {item.is_active ? 'Publish' : 'Draft'}
                   </span>
                 ),
-                created_at: formatDate(item.created_at),
+                created_at: formatDateUI(item.created_at),
                 action: (
                   <div className='flex flex-col gap-[10px]'>
                     <Link

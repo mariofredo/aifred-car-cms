@@ -29,7 +29,7 @@ import {
 } from '@/public';
 import Link from 'next/link';
 import {IoSearch} from 'react-icons/io5';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 import Image from 'next/image';
 interface Payload {
   keyword_variant: string;
@@ -272,7 +272,7 @@ export default function page() {
                     className='rounded-md'
                   />
                 ),
-                created_at: formatDate(item.created_at),
+                created_at: formatDateUI(item.created_at),
                 action: (
                   <div className='flex flex-col gap-[10px]'>
                     <Link

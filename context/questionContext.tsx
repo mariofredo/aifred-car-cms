@@ -25,6 +25,7 @@ interface ContextProps {
   ) => Promise<{[key: string]: any}>;
   getDetailQuestion: (id: string) => Promise<{[key: string]: any}>;
   deleteQuestion: (object_id: string) => Promise<{[key: string]: any}>;
+  getQuestionListByBrand: (brand_id: string) => Promise<{[key: string]: any}>;
 }
 
 const defaultValue: ContextProps = {
@@ -33,6 +34,7 @@ const defaultValue: ContextProps = {
   updateQuestion: async (question, payload) => ({}),
   getDetailQuestion: async (id) => ({}),
   deleteQuestion: async (object_id) => ({}),
+  getQuestionListByBrand: async (brand_id) => ({}),
 };
 
 const QuestionContext = createContext<ContextProps>(defaultValue);
@@ -155,12 +157,32 @@ export function QuestionContextProvider({
       return data;
     } catch (error) {}
   };
+  const getQuestionListByBrand = async (brand_id: string) => {
+    try {
+      const response = await fetch(
+        API_ROUTES.question_list_by_brand + `?brand_unique_id=${brand_id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {}
+  };
   const ctx = {
     getListQuestion,
     createQuestion,
     getDetailQuestion,
     updateQuestion,
     deleteQuestion,
+    getQuestionListByBrand,
   };
   return (
     <QuestionContext.Provider value={ctx}>{children}</QuestionContext.Provider>

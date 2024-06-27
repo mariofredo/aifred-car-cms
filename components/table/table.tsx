@@ -6,7 +6,7 @@ import {useRouter} from 'next/navigation';
 import {Button} from '@/components';
 import Link from 'next/link';
 import {ReactNode, useCallback} from 'react';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 import '@/styles/table.scss';
 import {useModal, useProduct} from '@/context';
 import {useComparison} from '@/context/comparisonContext';
@@ -95,7 +95,7 @@ export default function Table({
                       <HiDotsVertical className='w-[20px] h-[20px]' />
                     </td>
                   ) : key === 'created_at' ? (
-                    <td>{formatDate(el[key])}</td>
+                    <td>{formatDateUI(el[key])}</td>
                   ) : key === 'is_active' ? (
                     <td>
                       <span
@@ -140,7 +140,7 @@ export default function Table({
                   //       />
                   //     </td>
                   //   ) : key === 'created_at' ? (
-                  //     <td>{formatDate(el[key])}</td>
+                  //     <td>{formatDateUI(el[key])}</td>
                   //   ) : key === 'detail' ? (
                   //     <td className='table_pencil'>
                   //       <Image

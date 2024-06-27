@@ -4,7 +4,7 @@ import {DateRangePicker, Range, RangeKeyDict} from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import '@/styles/dateRange.scss';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 interface DateRangeProps {
   dateRange: [Range];
   label: string;
@@ -23,13 +23,13 @@ export default function DateRange({
         className='date_range_date'
         onClick={() => setShowDate((prev) => !prev)}
       >
-        {formatDate(dateRange[0].startDate, {
+        {formatDateUI(dateRange[0].startDate, {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
         })}
         {' - '}
-        {formatDate(dateRange[0].endDate, {
+        {formatDateUI(dateRange[0].endDate, {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',

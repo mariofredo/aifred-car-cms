@@ -27,7 +27,7 @@ import {
   TrashIcon,
 } from '@/public';
 import {useModal} from '@/context';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 
 export default function page() {
   const router = useRouter();
@@ -317,7 +317,7 @@ export default function page() {
                     {item.is_active ? 'Active' : 'Inactive'}
                   </span>
                 ),
-                created_at: formatDate(item.created_at),
+                created_at: formatDateUI(item.created_at),
                 detail: (
                   <div className='flex justify-center'>
                     <Image
