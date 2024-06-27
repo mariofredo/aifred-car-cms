@@ -440,10 +440,7 @@ export default function DashboardHome() {
                     backgroundColor: '#F1CDC6',
                   },
                 ],
-                labels: [
-                  'Total Completed Respondents',
-                  'Total Uncompleted Respondents',
-                ],
+                labels: [...Object.keys(totalRespondentsPerPeriod.completed)],
               }}
               options={{
                 plugins: {
