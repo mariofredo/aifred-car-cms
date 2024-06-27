@@ -16,6 +16,7 @@ interface FilterModalProps {
   setFilterModal: Dispatch<SetStateAction<boolean>>;
   payload: any;
   setPayload: Dispatch<SetStateAction<any>>;
+  onReset: () => void;
   action: () => void;
 }
 export default function FilterModal({
@@ -23,6 +24,7 @@ export default function FilterModal({
   setFilterModal,
   payload,
   setPayload,
+  onReset,
   action,
 }: FilterModalProps) {
   const router = useRouter();
@@ -108,8 +110,9 @@ export default function FilterModal({
           );
         case 'status_single':
           let containerStatusSingle = 'publish_container';
-          if (label === 'Publish') containerStatusSingle = 'publish_container';
-          else if (label === 'Unpublish')
+          if (label === 'Publish' || label === 'Active')
+            containerStatusSingle = 'publish_container';
+          else if (label === 'Unpublish' || label === 'Inactive')
             containerStatusSingle = 'unpublish_container';
           return (
             <div className='content_status'>
@@ -245,6 +248,7 @@ export default function FilterModal({
               borderColor='#DFDFDF'
               width={'100%'}
               onClick={() => {
+                onReset();
                 setTimeout(() => {
                   setFilterModal(false);
                 }, 500);

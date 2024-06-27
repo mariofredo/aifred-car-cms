@@ -1,7 +1,17 @@
 'use client';
-import {ChangeEvent, FormEvent, useMemo, useState} from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {IoSearch} from 'react-icons/io5';
+import Image from 'next/image';
+import {useRouter} from 'next/navigation';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 import {
   Button,
   DefaultContainer,
@@ -9,57 +19,170 @@ import {
   Table,
   TablePagination,
 } from '@/components';
-import {CirclePlus} from '@/public';
+import {
+  CirclePlus,
+  PencilIcon,
+  ReturnIcon,
+  SliderIcon,
+  TrashIcon,
+} from '@/public';
 import {useModal} from '@/context';
+import {formatDate} from '@/utils';
 
 export default function page() {
-  const [product, setProduct] = useState<[]>([]);
-  const [payload, setPayload] = useState<string>('');
+  const router = useRouter();
+  const [user, setUser] = useState<[]>([]);
+  const [payload, setPayload] = useState<any>({
+    order_by_name: '',
+    order_by_username: '',
+    order_by_email: '',
+    keyword: '',
+    is_active: 1,
+    date_created_start: '',
+    date_created_end: '',
+  });
   const {filterModal, setFilterModal} = useModal();
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalCount: 0,
     limit: 10,
   });
+
+  const getUserData = useCallback(
+    async (page: number, limit: number, payload: any = {}) => {
+      try {
+        let query = ``;
+        if (Object.keys(payload).length > 0)
+          for (const key in payload) {
+            if (Object.hasOwnProperty.call(payload, key)) {
+              query += `${key}=${payload[key]}&`;
+            }
+          }
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/user-management?page=${page}&${query}limit=${limit}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error('Error');
+        }
+        const {data} = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    []
+  );
+
+  const deleteUser = async (object_id: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/delete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            unique_id: object_id,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const {code} = await response.json();
+      if (code === 200) {
+        getUserData(pagination.currentPage, pagination.limit, {
+          keyword: payload.keyword,
+          order_by_name: payload.order_by_name,
+          order_by_username: payload.order_by_username,
+          order_by_email: payload.order_by_email,
+          is_active: payload.is_active,
+          date_created_start: payload.date_created_start,
+          date_created_end: payload.date_created_end,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getUserData(pagination.currentPage, pagination.limit, {
+      keyword: payload.keyword,
+      order_by_name: payload.order_by_name,
+      order_by_username: payload.order_by_username,
+      order_by_email: payload.order_by_email,
+      is_active: payload.is_active,
+      date_created_start: payload.date_created_start,
+      date_created_end: payload.date_created_end,
+    });
+  }, [pagination]);
+
   const handleRenderFilter = useMemo(
     () =>
       filterModal && (
         <FilterModal
           list={[
             {
-              title: 'Brand',
+              title: 'Username',
               type: 'button',
               data: [
                 {
                   label: 'A to Z',
                   value: 'asc',
-                  name: 'order_by_brand',
+                  name: 'order_by_username',
                 },
                 {
                   label: 'Z to A',
                   value: 'desc',
-                  name: 'order_by_brand',
+                  name: 'order_by_username',
                 },
               ],
             },
             {
-              title: 'Series Name',
+              title: 'Name',
               type: 'button',
               data: [
                 {
                   label: 'A to Z',
                   value: 'asc',
-                  name: 'order_by_series',
+                  name: 'order_by_name',
                 },
                 {
                   label: 'Z to A',
                   value: 'desc',
-                  name: 'order_by_series',
+                  name: 'order_by_name',
                 },
               ],
             },
             {
-              title: 'Activity By Date',
+              title: 'Status',
+              type: 'status_single',
+              data: [
+                {
+                  label: 'Active',
+                  value: 1,
+                  name: 'is_active',
+                },
+                {
+                  label: 'Inactive',
+                  value: 0,
+                  name: 'is_active',
+                },
+              ],
+            },
+            {
+              title: 'Date Created',
               type: 'date',
               data: [
                 {
@@ -72,33 +195,51 @@ export default function page() {
                 },
               ],
             },
-            {
-              title: 'Status',
-              type: 'status_single',
-              data: [
-                {
-                  label: 'Publish',
-                  value: 1,
-                  name: 'is_active',
-                },
-                {
-                  label: 'Unpublish',
-                  value: 0,
-                  name: 'is_active',
-                },
-              ],
-            },
           ]}
           setFilterModal={setFilterModal}
           payload={payload}
           setPayload={setPayload}
+          onReset={() => {
+            setPayload({
+              order_by_name: '',
+              order_by_username: '',
+              order_by_email: '',
+              keyword: '',
+              is_active: 1,
+              date_created_start: '',
+              date_created_end: '',
+            });
+            getUserData(pagination.currentPage, pagination.limit, {
+              keyword: '',
+              order_by_name: '',
+              order_by_username: '',
+              order_by_email: '',
+              is_active: 1,
+              date_created_start: '',
+              date_created_end: '',
+            });
+          }}
           action={() => {
             setFilterModal(false);
+            getUserData(pagination.currentPage, pagination.limit, {
+              keyword: payload.keyword,
+              order_by_name: payload.order_by_name,
+              order_by_username: payload.order_by_username,
+              order_by_email: payload.order_by_email,
+              is_active: payload.is_active,
+              date_created_start: payload.date_created_start,
+              date_created_end: payload.date_created_end,
+            });
           }}
         />
       ),
-    [payload, pagination]
+    [filterModal, payload, pagination]
   );
+
+  useEffect(() => {
+    console.log(filterModal, 'filterModal');
+  }, [filterModal]);
+
   return (
     <DefaultContainer title='User Management'>
       {handleRenderFilter}
@@ -130,9 +271,12 @@ export default function page() {
                 type='text'
                 name='keyword'
                 placeholder='Search username, name, email or phone'
-                value={payload}
+                value={payload.keyword}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setPayload(e.target.value)
+                  setPayload((prev: any) => ({
+                    ...prev,
+                    keyword: e.target.value,
+                  }))
                 }
               />
             </form>
@@ -146,19 +290,68 @@ export default function page() {
                 'Phone',
                 'Status',
                 'Data Created',
-                'Detail',
-                'Option',
+                <div className='flex justify-center' key='return'>
+                  <Image
+                    src={ReturnIcon}
+                    className='w-[20px] h-[15px]'
+                    alt='return_icon'
+                  />
+                </div>,
+                <div className='flex justify-center' key='delete'>
+                  <Image
+                    src={SliderIcon}
+                    alt='trash_icon'
+                    className='w-[20px] h-[20px]'
+                    onClick={() => setFilterModal((prev) => !prev)}
+                  />
+                </div>,
               ]}
-              data={product}
+              data={user.map((item: any) => ({
+                ...item,
+                is_active: (
+                  <span
+                    className={`table_status ${
+                      item.is_active === 1 ? 'publish' : 'draft'
+                    }`}
+                  >
+                    {item.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                ),
+                created_at: formatDate(item.created_at),
+                detail: (
+                  <div className='flex justify-center'>
+                    <Image
+                      src={PencilIcon}
+                      className='w-[20px] h-[20px] cursor-pointer'
+                      alt='return_icon'
+                      onClick={() =>
+                        router.push(
+                          `/dashboard/userManagement/${item.unique_id}`
+                        )
+                      }
+                    />
+                  </div>
+                ),
+                delete: (
+                  <div className='flex justify-center'>
+                    <Image
+                      src={TrashIcon}
+                      className='w-[20px] h-[20px] cursor-pointer'
+                      alt='trash_icon'
+                      onClick={() => deleteUser(item.unique_id)}
+                    />
+                  </div>
+                ),
+              }))}
               listKey={[
-                'brand_name',
-                'series_name',
-                'total_variant',
+                'username',
+                'name',
+                'email',
+                'phone',
                 'is_active',
                 'created_at',
-                'object_id',
                 'detail',
-                'option',
+                'delete',
               ]}
               type={'product'}
               subType='product'

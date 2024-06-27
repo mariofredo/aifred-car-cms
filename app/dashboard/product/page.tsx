@@ -170,6 +170,28 @@ export default function DashboardProduct() {
           setFilterModal={setFilterModal}
           payload={payload}
           setPayload={setPayload}
+          onReset={() => {
+            setPayload({
+              brand_unique_id: {label: '', value: ''},
+              keyword: '',
+              order_by_brand: '',
+              order_by_series: '',
+              date_created_start: '',
+              date_created_end: '',
+              is_active: 1,
+            });
+            callListProduct({
+              page: pagination.currentPage,
+              limit: pagination.limit,
+              brand_unique_id: '',
+              keyword: '',
+              order_by_brand: '',
+              order_by_series: '',
+              date_created_start: '',
+              date_created_end: '',
+              is_active: 1,
+            });
+          }}
           action={() => {
             setFilterModal(false);
             callListProduct({
@@ -284,14 +306,14 @@ export default function DashboardProduct() {
                 'Status',
                 'Date created',
                 '',
-                <div className='flex justify-center'>
+                <div className='flex justify-center' key='return'>
                   <Image
                     src={ReturnIcon}
                     className='w-[20px] h-[15px]'
                     alt='return_icon'
                   />
                 </div>,
-                <div className='flex justify-center'>
+                <div className='flex justify-center' key='delete'>
                   <Image
                     src={SliderIcon}
                     alt='trash_icon'

@@ -187,6 +187,13 @@ export default function ProductForm(
           setFilterModal={setFilterModal}
           payload={payload}
           setPayload={setPayload}
+          onReset={()=> {
+            setPayload({
+              brand_unique_id: '',
+              name: '',
+              is_active: 0,
+            });
+          }}
           action={() => {
             setFilterModal(false);
             // callListProduct({

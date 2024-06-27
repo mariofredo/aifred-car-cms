@@ -131,6 +131,26 @@ export default function DashboardComparisonList() {
           setFilterModal={setFilterModal}
           payload={payload}
           setPayload={setPayload}
+          onReset={() => {
+            setPayload({
+              keyword: '',
+              order_by_brand: '',
+              order_by_series: '',
+              date_created_start: '',
+              date_created_end: '',
+              is_active: 1,
+            });
+            callListComparison(id, {
+              page: pagination.currentPage,
+              limit: pagination.limit,
+              keyword: '',
+              order_by_brand: '',
+              order_by_series: '',
+              date_created_start: '',
+              date_created_end: '',
+              is_active: 1,
+            });
+          }}
           action={() => {
             setFilterModal(false);
             callListComparison(id, {
