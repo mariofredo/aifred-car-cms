@@ -31,7 +31,7 @@ import {Tag, Brand, Variant, Comparison} from '@/types';
 import Cookie from 'js-cookie';
 import '@/styles/productForm.scss';
 import Link from 'next/link';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 import {FILTER_PRODUCT_DETAIL} from '@/consts';
 interface ProductFormProps {
   type: string;
@@ -519,7 +519,7 @@ export default function ProductForm(
                       {item.is_active ? 'Publish' : 'Draft'}
                     </span>
                   ),
-                  created_at: formatDate(item.created_at),
+                  created_at: formatDateUI(item.created_at),
                   action: (
                     <div className='flex flex-col gap-[10px]'>
                       <Link
@@ -689,7 +689,7 @@ export default function ProductForm(
                       {item.is_active ? 'Publish' : 'Draft'}
                     </span>
                   ),
-                  created_at: formatDate(item.created_at),
+                  created_at: formatDateUI(item.created_at),
                   action: (
                     <div className='flex flex-col gap-[10px]'>
                       <Link

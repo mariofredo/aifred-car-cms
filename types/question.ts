@@ -25,8 +25,12 @@ export interface PayloadSideBar {
 }
 
 export interface Question {
-  company_brand_name: string;
-  batch: number;
+  brand_name: string;
+  created_at: string;
+  is_active: number;
+  question_set_title: string;
+  total_question: number;
+  unique_id: string;
 }
 
 export interface ListQuestionItem {

@@ -29,7 +29,7 @@ import Link from 'next/link';
 import {SingleValue} from 'react-select';
 import Image from 'next/image';
 import {useRouter} from 'next/navigation';
-import {formatDate} from '@/utils';
+import {formatDateUI} from '@/utils';
 interface Payload {
   brand_unique_id: SingleValue<{
     label: string;
@@ -333,7 +333,7 @@ export default function DashboardProduct() {
                     {item.is_active ? 'Publish' : 'Draft'}
                   </span>
                 ),
-                created_at: formatDate(item.created_at),
+                created_at: formatDateUI(item.created_at),
                 action: (
                   <div className='flex flex-col gap-[10px]'>
                     <Link

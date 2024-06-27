@@ -33,8 +33,45 @@ ChartJS.register(
   Legend,
   ChartDataLabels
 );
+import {Range} from 'react-date-range';
 import Cookies from 'js-cookie';
+import {useBrand, useQuestion} from '@/context';
+import {SingleValue} from 'react-select';
+import {Question} from '@/types';
+import {formatDate} from '@/utils';
+interface Payload {
+  brand_unique_id: SingleValue<{
+    label: string;
+    value: string;
+  }>;
+  question_unique_id: SingleValue<{
+    label: string;
+    value: string;
+  }>;
+  date_range_home: Range;
+}
 export default function DashboardHome() {
+  const {getListBrand} = useBrand();
+  const {getQuestionListByBrand} = useQuestion();
+  const [payload, setPayload] = useState<Payload>({
+    brand_unique_id: {
+      label: '',
+      value: '',
+    },
+    question_unique_id: {
+      label: '',
+      value: '',
+    },
+    date_range_home: {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'date_range_home',
+    },
+  });
+  const [brand, setBrand] = useState<{label: string; value: string}[]>([]);
+  const [question, setQuestion] = useState<{label: string; value: string}[]>(
+    []
+  );
   const [summaryRespondent, setSummaryRespondent] = useState({
     total: 0,
     completed: 0,
@@ -63,7 +100,7 @@ export default function DashboardHome() {
     completed: {},
     uncompleted: {},
   });
-  const getSummaryRespondents = useCallback(async () => {
+  const getSummaryRespondents = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-respondents`,
       {
@@ -73,7 +110,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -85,7 +124,7 @@ export default function DashboardHome() {
     return data;
   }, []);
 
-  const getSummaryCompleted = useCallback(async () => {
+  const getSummaryCompleted = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-completed`,
       {
@@ -95,7 +134,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -106,7 +147,7 @@ export default function DashboardHome() {
     setSummaryCompleted(data);
     return data;
   }, []);
-  const getCompletedDuration = useCallback(async () => {
+  const getCompletedDuration = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/completed-duration`,
       {
@@ -116,7 +157,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -128,7 +171,7 @@ export default function DashboardHome() {
     return data;
   }, []);
 
-  const getTotalAnswersPerQuestion = useCallback(async () => {
+  const getTotalAnswersPerQuestion = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/total-answers-per-question`,
       {
@@ -138,7 +181,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -149,7 +194,7 @@ export default function DashboardHome() {
     setTotalAnswersPerQuestion(data);
     return data;
   }, []);
-  const getTotalRespondentsPerPeriod = useCallback(async () => {
+  const getTotalRespondentsPerPeriod = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/total-respondents-per-period`,
       {
@@ -159,7 +204,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -171,28 +218,33 @@ export default function DashboardHome() {
     return data;
   }, []);
 
-  const getSummaryAnsweredQuestionDuration = useCallback(async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-answered-questions-duration`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
-        },
-        body: JSON.stringify({
-          question_unique_id: 'qs2',
-        }),
+  const getSummaryAnsweredQuestionDuration = useCallback(
+    async (payload: Payload) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-answered-questions-duration`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            question_unique_id: payload.question_unique_id?.value,
+            date_start: formatDate(payload.date_range_home.startDate),
+            date_end: formatDate(payload.date_range_home.endDate),
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
       }
-    );
-    if (!response.ok) {
-      throw new Error('Error');
-    }
-    const {data} = await response.json();
-    setSummaryAnsweredQuestionsDuration(data);
-    return data;
-  }, []);
-  const getMostSelectedProduct = useCallback(async () => {
+      const {data} = await response.json();
+      setSummaryAnsweredQuestionsDuration(data);
+      return data;
+    },
+    []
+  );
+  const getMostSelectedProduct = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/most-selected-products`,
       {
@@ -202,7 +254,9 @@ export default function DashboardHome() {
           Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
         },
         body: JSON.stringify({
-          question_unique_id: 'qs2',
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
         }),
       }
     );
@@ -213,47 +267,85 @@ export default function DashboardHome() {
     setMostSelectedProduct(data);
     return data;
   }, []);
+  const callListBrand = useCallback(async () => {
+    const {data} = await getListBrand(); // get brand list
+    setBrand(data.map((item) => ({label: item.name, value: item.unique_id}))); // set brand list
+  }, [brand]);
+
+  const callListQuestion = useCallback(
+    async (brand_id: {label: string; value: string}) => {
+      const {data} = await getQuestionListByBrand(brand_id.value);
+      setQuestion(
+        data.map((item: Question) => ({
+          ...item,
+          label: item.question_set_title,
+          value: item.unique_id,
+        }))
+      );
+    },
+    [question]
+  );
+  useEffect(() => {
+    callListBrand();
+  }, []);
+  useEffect(() => {
+    if (payload.question_unique_id?.value) {
+      getSummaryRespondents(payload);
+      getSummaryCompleted(payload);
+      getTotalAnswersPerQuestion(payload);
+      getSummaryAnsweredQuestionDuration(payload);
+      getMostSelectedProduct(payload);
+      getCompletedDuration(payload);
+      getTotalRespondentsPerPeriod(payload);
+    }
+  }, [payload]);
 
   useEffect(() => {
-    getSummaryRespondents();
-    getSummaryCompleted();
-    getTotalAnswersPerQuestion();
-    getSummaryAnsweredQuestionDuration();
-    getMostSelectedProduct();
-    getCompletedDuration();
-    getTotalRespondentsPerPeriod();
-  }, []);
+    if (payload.brand_unique_id?.value)
+      callListQuestion(payload.brand_unique_id);
+  }, [payload.brand_unique_id]);
   return (
     <div className='dashboard_home_ctr'>
       {/* <HomeHeader /> */}
-      {/* <div className='dashboard_home_filter'>
+      <div className='dashboard_home_filter'>
         <Select
-          options={[
-            {
-              label: 'Mitsubishi',
-              value: 'Mitsubishi',
-            },
-            {
-              label: 'Hyundai',
-              value: 'Hyundai',
-            },
-          ]}
-          value={null}
+          options={brand}
+          value={payload.brand_unique_id}
+          isSearchable
+          isClearable
+          label='BRAND'
+          name='brand_unique_id'
+          onChange={(newValue) => {
+            setPayload((prev) => ({
+              ...prev,
+              brand_unique_id: newValue,
+              question_unique_id: {label: '', value: ''},
+            }));
+          }}
         />
         <Select
-          options={[
-            {
-              label: 'Mitsubishi',
-              value: 'Mitsubishi',
-            },
-            {
-              label: 'Hyundai',
-              value: 'Hyundai',
-            },
-          ]}
-          value={null}
+          options={question}
+          value={payload.question_unique_id}
+          isSearchable
+          isClearable
+          label='QUESTION SET'
+          name='question_unique_id'
+          onChange={(newValue) => {
+            setPayload((prev) => ({...prev, question_unique_id: newValue}));
+          }}
+          isDisabled={!payload.brand_unique_id?.value}
         />
-      </div> */}Payload
+        <DateRange
+          dateRange={[payload.date_range_home]}
+          onChange={(item) => {
+            setPayload((prev) => ({
+              ...prev,
+              date_range_home: item['date_range_home'],
+            }));
+          }}
+          label='PERIOD'
+        />
+      </div>
       <div className='dashboard_box'>
         <div className='grid grid-cols-4 gap-[50px]'>
           <div className='dashboard_info'>
@@ -440,10 +532,7 @@ export default function DashboardHome() {
                     backgroundColor: '#F1CDC6',
                   },
                 ],
-                labels: [
-                  'Total Completed Respondents',
-                  'Total Uncompleted Respondents',
-                ],
+                labels: [...Object.keys(totalRespondentsPerPeriod.completed)],
               }}
               options={{
                 plugins: {
@@ -452,6 +541,11 @@ export default function DashboardHome() {
                     labels: {
                       usePointStyle: true,
                       pointStyle: 'circle',
+                    },
+                  },
+                  datalabels: {
+                    font: {
+                      size: 0,
                     },
                   },
                 },

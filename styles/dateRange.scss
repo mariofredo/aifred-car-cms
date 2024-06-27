@@ -1,0 +1,27 @@
+.date_range_ctr {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  .date_range_label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #3e3e3e;
+  }
+  .date_range_date {
+    cursor: pointer;
+    font-size: 21px;
+    padding: 8px;
+    font-weight: 600;
+    color: #3e3e3e;
+    border-radius: 10px;
+    border: 1.3px solid #b5b5b5;
+  }
+  .date_range_wrapper {
+    position: absolute;
+    right: 0px;
+    top: 100px;
+    z-index: 20;
+  }
+}
