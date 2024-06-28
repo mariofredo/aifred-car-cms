@@ -102,6 +102,7 @@ export default function DashboardProduct() {
     const {data} = await getListBrand();
     setBrand(data.map((item) => ({label: item.name, value: item.unique_id})));
   }, [brand]);
+
   const handleRenderFilter = useMemo(
     () =>
       filterModal && (

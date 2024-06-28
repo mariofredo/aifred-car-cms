@@ -1,13 +1,6 @@
 'use client';
 import {useCallback, useEffect, useState} from 'react';
-import {
-  Card,
-  DateRange,
-  HomeHeader,
-  Select,
-  Table,
-  TableHome,
-} from '@/components';
+import {Card, DateRange, Select, Table, TableHome} from '@/components';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -39,6 +32,8 @@ import {useBrand, useQuestion} from '@/context';
 import {SingleValue} from 'react-select';
 import {Question} from '@/types';
 import {formatDate} from '@/utils';
+import Image from 'next/image';
+import {ReturnIcon, SliderIcon} from '@/public';
 interface Payload {
   brand_unique_id: SingleValue<{
     label: string;
@@ -53,6 +48,7 @@ interface Payload {
 export default function DashboardHome() {
   const {getListBrand} = useBrand();
   const {getQuestionListByBrand} = useQuestion();
+  const [mostSubmissionBySales, setMostSubmissionBySales] = useState([]);
   const [payload, setPayload] = useState<Payload>({
     brand_unique_id: {
       label: '',
@@ -285,6 +281,33 @@ export default function DashboardHome() {
     },
     [question]
   );
+  const postMostSubmissionBySales = useCallback(async (payload: Payload) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/dashboard/most-submission-by-sales`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            question_unique_id: payload.question_unique_id?.value,
+            date_start: formatDate(payload.date_range_home.startDate),
+            date_end: formatDate(payload.date_range_home.endDate),
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const {data} = await response.json();
+      setMostSubmissionBySales(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   useEffect(() => {
     callListBrand();
   }, []);
@@ -297,6 +320,7 @@ export default function DashboardHome() {
       getMostSelectedProduct(payload);
       getCompletedDuration(payload);
       getTotalRespondentsPerPeriod(payload);
+      postMostSubmissionBySales(payload);
     }
   }, [payload]);
 
@@ -607,6 +631,35 @@ export default function DashboardHome() {
               })
             )}
             tableKey={['name', 'fastest', 'average', 'slowest']}
+          />
+        </div>
+      </div>
+      <div className='dashboard_box'>
+        <div className='dashboard_info'>
+          <p className='dashboard_text_title'>Most Submission by Sales</p>
+          <Table
+            listTitle={[
+              'Rank',
+              'User Name',
+              'Name',
+              'Email',
+              'Phone',
+              'Status',
+              'Total Submission',
+            ]}
+            data={mostSubmissionBySales}
+            listKey={[
+              'brand_name',
+              'series_name',
+              'total_variant',
+              'is_active',
+              'created_at',
+              'action',
+              'detail',
+            ]}
+            type={'product'}
+            subType='product'
+            id={''}
           />
         </div>
       </div>
