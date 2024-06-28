@@ -551,11 +551,11 @@ export default function ProductForm(
                     <div className='flex justify-center'>
                       <Image
                         src={PencilIcon}
-                        className='w-[20px] h-[20px]'
+                        className='w-[20px] h-[20px] cursor-pointer'
                         alt='return_icon'
                         onClick={() =>
                           router.push(
-                            `/dashboard/variant/${id}/${item.object_id}`
+                            `/dashboard/variant/${id}/edit/${item.object_id}`
                           )
                         }
                       />
@@ -573,7 +573,6 @@ export default function ProductForm(
                   ),
                 }))}
                 type={'product'}
-                id={''}
               />
             </div>
           </>
@@ -634,7 +633,7 @@ export default function ProductForm(
             <div className='col-span-3 overflow-scroll'>
               <Table
                 listTitle={[
-                  'Main Comparison',
+                  // 'Main Comparison',
                   'Brand',
                   'Name',
                   'Status',
@@ -651,7 +650,7 @@ export default function ProductForm(
                     <Image
                       src={SliderIcon}
                       alt='trash_icon'
-                      className='w-[20px] h-[20px]'
+                      className='w-[20px] h-[20px] cursor-pointer'
                       onClick={() => {
                         setFilterModal((prev) => !prev);
                         setFilterType('comparison');
@@ -720,7 +719,7 @@ export default function ProductForm(
                     <div className='flex justify-center'>
                       <Image
                         src={PencilIcon}
-                        className='w-[20px] h-[20px]'
+                        className='w-[20px] h-[20px] cursor-pointer'
                         alt='return_icon'
                         onClick={() =>
                           router.push(
@@ -734,7 +733,7 @@ export default function ProductForm(
                     <div className='flex justify-center'>
                       <Image
                         src={TrashIcon}
-                        className='w-[20px] h-[20px]'
+                        className='w-[20px] h-[20px] cursor-pointer'
                         alt='trash_icon'
                         onClick={() => callDeleteComparison(id, item.object_id)}
                       />
@@ -742,7 +741,6 @@ export default function ProductForm(
                   ),
                 }))}
                 type={'product'}
-                id={''}
               />
             </div>
           </>

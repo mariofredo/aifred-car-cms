@@ -385,7 +385,6 @@ export default function DashboardComparisonList() {
                 ]}
                 type={'product'}
                 subType={'comparison'}
-                id={id}
               />
             )}
           </div>

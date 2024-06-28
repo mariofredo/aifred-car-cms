@@ -253,12 +253,67 @@
           background: #fff;
           padding: 10px;
           display: flex;
-          flex-direction: column;
-
+          justify-content: space-between;
+          align-items: center;
           .modal_form_input {
             display: flex;
             flex-direction: row;
             align-items: center;
+            position: relative;
+            .modal_input_checkbox {
+              width: 100%;
+              height: 100%;
+              opacity: 0;
+              position: absolute;
+              top: 0;
+              left: 0;
+            }
+            .modal_checkbox_icon {
+              width: 15px;
+              height: 15px;
+            }
+          }
+          .modal_item_input {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            .modal_checkbox_icon {
+              width: 15px;
+              height: 15px;
+              cursor: pointer;
+            }
+            .item_input_edit_wrapper {
+              position: relative;
+              width: calc(100% - 10px);
+              .item_input_edit {
+                width: 100%;
+                padding: 10px 15px;
+                width: 100%;
+                border-radius: 10px;
+                border: 2px solid #b5b5b5;
+              }
+              .item_input_edit_confirm {
+                position: absolute;
+                right: 40px;
+                top: 50%;
+                width: 16.5px;
+                height: 16.5px;
+                transform: translateY(-50%);
+                cursor: pointer;
+              }
+              .item_input_edit_cancel {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                width: 20px;
+                height: 20px;
+                transform: translateY(-50%);
+                cursor: pointer;
+              }
+            }
+          }
+          .modal_form_btn {
           }
         }
       }

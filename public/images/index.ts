@@ -12,16 +12,17 @@ export {default as PencilIcon} from './pencil_icon.png';
 export {default as NoImage} from './no_image.png';
 export {default as DummyBanner} from './dummy_banner.png';
 export {default as DummyProfileIcon} from './dummy_profile_icon.png';
+
 export {default as UserIcon} from './user_icon.svg';
 export {default as ContactIcon} from './contact_icon.svg';
 export {default as MailIcon} from './mail_icon.svg';
-
 export {default as ChevronLeftBlack} from './chevron_left_black.svg';
 export {default as ChevronLeftGrey} from './chevron_left_grey.svg';
 export {default as ChevronRightBlack} from './chevron_right_black.svg';
 export {default as ChevronRightGrey} from './chevron_right_grey.svg';
 export {default as TrashIcon} from './trash_icon.svg';
 export {default as FilterChevronUp} from './filter_modal_chevron_up.svg';
-
+export {default as UncheckIcon} from './uncheck_icon.svg';
+export {default as CheckIcon} from './check_icon.svg';
 // export {default as EyeShow} from './eye_show.png';
 // export {default as EyeHidden} from './eye_hidden.png';

@@ -183,7 +183,12 @@ export default function BrandForm({
                       <FaCheck
                         color='#06D001'
                         className='item_input_edit_confirm'
-                        onClick={() => callUpdateBrand(payload)}
+                        onClick={() =>
+                          callUpdateBrand({
+                            ...payload,
+                            unique_id: item.unique_id,
+                          })
+                        }
                         height={20}
                         width={20}
                       />
@@ -232,7 +237,7 @@ export default function BrandForm({
                         src={TrashIcon}
                         className='w-[15px] h-[15px] cursor-pointer'
                         alt='trash_icon'
-                        onClick={() => {}}
+                        onClick={() => callDeleteBrand(item.unique_id)}
                       />
                     </div>
                   </>

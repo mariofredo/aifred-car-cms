@@ -44,7 +44,6 @@ export function SpecParamContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-
   const token = Cookies.get('token_aifred_neo_cms');
   const [tagSuggestion, setTagSuggestion] = useState<Tag[]>([]);
   const [specs, setSpecs] = useState<Spec[]>([]);
@@ -75,7 +74,7 @@ export function SpecParamContextProvider({
   };
   const createSpec = async (payload: {name: string}) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/spec-param/create`,
+      `${process.env.NEXT_PUBLIC_API_URL}/spec/store`,
       {
         method: 'POST',
         headers: {
@@ -87,6 +86,26 @@ export function SpecParamContextProvider({
     );
     if (response.ok) {
       const data = response.json();
+    }
+  };
+  const updateSpec = async (payload: {name: string; id: number}) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/spec/update`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (response.ok) {
+        const data = response.json();
+      }
+    } catch (error) {
+    } finally {
     }
   };
   const getListTag = async () => {
