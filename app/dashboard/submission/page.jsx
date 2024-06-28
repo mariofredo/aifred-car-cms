@@ -4,6 +4,7 @@ import {Select, DefaultContainer, Table, TablePagination} from '@/components';
 import Cookies from 'js-cookie';
 import '@/styles/submission.scss';
 import Link from 'next/link';
+import {formatCompleteDate} from '@/utils';
 
 export default function page() {
   const [pagination, setPagination] = useState({
@@ -132,7 +133,7 @@ export default function page() {
               data={submissions.map((submission) => ({
                 unique_id: submission.unique_id,
                 brand_name: submission.brand_name,
-                created_at: submission.created_at,
+                created_at: formatCompleteDate(submission.created_at),
                 duration: submission.duration,
                 complete_status: handleRenderCompleteStatus(
                   submission.complete_status

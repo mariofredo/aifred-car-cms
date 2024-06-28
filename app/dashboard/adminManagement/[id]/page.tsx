@@ -1,6 +1,7 @@
 'use client';
-import {ChangeEvent, useCallback, useMemo, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {ChangeEvent, useCallback, useEffect, useMemo, useState} from 'react';
+import {useParams, useRouter} from 'next/navigation';
+import Cookies from 'js-cookie';
 import {
   Button,
   DefaultContainer,
@@ -11,13 +12,19 @@ import '@/styles/userManagement.scss';
 
 export default function page() {
   const router = useRouter();
+  const {id} = useParams();
   const [modal, setModal] = useState(false);
   const [payload, setPayload] = useState({
     name: '',
-    phone_number: '',
+    phone: '',
     username: '',
     email: '',
     is_active: 1,
+  });
+  const [changePassword, setChangePassword] = useState({
+    old: '',
+    new: '',
+    confirm: '',
   });
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -27,22 +34,116 @@ export default function page() {
     [payload]
   );
 
+  const getUserData = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}?type=admin`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const {data} = await response.json();
+      setPayload(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [id]);
+
+  const handleEditUser = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/update`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            type: 'admin',
+            unique_id: id,
+            ...payload,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const {message} = await response.json();
+        throw new Error(message);
+      }
+      const {code} = await response.json();
+      if (code === 200) {
+        router.push('/dashboard/adminManagement');
+      }
+    } catch (error) {
+      alert(error);
+    }
+  }, [id, payload]);
+
+  const handleChangePassword = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/change-password`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify({
+            type: 'admin',
+            unique_id: id,
+            password_old: changePassword.old,
+            password: changePassword.new,
+            password_confirmation: changePassword.confirm,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const {message} = await response.json();
+        throw new Error(message);
+      }
+      const {code} = await response.json();
+      if (code === 200) {
+        setModal(false);
+      }
+    } catch (error) {
+      alert(error);
+    }
+  }, [id, changePassword]);
+
   const handleRenderModal = useMemo(
     () =>
       modal && (
         <ModalChangePassword
-          currentPassword={''}
-          newPassword={''}
-          confirmNewPassword={''}
-          onChangeCurrentPassword={() => {}}
-          onChangeNewPassword={() => {}}
-          onChangeConfirmNewPassword={() => {}}
+          currentPassword={changePassword.old}
+          newPassword={changePassword.new}
+          confirmNewPassword={changePassword.confirm}
+          onChangeCurrentPassword={(e) =>
+            setChangePassword({...changePassword, old: e.target.value})
+          }
+          onChangeNewPassword={(e) =>
+            setChangePassword({...changePassword, new: e.target.value})
+          }
+          onChangeConfirmNewPassword={(e) =>
+            setChangePassword({...changePassword, confirm: e.target.value})
+          }
           onCancel={() => setModal(false)}
-          onDone={() => {}}
+          onDone={handleChangePassword}
         />
       ),
-    [modal]
+    [modal, changePassword]
   );
+
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   return (
     <DefaultContainer title='Edit Admin Details'>
@@ -64,11 +165,11 @@ export default function page() {
           <div>
             <Input
               label='PHONE NUMBER'
-              id='phone_number'
+              id='phone'
               type='text'
-              name='phone_number'
+              name='phone'
               onChange={handleChange}
-              value={payload.phone_number}
+              value={payload.phone}
               placeholder='Enter phone number'
             />
           </div>
@@ -80,13 +181,26 @@ export default function page() {
         <div className='flex flex-col gap-[30px] mt-[50px]'>
           <div>
             <Input
+              label='USERNAME'
+              id='username'
+              type='text'
+              name='username'
+              onChange={() => {}}
+              value={payload.username}
+              placeholder='Enter username'
+              readOnly
+            />
+          </div>
+          <div>
+            <Input
               label='E-MAIL ADDRESS'
               id='email'
               type='text'
               name='email'
-              onChange={handleChange}
+              onChange={() => {}}
               value={payload.email}
               placeholder='Enter email'
+              readOnly
             />
           </div>
         </div>
@@ -117,13 +231,13 @@ export default function page() {
         <div className='flex gap-[20px] mt-[30px] w-[400px]'>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-            onClick={() => router.push('/dashboard/userManagement')}
+            onClick={() => router.push('/dashboard/adminManagement')}
           >
             Cancel
           </button>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-            onClick={() => {}}
+            onClick={handleEditUser}
           >
             Done
           </button>

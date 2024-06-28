@@ -36,6 +36,9 @@ export default function LoginForm() {
           Cookie.set('username_aifred_neo_cms', data.username, {
             expires: new Date(data.expired_at),
           });
+          Cookie.set('unique_id_aifred_neo_cms', data.unique_id, {
+            expires: new Date(data.expired_at),
+          });
           router.push('/dashboard');
         }
       } else {

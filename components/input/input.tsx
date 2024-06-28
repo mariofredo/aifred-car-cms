@@ -8,6 +8,7 @@ interface InputProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   id: string;
   label?: string;
+  readOnly?: boolean;
 }
 export default function Input({
   type = 'text',
@@ -17,6 +18,7 @@ export default function Input({
   onChange,
   id,
   label,
+  readOnly = false,
 }: InputProps) {
   return (
     <div className='input_ctrs'>
@@ -28,6 +30,11 @@ export default function Input({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        readOnly={readOnly}
+        style={{
+          backgroundColor: `${readOnly ? '#DFDFDF' : '#fff'}`,
+          cursor: `${readOnly ? 'not-allowed' : 'text'}`,
+        }}
       />
     </div>
   );

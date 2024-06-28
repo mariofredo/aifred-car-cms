@@ -37,7 +37,7 @@ export default function page() {
   const getUserData = useCallback(async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}?type=user`,
         {
           method: 'GET',
           headers: {
@@ -67,6 +67,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
+            type: 'user',
             unique_id: id,
             ...payload,
           }),
@@ -96,6 +97,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
+            type: 'user',
             unique_id: id,
             password_old: changePassword.old,
             password: changePassword.new,
@@ -179,13 +181,26 @@ export default function page() {
         <div className='flex flex-col gap-[30px] mt-[50px]'>
           <div>
             <Input
+              label='USERNAME'
+              id='username'
+              type='text'
+              name='username'
+              onChange={() => {}}
+              value={payload.username}
+              placeholder='Enter username'
+              readOnly
+            />
+          </div>
+          <div>
+            <Input
               label='E-MAIL ADDRESS'
               id='email'
               type='text'
               name='email'
-              onChange={handleChange}
+              onChange={() => {}}
               value={payload.email}
               placeholder='Enter email'
+              readOnly
             />
           </div>
         </div>

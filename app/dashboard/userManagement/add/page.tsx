@@ -15,6 +15,7 @@ export default function page() {
     password: '',
     password_confirmation: '',
     is_active: 1,
+    type: 'user',
   });
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {

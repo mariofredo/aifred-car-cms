@@ -60,7 +60,7 @@ export default function page() {
           }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/user-management?page=${page}&${query}limit=${limit}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/user-management?page=${page}&${query}limit=${limit}&type=admin`,
           {
             method: 'GET',
             headers: {
@@ -92,6 +92,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
+            type: 'admin',
             unique_id: object_id,
           }),
         }
@@ -242,7 +243,7 @@ export default function page() {
       <div>
         <div className='dc_table_ctr'>
           <div className='dc_action_ctr'>
-            <Link href={'/dashboard/userManagement/add'}>
+            <Link href={'/dashboard/adminManagement/add'}>
               <Button
                 bgColor='#DFDFDF'
                 text='Add New'
@@ -322,7 +323,7 @@ export default function page() {
                       alt='return_icon'
                       onClick={() =>
                         router.push(
-                          `/dashboard/userManagement/${item.unique_id}`
+                          `/dashboard/adminManagement/${item.unique_id}`
                         )
                       }
                     />

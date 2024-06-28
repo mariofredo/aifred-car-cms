@@ -1,6 +1,7 @@
 'use client';
 import {ChangeEvent, useCallback, useState} from 'react';
 import {useRouter} from 'next/navigation';
+import Cookies from 'js-cookie';
 import {DefaultContainer, Input, InputPassword} from '@/components';
 import '@/styles/userManagement.scss';
 
@@ -8,10 +9,13 @@ export default function page() {
   const router = useRouter();
   const [payload, setPayload] = useState({
     name: '',
-    phone_number: '',
+    phone: '',
     username: '',
     email: '',
+    password: '',
+    password_confirmation: '',
     is_active: 1,
+    type: 'admin',
   });
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -20,6 +24,33 @@ export default function page() {
     },
     [payload]
   );
+
+  const handleAddNewUser = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/store`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!response.ok) {
+        const {message} = await response.json();
+        throw new Error(message);
+      }
+      const {code} = await response.json();
+      if (code === 200) {
+        router.push('/dashboard/adminManagement');
+      }
+    } catch (error) {
+      alert(error);
+    }
+  }, [payload]);
+
   return (
     <DefaultContainer title='Add New Admin'>
       <div className='mb-[30px]'>
@@ -39,11 +70,11 @@ export default function page() {
           <div>
             <Input
               label='PHONE NUMBER'
-              id='phone_number'
+              id='phone'
               type='text'
-              name='phone_number'
+              name='phone'
               onChange={handleChange}
-              value={payload.phone_number}
+              value={payload.phone}
               placeholder='Enter phone number'
             />
           </div>
@@ -87,17 +118,24 @@ export default function page() {
           <div>
             <InputPassword
               label={'NEW PASSWORD'}
-              value={'AIJSDBCIASDBCIA'}
-              name={''}
-              onChange={() => {}}
+              value={payload.password}
+              name={'password'}
+              onChange={(e) =>
+                setPayload({...payload, password: e.target.value})
+              }
             />
           </div>
           <div>
             <InputPassword
               label={'CONFIRM NEW PASSWORD'}
-              value={'ACABSDHCBAISDB'}
-              name={''}
-              onChange={() => {}}
+              value={payload.password_confirmation}
+              name={'password_confirmation'}
+              onChange={(e) =>
+                setPayload({
+                  ...payload,
+                  password_confirmation: e.target.value,
+                })
+              }
             />
           </div>
         </div>
@@ -119,13 +157,19 @@ export default function page() {
         <div className='flex gap-[20px] mt-[30px] w-[400px]'>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-            onClick={() => router.push('/dashboard/userManagement')}
+            onClick={() => router.push('/dashboard/adminManagement')}
           >
             Cancel
           </button>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
-            onClick={() => {}}
+            onClick={handleAddNewUser}
+            disabled={Object.values(payload).includes('')}
+            style={{
+              cursor: Object.values(payload).includes('')
+                ? 'not-allowed'
+                : 'pointer',
+            }}
           >
             Done
           </button>

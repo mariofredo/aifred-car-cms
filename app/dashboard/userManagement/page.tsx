@@ -60,7 +60,7 @@ export default function page() {
           }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/user-management?page=${page}&${query}limit=${limit}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/user-management?page=${page}&${query}limit=${limit}&type=user`,
           {
             method: 'GET',
             headers: {
@@ -92,6 +92,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
+            type: 'user',
             unique_id: object_id,
           }),
         }
