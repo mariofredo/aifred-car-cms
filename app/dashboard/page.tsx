@@ -275,6 +275,13 @@ export default function DashboardHome() {
   const callListQuestion = useCallback(
     async (brand_id: {label: string; value: string}) => {
       const {data} = await getQuestionListByBrand(brand_id.value);
+      setPayload((prev) => ({
+        ...prev,
+        question_unique_id: {
+          label: data[0].question_set_title,
+          value: data[0].unique_id,
+        },
+      }));
       setQuestion(
         data.map((item: Question) => ({
           ...item,

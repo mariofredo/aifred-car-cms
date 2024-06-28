@@ -660,7 +660,6 @@ export default function ProductForm(
                   </div>,
                 ]}
                 listKey={[
-                  'is_primary',
                   'brand',
                   'name',
                   'is_active',
