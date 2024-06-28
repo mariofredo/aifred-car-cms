@@ -1,6 +1,6 @@
 'use client';
 import {useState, useEffect, useCallback} from 'react';
-import {Select, DefaultContainer, Table, TablePagination} from '@/components';
+import {DefaultContainer, Table, TablePagination} from '@/components';
 import Cookies from 'js-cookie';
 import '@/styles/submission.scss';
 import Link from 'next/link';
@@ -172,11 +172,13 @@ export default function page() {
             />
           )}
         </div>
-        <TablePagination
-          pagination={pagination}
-          setPagination={setPagination}
-          limit={pagination.limit}
-        />
+        {!loading && (
+          <TablePagination
+            pagination={pagination}
+            setPagination={setPagination}
+            limit={pagination.limit}
+          />
+        )}
       </div>
     </div>
   );

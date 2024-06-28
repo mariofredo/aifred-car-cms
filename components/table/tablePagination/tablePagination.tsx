@@ -76,7 +76,9 @@ export default function TablePaginationSupport({
       <button
         className='table_pagination_chevron_right'
         onClick={() => handlePageChange(pagination.currentPage + 1)}
-        disabled={pagination.currentPage === pagination.totalCount % limit}
+        disabled={
+          pagination.currentPage === Math.ceil(pagination.totalCount / limit)
+        }
       >
         <Image src={ChevronRightBlack} alt='chevron right' />
       </button>

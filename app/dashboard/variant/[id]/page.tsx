@@ -47,7 +47,7 @@ export default function page() {
     totalCount: 0,
   });
   const {filterModal, setFilterModal} = useModal();
-
+  const [loading, setLoading] = useState(true);
   const {getListVariant, deleteVariant} = useVariant();
   const [variant, setVariant] = useState<Variant[]>([]);
   const [payload, setPayload] = useState<Payload>({
@@ -59,12 +59,14 @@ export default function page() {
   });
   const callListVariant = useCallback(
     async (id: string, payload: any) => {
+      setLoading(true);
       const {data, total_data} = await getListVariant(id, payload);
       setVariant(data);
       setPagination((prev) => ({
         ...prev,
         totalCount: total_data,
       }));
+      setLoading(false);
     },
     [variant, pagination, payload]
   );
@@ -230,119 +232,125 @@ export default function page() {
             </form>
           </div>
           <div className='dc_table'>
-            <Table
-              listTitle={[
-                'Name',
-                'Status',
-                'Date Created',
-                'Image',
-                <div className='flex justify-center'>
-                  <Image
-                    src={ReturnIcon}
-                    className='w-[20px] h-[15px]'
-                    alt='return_icon'
-                  />
-                </div>,
-                <div className='flex justify-center'>
-                  <Image
-                    src={SliderIcon}
-                    alt='trash_icon'
-                    className='w-[20px] h-[20px]'
-                    onClick={() => setFilterModal((prev) => !prev)}
-                  />
-                </div>,
-              ]}
-              data={variant.map((item) => ({
-                ...item,
-                is_active: (
-                  <span
-                    className={`table_status ${
-                      item.is_active === 1 ? 'publish' : 'draft'
-                    }`}
-                  >
-                    {item.is_active ? 'Publish' : 'Draft'}
-                  </span>
-                ),
-                image: (
-                  <Image
-                    src={item.image || NoImage}
-                    width={150}
-                    height={100}
-                    alt={`gambar`}
-                    className='rounded-md'
-                  />
-                ),
-                created_at: formatDateUI(item.created_at),
-                action: (
-                  <div className='flex flex-col gap-[10px]'>
-                    <Link
-                      href={`/dashboard/variant/${item.object_id}`}
-                      className='w-full'
-                    >
-                      <Button
-                        borderRadius='5px'
-                        bgColor='rgba(101, 57, 228, 0.58)'
-                        color='#fff'
-                        text='Variant List'
-                        width='100%'
-                        padding='3.5px'
-                      />
-                    </Link>
-                    <Link href={`/dashboard/comparison/${item.object_id}`}>
-                      <Button
-                        borderRadius='5px'
-                        bgColor='rgba(228, 57, 57, 0.58)'
-                        color='#fff'
-                        text='Comparison List'
-                        width='100%'
-                        padding='3.5px'
-                      />
-                    </Link>
-                  </div>
-                ),
-                detail: (
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <Table
+                listTitle={[
+                  'Name',
+                  'Status',
+                  'Date Created',
+                  'Image',
                   <div className='flex justify-center'>
                     <Image
-                      src={PencilIcon}
-                      className='w-[20px] h-[20px] cursor-pointer'
+                      src={ReturnIcon}
+                      className='w-[20px] h-[15px]'
                       alt='return_icon'
-                      onClick={() =>
-                        router.push(
-                          `/dashboard/variant/${id}/edit/${item.object_id}`
-                        )
-                      }
                     />
-                  </div>
-                ),
-                delete: (
+                  </div>,
                   <div className='flex justify-center'>
                     <Image
-                      src={TrashIcon}
-                      className='w-[20px] h-[20px] cursor-pointer'
+                      src={SliderIcon}
                       alt='trash_icon'
-                      onClick={() => callDeleteVariant(id, item.object_id)}
+                      className='w-[20px] h-[20px]'
+                      onClick={() => setFilterModal((prev) => !prev)}
                     />
-                  </div>
-                ),
-              }))}
-              listKey={[
-                'name',
-                'is_active',
-                'created_at',
-                'image',
-                'detail',
-                'delete',
-              ]}
-              type={'product'}
-              subType='variant'
-              id={id}
-            />
+                  </div>,
+                ]}
+                data={variant.map((item) => ({
+                  ...item,
+                  is_active: (
+                    <span
+                      className={`table_status ${
+                        item.is_active === 1 ? 'publish' : 'draft'
+                      }`}
+                    >
+                      {item.is_active ? 'Publish' : 'Draft'}
+                    </span>
+                  ),
+                  image: (
+                    <Image
+                      src={item.image || NoImage}
+                      width={150}
+                      height={100}
+                      alt={`gambar`}
+                      className='rounded-md'
+                    />
+                  ),
+                  created_at: formatDateUI(item.created_at),
+                  action: (
+                    <div className='flex flex-col gap-[10px]'>
+                      <Link
+                        href={`/dashboard/variant/${item.object_id}`}
+                        className='w-full'
+                      >
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(101, 57, 228, 0.58)'
+                          color='#fff'
+                          text='Variant List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                      <Link href={`/dashboard/comparison/${item.object_id}`}>
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(228, 57, 57, 0.58)'
+                          color='#fff'
+                          text='Comparison List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                    </div>
+                  ),
+                  detail: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={PencilIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='return_icon'
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/variant/${id}/edit/${item.object_id}`
+                          )
+                        }
+                      />
+                    </div>
+                  ),
+                  delete: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={TrashIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='trash_icon'
+                        onClick={() => callDeleteVariant(id, item.object_id)}
+                      />
+                    </div>
+                  ),
+                }))}
+                listKey={[
+                  'name',
+                  'is_active',
+                  'created_at',
+                  'image',
+                  'detail',
+                  'delete',
+                ]}
+                type={'product'}
+                subType='variant'
+                id={id}
+              />
+            )}
           </div>
-          <TablePagination
-            pagination={pagination}
-            setPagination={setPagination}
-            limit={pagination.limit}
-          />
+          {!loading && (
+            <TablePagination
+              pagination={pagination}
+              setPagination={setPagination}
+              limit={pagination.limit}
+            />
+          )}
         </div>
       </DefaultContainer>
     </div>

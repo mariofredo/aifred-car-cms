@@ -42,6 +42,7 @@ export default function page() {
     date_created_end: '',
   });
   const {filterModal, setFilterModal} = useModal();
+  const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalCount: 0,
@@ -50,6 +51,7 @@ export default function page() {
 
   const getUserData = useCallback(
     async (page: number, limit: number, payload: any = {}) => {
+      setLoading(true);
       try {
         let query = ``;
         if (Object.keys(payload).length > 0)
@@ -72,8 +74,13 @@ export default function page() {
         if (!response.ok) {
           throw new Error('Error');
         }
-        const {data} = await response.json();
+        const {data, total_data} = await response.json();
         setUser(data);
+        setPagination((prev) => ({
+          ...prev,
+          totalCount: total_data,
+        }));
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -127,7 +134,7 @@ export default function page() {
       date_created_start: payload.date_created_start,
       date_created_end: payload.date_created_end,
     });
-  }, [pagination]);
+  }, [pagination.currentPage]);
 
   const handleRenderFilter = useMemo(
     () =>
@@ -279,87 +286,93 @@ export default function page() {
             </form>
           </div>
           <div className='dc_table'>
-            <Table
-              listTitle={[
-                'User Name',
-                'Name',
-                'Email',
-                'Phone',
-                'Status',
-                'Data Created',
-                <div className='flex justify-center' key='return'>
-                  <Image
-                    src={ReturnIcon}
-                    className='w-[20px] h-[15px]'
-                    alt='return_icon'
-                  />
-                </div>,
-                <div className='flex justify-center' key='delete'>
-                  <Image
-                    src={SliderIcon}
-                    alt='trash_icon'
-                    className='w-[20px] h-[20px]'
-                    onClick={() => setFilterModal((prev) => !prev)}
-                  />
-                </div>,
-              ]}
-              data={user.map((item: any) => ({
-                ...item,
-                is_active: (
-                  <span
-                    className={`table_status ${
-                      item.is_active === 1 ? 'publish' : 'draft'
-                    }`}
-                  >
-                    {item.is_active ? 'Active' : 'Inactive'}
-                  </span>
-                ),
-                created_at: formatDateUI(item.created_at),
-                detail: (
-                  <div className='flex justify-center'>
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <Table
+                listTitle={[
+                  'User Name',
+                  'Name',
+                  'Email',
+                  'Phone',
+                  'Status',
+                  'Data Created',
+                  <div className='flex justify-center' key='return'>
                     <Image
-                      src={PencilIcon}
-                      className='w-[20px] h-[20px] cursor-pointer'
+                      src={ReturnIcon}
+                      className='w-[20px] h-[15px]'
                       alt='return_icon'
-                      onClick={() =>
-                        router.push(
-                          `/dashboard/userManagement/${item.unique_id}`
-                        )
-                      }
                     />
-                  </div>
-                ),
-                delete: (
-                  <div className='flex justify-center'>
+                  </div>,
+                  <div className='flex justify-center' key='delete'>
                     <Image
-                      src={TrashIcon}
-                      className='w-[20px] h-[20px] cursor-pointer'
+                      src={SliderIcon}
                       alt='trash_icon'
-                      onClick={() => deleteUser(item.unique_id)}
+                      className='w-[20px] h-[20px]'
+                      onClick={() => setFilterModal((prev) => !prev)}
                     />
-                  </div>
-                ),
-              }))}
-              listKey={[
-                'username',
-                'name',
-                'email',
-                'phone',
-                'is_active',
-                'created_at',
-                'detail',
-                'delete',
-              ]}
-              type={'product'}
-              subType='product'
-              id={''}
-            />
+                  </div>,
+                ]}
+                data={user.map((item: any) => ({
+                  ...item,
+                  is_active: (
+                    <span
+                      className={`table_status ${
+                        item.is_active === 1 ? 'publish' : 'draft'
+                      }`}
+                    >
+                      {item.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  ),
+                  created_at: formatDateUI(item.created_at),
+                  detail: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={PencilIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='return_icon'
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/userManagement/${item.unique_id}`
+                          )
+                        }
+                      />
+                    </div>
+                  ),
+                  delete: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={TrashIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='trash_icon'
+                        onClick={() => deleteUser(item.unique_id)}
+                      />
+                    </div>
+                  ),
+                }))}
+                listKey={[
+                  'username',
+                  'name',
+                  'email',
+                  'phone',
+                  'is_active',
+                  'created_at',
+                  'detail',
+                  'delete',
+                ]}
+                type={'product'}
+                subType='product'
+                id={''}
+              />
+            )}
           </div>
-          <TablePagination
-            limit={pagination.limit}
-            pagination={pagination}
-            setPagination={setPagination}
-          />
+          {!loading && (
+            <TablePagination
+              limit={pagination.limit}
+              pagination={pagination}
+              setPagination={setPagination}
+            />
+          )}
         </div>
       </div>
     </DefaultContainer>
