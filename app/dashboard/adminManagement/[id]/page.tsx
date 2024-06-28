@@ -37,7 +37,7 @@ export default function page() {
   const getUserData = useCallback(async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}?type=user`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}?type=admin`,
         {
           method: 'GET',
           headers: {
@@ -67,7 +67,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
-            type: 'user',
+            type: 'admin',
             unique_id: id,
             ...payload,
           }),
@@ -79,7 +79,7 @@ export default function page() {
       }
       const {code} = await response.json();
       if (code === 200) {
-        router.push('/dashboard/userManagement');
+        router.push('/dashboard/adminManagement');
       }
     } catch (error) {
       alert(error);
@@ -97,7 +97,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
-            type: 'user',
+            type: 'admin',
             unique_id: id,
             password_old: changePassword.old,
             password: changePassword.new,
@@ -146,7 +146,7 @@ export default function page() {
   }, []);
 
   return (
-    <DefaultContainer title='Edit User Details'>
+    <DefaultContainer title='Edit Admin Details'>
       {handleRenderModal}
       <div className='mb-[30px]'>
         <p className='title mt-[30px]'>Personal Information</p>
@@ -231,7 +231,7 @@ export default function page() {
         <div className='flex gap-[20px] mt-[30px] w-[400px]'>
           <button
             className='w-[50%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf]'
-            onClick={() => router.push('/dashboard/userManagement')}
+            onClick={() => router.push('/dashboard/adminManagement')}
           >
             Cancel
           </button>

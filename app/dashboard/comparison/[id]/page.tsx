@@ -47,6 +47,7 @@ export default function DashboardComparisonList() {
   const {getListComparison, deleteComparison, updateMainComparison} =
     useComparison();
   const {filterModal, setFilterModal} = useModal();
+  const [loading, setLoading] = useState(true);
   const [comparison, setComparison] = useState<Comparison[]>([]);
   const [pagination, setPagination] = useState({
     limit: 10,
@@ -64,12 +65,14 @@ export default function DashboardComparisonList() {
 
   const callListComparison = useCallback(
     async (id: string, payload: any) => {
+      setLoading(true);
       const {data, total_data} = await getListComparison(id, payload);
       setComparison(data);
       setPagination((prev) => ({
         ...prev,
         totalCount: total_data,
       }));
+      setLoading(false);
     },
     [comparison, pagination, payload]
   );
@@ -251,142 +254,148 @@ export default function DashboardComparisonList() {
             </form>
           </div>
           <div className='dc_table'>
-            <Table
-              listTitle={[
-                // 'Main Comparison',
-                'Brand',
-                'Name',
-                'Status',
-                'Date Created',
-                'Image',
-                <div className='flex justify-center'>
-                  <Image
-                    src={ReturnIcon}
-                    className='w-[20px] h-[15px]'
-                    alt='return_icon'
-                  />
-                </div>,
-                <div className='flex justify-center'>
-                  <Image
-                    src={SliderIcon}
-                    alt='trash_icon'
-                    className='w-[20px] h-[20px]'
-                    onClick={() => setFilterModal((prev) => !prev)}
-                  />
-                </div>,
-              ]}
-              data={comparison.map((item) => ({
-                ...item,
-                // is_primary: (
-                //   <div className='flex justify-center'>
-                //     {item.is_primary ? (
-                //       <FaStar
-                //         fill='#FFD101'
-                //         color='#FFD101'
-                //         className='w-[20px] h-[20px]'
-                //       />
-                //     ) : (
-                //       <FaRegStar
-                //         fill='#FFD101'
-                //         className='w-[20px] h-[20px]'
-                //         onClick={() =>
-                //           callUpdateMainComparison(id, item.object_id)
-                //         }
-                //       />
-                //     )}
-                //   </div>
-                // ),
-                image: (
-                  <Image
-                    src={item.image || NoImage}
-                    width={150}
-                    height={100}
-                    alt={`gambar`}
-                    className='rounded-md'
-                  />
-                ),
-                is_active: (
-                  <span
-                    className={`table_status ${
-                      item.is_active === 1 ? 'publish' : 'draft'
-                    }`}
-                  >
-                    {item.is_active ? 'Publish' : 'Draft'}
-                  </span>
-                ),
-                created_at: formatDateUI(item.created_at),
-                action: (
-                  <div className='flex flex-col gap-[10px]'>
-                    <Link
-                      href={`/dashboard/comparison/${item.object_id}`}
-                      className='w-full'
-                    >
-                      <Button
-                        borderRadius='5px'
-                        bgColor='rgba(101, 57, 228, 0.58)'
-                        color='#fff'
-                        text='Variant List'
-                        width='100%'
-                        padding='3.5px'
-                      />
-                    </Link>
-                    <Link href={`/dashboard/comparison/${item.object_id}`}>
-                      <Button
-                        borderRadius='5px'
-                        bgColor='rgba(228, 57, 57, 0.58)'
-                        color='#fff'
-                        text='Comparison List'
-                        width='100%'
-                        padding='3.5px'
-                      />
-                    </Link>
-                  </div>
-                ),
-                detail: (
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <Table
+                listTitle={[
+                  // 'Main Comparison',
+                  'Brand',
+                  'Name',
+                  'Status',
+                  'Date Created',
+                  'Image',
                   <div className='flex justify-center'>
                     <Image
-                      src={PencilIcon}
-                      className='w-[20px] h-[20px]'
+                      src={ReturnIcon}
+                      className='w-[20px] h-[15px]'
                       alt='return_icon'
-                      onClick={() =>
-                        router.push(
-                          `/dashboard/comparison/${id}/edit/${item.object_id}`
-                        )
-                      }
                     />
-                  </div>
-                ),
-                delete: (
+                  </div>,
                   <div className='flex justify-center'>
                     <Image
-                      src={TrashIcon}
-                      className='w-[20px] h-[20px]'
+                      src={SliderIcon}
                       alt='trash_icon'
-                      onClick={() => callDeleteComparison(id, item.object_id)}
+                      className='w-[20px] h-[20px]'
+                      onClick={() => setFilterModal((prev) => !prev)}
                     />
-                  </div>
-                ),
-              }))}
-              listKey={[
-                'is_primary',
-                'brand',
-                'name',
-                'is_active',
-                'created_at',
-                'image',
-                'detail',
-                'delete',
-              ]}
-              type={'product'}
-              subType={'comparison'}
-              id={id}
-            />
+                  </div>,
+                ]}
+                data={comparison.map((item) => ({
+                  ...item,
+                  // is_primary: (
+                  //   <div className='flex justify-center'>
+                  //     {item.is_primary ? (
+                  //       <FaStar
+                  //         fill='#FFD101'
+                  //         color='#FFD101'
+                  //         className='w-[20px] h-[20px]'
+                  //       />
+                  //     ) : (
+                  //       <FaRegStar
+                  //         fill='#FFD101'
+                  //         className='w-[20px] h-[20px]'
+                  //         onClick={() =>
+                  //           callUpdateMainComparison(id, item.object_id)
+                  //         }
+                  //       />
+                  //     )}
+                  //   </div>
+                  // ),
+                  image: (
+                    <Image
+                      src={item.image || NoImage}
+                      width={150}
+                      height={100}
+                      alt={`gambar`}
+                      className='rounded-md'
+                    />
+                  ),
+                  is_active: (
+                    <span
+                      className={`table_status ${
+                        item.is_active === 1 ? 'publish' : 'draft'
+                      }`}
+                    >
+                      {item.is_active ? 'Publish' : 'Draft'}
+                    </span>
+                  ),
+                  created_at: formatDateUI(item.created_at),
+                  action: (
+                    <div className='flex flex-col gap-[10px]'>
+                      <Link
+                        href={`/dashboard/comparison/${item.object_id}`}
+                        className='w-full'
+                      >
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(101, 57, 228, 0.58)'
+                          color='#fff'
+                          text='Variant List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                      <Link href={`/dashboard/comparison/${item.object_id}`}>
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(228, 57, 57, 0.58)'
+                          color='#fff'
+                          text='Comparison List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                    </div>
+                  ),
+                  detail: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={PencilIcon}
+                        className='w-[20px] h-[20px]'
+                        alt='return_icon'
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/comparison/${id}/edit/${item.object_id}`
+                          )
+                        }
+                      />
+                    </div>
+                  ),
+                  delete: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={TrashIcon}
+                        className='w-[20px] h-[20px]'
+                        alt='trash_icon'
+                        onClick={() => callDeleteComparison(id, item.object_id)}
+                      />
+                    </div>
+                  ),
+                }))}
+                listKey={[
+                  // 'is_primary',
+                  'brand',
+                  'name',
+                  'is_active',
+                  'created_at',
+                  'image',
+                  'detail',
+                  'delete',
+                ]}
+                type={'product'}
+                subType={'comparison'}
+                id={id}
+              />
+            )}
           </div>
-          <TablePagination
-            pagination={pagination}
-            setPagination={setPagination}
-            limit={pagination.limit}
-          />
+          {!loading && (
+            <TablePagination
+              pagination={pagination}
+              setPagination={setPagination}
+              limit={pagination.limit}
+            />
+          )}
         </div>
       </div>
     </DefaultContainer>

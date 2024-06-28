@@ -31,6 +31,7 @@ import {formatDateUI} from '@/utils';
 
 export default function page() {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<[]>([]);
   const [payload, setPayload] = useState<any>({
     order_by_name: '',
@@ -42,7 +43,6 @@ export default function page() {
     date_created_end: '',
   });
   const {filterModal, setFilterModal} = useModal();
-  const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalCount: 0,
@@ -62,7 +62,7 @@ export default function page() {
           }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/user-management?page=${page}&${query}limit=${limit}&type=user`,
+          `${process.env.NEXT_PUBLIC_API_URL}/user-management?page=${page}&${query}limit=${limit}&type=admin`,
           {
             method: 'GET',
             headers: {
@@ -72,6 +72,7 @@ export default function page() {
           }
         );
         if (!response.ok) {
+          setLoading(false);
           throw new Error('Error');
         }
         const {data, total_data} = await response.json();
@@ -99,7 +100,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
-            type: 'user',
+            type: 'admin',
             unique_id: object_id,
           }),
         }
@@ -134,7 +135,7 @@ export default function page() {
       date_created_start: payload.date_created_start,
       date_created_end: payload.date_created_end,
     });
-  }, [pagination.currentPage]);
+  }, [pagination.currentPage, pagination.limit]);
 
   const handleRenderFilter = useMemo(
     () =>
@@ -245,12 +246,12 @@ export default function page() {
   );
 
   return (
-    <DefaultContainer title='User Management'>
+    <DefaultContainer title='Admin Management'>
       {handleRenderFilter}
       <div>
         <div className='dc_table_ctr'>
           <div className='dc_action_ctr'>
-            <Link href={'/dashboard/userManagement/add'}>
+            <Link href={'/dashboard/adminManagement/add'}>
               <Button
                 bgColor='#DFDFDF'
                 text='Add New'
@@ -333,7 +334,7 @@ export default function page() {
                         alt='return_icon'
                         onClick={() =>
                           router.push(
-                            `/dashboard/userManagement/${item.unique_id}`
+                            `/dashboard/adminManagement/${item.unique_id}`
                           )
                         }
                       />

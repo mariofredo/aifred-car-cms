@@ -22,11 +22,7 @@ export default function SideBar({}) {
           )}
         </div> */}
       </div>
-      <div
-        className={`sb_ml_ctr ${
-          open ? 'h-[calc(100%-180px)]' : 'h-[calc(100%-140px)]'
-        }`}
-      >
+      <div className={`sb_ml_ctr h-[calc(70%)]`}>
         {MENU_ITEMS.map((item) => (
           <MenuLink
             key={item.title}

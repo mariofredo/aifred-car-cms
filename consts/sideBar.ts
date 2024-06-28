@@ -92,6 +92,13 @@ export const MENU_ITEMS = [
     subMenu: [],
   },
   {
+    title: 'Admin Management',
+    path: '/dashboard/adminManagement',
+    icon: '',
+    type: 'normal',
+    subMenu: [],
+  },
+  {
     title: 'My Account',
     path: '/dashboard/account',
     icon: '',
