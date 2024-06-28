@@ -202,7 +202,11 @@ export default function Table({
           )}
         </tr>
       </thead>
-      <tbody>{handleViewBody(type, subType, data, listKey)}</tbody>
+      {data.length === 0 ? (
+        <div className='ml-4'>No Data Found</div>
+      ) : (
+        <tbody>{handleViewBody(type, subType, data, listKey)}</tbody>
+      )}
     </table>
   );
 }
