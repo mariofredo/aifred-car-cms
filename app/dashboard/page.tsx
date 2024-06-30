@@ -359,9 +359,10 @@ export default function DashboardHome() {
             yaxis: {
               ticks: '',
               ticksuffix: ' ',
+              automargin: true,
               // width: 700,
               // height: 700,
-              autosize: true,
+              // autosize: true,
             },
           },
           loading: false,

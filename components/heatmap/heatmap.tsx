@@ -4,7 +4,9 @@ import {useEffect, useState} from 'react';
 
 export default function Heatmap({data, layout, loading}: PlotlyType) {
   useEffect(() => {
-    Plotly.newPlot('heatmap_ctr', data, layout);
+    if (typeof window) {
+      Plotly.newPlot('heatmap_ctr', data, layout);
+    }
   }, [data, layout]);
   return (
     <>
