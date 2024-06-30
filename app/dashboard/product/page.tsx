@@ -403,7 +403,6 @@ export default function DashboardProduct() {
                 ]}
                 type={'product'}
                 subType='product'
-                id={''}
               />
             )}
           </div>

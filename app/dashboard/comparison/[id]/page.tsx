@@ -259,7 +259,7 @@ export default function DashboardComparisonList() {
             ) : (
               <Table
                 listTitle={[
-                  'Main Comparison',
+                  // 'Main Comparison',
                   'Brand',
                   'Name',
                   'Status',
@@ -283,25 +283,25 @@ export default function DashboardComparisonList() {
                 ]}
                 data={comparison.map((item) => ({
                   ...item,
-                  is_primary: (
-                    <div className='flex justify-center'>
-                      {item.is_primary ? (
-                        <FaStar
-                          fill='#FFD101'
-                          color='#FFD101'
-                          className='w-[20px] h-[20px]'
-                        />
-                      ) : (
-                        <FaRegStar
-                          fill='#FFD101'
-                          className='w-[20px] h-[20px]'
-                          onClick={() =>
-                            callUpdateMainComparison(id, item.object_id)
-                          }
-                        />
-                      )}
-                    </div>
-                  ),
+                  // is_primary: (
+                  //   <div className='flex justify-center'>
+                  //     {item.is_primary ? (
+                  //       <FaStar
+                  //         fill='#FFD101'
+                  //         color='#FFD101'
+                  //         className='w-[20px] h-[20px]'
+                  //       />
+                  //     ) : (
+                  //       <FaRegStar
+                  //         fill='#FFD101'
+                  //         className='w-[20px] h-[20px]'
+                  //         onClick={() =>
+                  //           callUpdateMainComparison(id, item.object_id)
+                  //         }
+                  //       />
+                  //     )}
+                  //   </div>
+                  // ),
                   image: (
                     <Image
                       src={item.image || NoImage}
@@ -374,7 +374,7 @@ export default function DashboardComparisonList() {
                   ),
                 }))}
                 listKey={[
-                  'is_primary',
+                  // 'is_primary',
                   'brand',
                   'name',
                   'is_active',
@@ -385,7 +385,6 @@ export default function DashboardComparisonList() {
                 ]}
                 type={'product'}
                 subType={'comparison'}
-                id={id}
               />
             )}
           </div>

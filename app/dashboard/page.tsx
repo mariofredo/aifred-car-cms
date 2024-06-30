@@ -1,6 +1,6 @@
 'use client';
 import {useCallback, useEffect, useState} from 'react';
-import {Card, DateRange, Select, Table, TableHome} from '@/components';
+import {Card, DateRange, Heatmap, Select, Table, TableHome} from '@/components';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -30,10 +30,11 @@ import {Range} from 'react-date-range';
 import Cookies from 'js-cookie';
 import {useBrand, useQuestion} from '@/context';
 import {SingleValue} from 'react-select';
-import {Question} from '@/types';
+import {PlotlyType, Question} from '@/types';
 import {formatDate} from '@/utils';
 import Image from 'next/image';
-import {ReturnIcon, SliderIcon} from '@/public';
+import {CompareWithIcon, ReturnIcon, SliderIcon} from '@/public';
+import {Annotations} from 'plotly.js';
 interface Payload {
   brand_unique_id: SingleValue<{
     label: string;
@@ -51,15 +52,17 @@ export default function DashboardHome() {
   const [mostSubmissionBySales, setMostSubmissionBySales] = useState([]);
   const [payload, setPayload] = useState<Payload>({
     brand_unique_id: {
-      label: '',
-      value: '',
+      label: 'Mitsubishi',
+      value: '7ee2a44f',
     },
     question_unique_id: {
       label: '',
       value: '',
     },
     date_range_home: {
-      startDate: new Date(),
+      startDate: new Date(
+        `${new Date().getFullYear()}-${new Date().getMonth() + 1}-01`
+      ),
       endDate: new Date(),
       key: 'date_range_home',
     },
@@ -95,6 +98,12 @@ export default function DashboardHome() {
   }>({
     completed: {},
     uncompleted: {},
+  });
+  const [mostComparedProduct, setMostComparedProduct] = useState([]);
+  const [heatMap, setHeatMap] = useState<PlotlyType>({
+    data: [],
+    layout: {},
+    loading: false,
   });
   const getSummaryRespondents = useCallback(async (payload: Payload) => {
     const response = await fetch(
@@ -263,6 +272,109 @@ export default function DashboardHome() {
     setMostSelectedProduct(data);
     return data;
   }, []);
+  const getMostComparedProduct = useCallback(async (payload: Payload) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/most-compared-products`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+        },
+        body: JSON.stringify({
+          question_unique_id: payload.question_unique_id?.value,
+          date_start: formatDate(payload.date_range_home.startDate),
+          date_end: formatDate(payload.date_range_home.endDate),
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Error');
+    }
+    const {data} = await response.json();
+    setMostComparedProduct(data);
+    return data;
+  }, []);
+  const getHeatMapGraph = useCallback(
+    async (payload: Payload) => {
+      try {
+        setHeatMap((prev) => ({...prev, loading: true}));
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/dashboard/heat-map-graph`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+            },
+            body: JSON.stringify({
+              question_unique_id: payload.question_unique_id?.value,
+              date_start: formatDate(payload.date_range_home.startDate),
+              date_end: formatDate(payload.date_range_home.endDate),
+            }),
+          }
+        );
+        if (!response.ok) {
+          throw new Error('Error');
+        }
+        const {data} = await response.json();
+        const {x_axis, y_axis, z_axis, color_scale} = data;
+        let annotations: Partial<Annotations>[] = [];
+        y_axis.forEach((_: any, i: number) => {
+          x_axis.forEach((_: any, j: number) => {
+            var result: Partial<Annotations> = {
+              xref: 'x',
+              yref: 'y',
+              x: x_axis[j],
+              y: y_axis[i],
+              text: z_axis[i][j],
+              font: {
+                family: 'Arial',
+                size: 12,
+                color: '#fff',
+              },
+              showarrow: false,
+            };
+            annotations.push(result);
+          });
+        });
+
+        setHeatMap({
+          data: [
+            {
+              x: x_axis,
+              y: y_axis,
+              z: z_axis,
+              type: 'heatmap',
+              colorscale: color_scale,
+            },
+          ],
+          layout: {
+            title: 'Heatmap',
+            annotations: annotations,
+            xaxis: {
+              ticks: '',
+              side: 'bottom',
+            },
+            yaxis: {
+              ticks: '',
+              ticksuffix: ' ',
+              // width: 700,
+              // height: 700,
+              autosize: true,
+            },
+          },
+          loading: false,
+        });
+        return data;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setHeatMap((prev) => ({...prev, loading: false}));
+      }
+    },
+    [payload]
+  );
   const callListBrand = useCallback(async () => {
     const {data} = await getListBrand(); // get brand list
     setBrand(data.map((item) => ({label: item.name, value: item.unique_id}))); // set brand list
@@ -271,6 +383,13 @@ export default function DashboardHome() {
   const callListQuestion = useCallback(
     async (brand_id: {label: string; value: string}) => {
       const {data} = await getQuestionListByBrand(brand_id.value);
+      setPayload((prev) => ({
+        ...prev,
+        question_unique_id: {
+          label: data[0].question_set_title,
+          value: data[0].unique_id,
+        },
+      }));
       setQuestion(
         data.map((item: Question) => ({
           ...item,
@@ -281,7 +400,7 @@ export default function DashboardHome() {
     },
     [question]
   );
-  const postMostSubmissionBySales = useCallback(async (payload: Payload) => {
+  const getMostSubmissionBySales = useCallback(async (payload: Payload) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/dashboard/most-submission-by-sales`,
@@ -320,7 +439,9 @@ export default function DashboardHome() {
       getMostSelectedProduct(payload);
       getCompletedDuration(payload);
       getTotalRespondentsPerPeriod(payload);
-      postMostSubmissionBySales(payload);
+      getMostSubmissionBySales(payload);
+      getMostComparedProduct(payload);
+      getHeatMapGraph(payload);
     }
   }, [payload]);
 
@@ -604,6 +725,12 @@ export default function DashboardHome() {
       </div>
       <div className='dashboard_box'>
         <div className='dashboard_info'>
+          <p className='dashboard_text_title'>Heat Map Graph by Time</p>
+          <Heatmap {...heatMap} />
+        </div>
+      </div>
+      <div className='dashboard_box'>
+        <div className='dashboard_info'>
           <p className='dashboard_text_title'>Summary of Answered Questions</p>
           <TableHome
             tableName={[
@@ -639,7 +766,7 @@ export default function DashboardHome() {
           <p className='dashboard_text_title'>Most Submission by Sales</p>
           <Table
             listTitle={[
-              'Rank',
+              <div className='text-center'>Rank</div>,
               'User Name',
               'Name',
               'Email',
@@ -647,19 +774,34 @@ export default function DashboardHome() {
               'Status',
               'Total Submission',
             ]}
-            data={mostSubmissionBySales}
+            data={mostSubmissionBySales.map((item: any, index) => ({
+              ...item,
+              rank: (
+                <span className='flex justify-center font-bold'>
+                  {index + 1}
+                </span>
+              ),
+              is_active: (
+                <span
+                  className={`table_status ${
+                    item.is_active === 1 ? 'publish' : 'draft'
+                  }`}
+                >
+                  {item.is_active ? 'Active' : 'Inactive'}
+                </span>
+              ),
+            }))}
             listKey={[
-              'brand_name',
-              'series_name',
-              'total_variant',
+              'rank',
+              'username',
+              'name',
+              'email',
+              'phone',
               'is_active',
-              'created_at',
-              'action',
-              'detail',
+              'total',
             ]}
             type={'product'}
             subType='product'
-            id={''}
           />
         </div>
       </div>
@@ -673,13 +815,56 @@ export default function DashboardHome() {
                   // brand_name='Mitsubishi'
                   product_level_1_name={item.product_name}
                   product_level_2_name={item.variant_name}
-                  price={item.price}
+                  // price={item.price}
                   image={item.image}
                 />
                 <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
                   <span className='font-bold text-[24px] '>#{idx + 1}</span>
                   <span className=''>Choosen</span>
                   <span className='font-bold'>{item.total}</span>X
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className='dashboard_box'>
+        <div className='dashboard_info'>
+          <p className='dashboard_text_title'>Most Compared Product</p>
+          <div className='grid grid-cols-5 gap-[20px]'>
+            {mostComparedProduct.map((item: any, idx: number) => (
+              <div className='flex flex-col gap-[20px]'>
+                <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
+                  <Card
+                    // brand_name='Mitsubishi'
+                    product_level_1_name={item.compared_with.level_1_name}
+                    product_level_2_name={item.compared_with.name}
+                    price={item.compared_with.price}
+                    image={item.compared_with.image}
+                  />
+                  <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
+                    <span className='font-bold text-[24px] '>#{idx + 1}</span>
+                    <span className=''>Choosen</span>
+                    <span className='font-bold'>{item.total}</span>X
+                  </div>
+                </div>
+                <div className='w-full flex justify-center items-center font-bold'>
+                  Compare With{' '}
+                  <Image src={CompareWithIcon} alt='compare_with_icon' />
+                </div>
+                <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
+                  <Card
+                    // brand_name='Mitsubishi'
+                    product_level_1_name={item.level_1_name}
+                    product_level_2_name={item.name}
+                    price={item.price}
+                    image={item.image}
+                  />
+                  <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
+                    <span className='font-bold text-[24px] '>#{idx + 1}</span>
+                    <span className=''>Choosen</span>
+                    <span className='font-bold'>{item.total}</span>X
+                  </div>
                 </div>
               </div>
             ))}
