@@ -532,157 +532,185 @@ export default function DashboardHome() {
         <div className='col-span-3 dashboard_box'>
           <div className='dashboard_info'>
             <p className='dashboard_text_title'>Total Respondent per Period</p>
-            <Line
-              data={{
-                datasets: [
-                  {
-                    label: 'Total Completed Respondents',
-                    data: Object.keys(totalRespondentsPerPeriod.completed).map(
-                      (item: string) =>
-                        totalRespondentsPerPeriod.completed[item]
-                    ),
-                    borderColor: '#E0150A',
-                    backgroundColor: '#E0150A',
-                  },
-                  {
-                    label: 'Total Uncompleted Respondents',
-                    data: Object.keys(
-                      totalRespondentsPerPeriod.uncompleted
-                    ).map(
-                      (item: string) =>
-                        totalRespondentsPerPeriod.uncompleted[item]
-                    ),
-                    borderColor: '#F1CDC6',
-                    backgroundColor: '#F1CDC6',
-                  },
-                ],
-                labels: [...Object.keys(totalRespondentsPerPeriod.completed)],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    position: 'top',
-                    labels: {
-                      usePointStyle: true,
-                      pointStyle: 'circle',
+            {totalRespondentsPerPeriod.completed.length > 0 &&
+            totalRespondentsPerPeriod.uncompleted.length > 0 ? (
+              <Line
+                data={{
+                  datasets: [
+                    {
+                      label: 'Total Completed Respondents',
+                      data: Object.keys(
+                        totalRespondentsPerPeriod.completed
+                      ).map(
+                        (item: string) =>
+                          totalRespondentsPerPeriod.completed[item]
+                      ),
+                      borderColor: '#E0150A',
+                      backgroundColor: '#E0150A',
+                    },
+                    {
+                      label: 'Total Uncompleted Respondents',
+                      data: Object.keys(
+                        totalRespondentsPerPeriod.uncompleted
+                      ).map(
+                        (item: string) =>
+                          totalRespondentsPerPeriod.uncompleted[item]
+                      ),
+                      borderColor: '#F1CDC6',
+                      backgroundColor: '#F1CDC6',
+                    },
+                  ],
+                  labels: [...Object.keys(totalRespondentsPerPeriod.completed)],
+                }}
+                options={{
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                      labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                      },
+                    },
+                    datalabels: {
+                      font: {
+                        size: 0,
+                      },
                     },
                   },
-                  datalabels: {
-                    font: {
-                      size: 0,
-                    },
-                  },
-                },
-              }}
-            />
+                }}
+              />
+            ) : (
+              <p>No Data Found</p>
+            )}
           </div>
         </div>
       </div>
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Total Answers per Question</p>
-          <Bar
-            data={{
-              labels: totalAnswersPerQuestion.map((_, idx) => `Q${idx + 1}`),
-              datasets: [
-                {
-                  label: 'Total Answers per Question',
-                  data: totalAnswersPerQuestion.map((item: any) => item.total),
-                  backgroundColor: '#E0150A',
+          {totalAnswersPerQuestion.length > 0 ? (
+            <Bar
+              data={{
+                labels: totalAnswersPerQuestion.map((_, idx) => `Q${idx + 1}`),
+                datasets: [
+                  {
+                    label: 'Total Answers per Question',
+                    data: totalAnswersPerQuestion.map(
+                      (item: any) => item.total
+                    ),
+                    backgroundColor: '#E0150A',
+                  },
+                ],
+              }}
+              options={{
+                plugins: {
+                  datalabels: {
+                    color: '#FFF',
+                  },
                 },
-              ],
-            }}
-            options={{
-              plugins: {
-                datalabels: {
-                  color: '#FFF',
-                },
-              },
-            }}
-          />
+              }}
+            />
+          ) : (
+            <p>No Data Found</p>
+          )}
         </div>
       </div>
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Summary of Answered Questions</p>
-          <TableHome
-            tableName={[
-              {
-                name: 'Question',
-                colSpan: 1,
-              },
-              {
-                name: 'Fastest',
-                colSpan: 1,
-              },
-              {
-                name: 'Average',
-                colSpan: 1,
-              },
-              {
-                name: 'Slowest',
-                colSpan: 1,
-              },
-            ]}
-            tableValue={summaryAnsweredQuestionsDuration.map(
-              (item: any, idx) => ({
-                name: `Question ${idx + 1}`,
-                ...item,
-              })
-            )}
-            tableKey={['name', 'fastest', 'average', 'slowest']}
-          />
+          {summaryAnsweredQuestionsDuration.length > 0 ? (
+            <TableHome
+              tableName={[
+                {
+                  name: 'Question',
+                  colSpan: 1,
+                },
+                {
+                  name: 'Fastest',
+                  colSpan: 1,
+                },
+                {
+                  name: 'Average',
+                  colSpan: 1,
+                },
+                {
+                  name: 'Slowest',
+                  colSpan: 1,
+                },
+              ]}
+              tableValue={summaryAnsweredQuestionsDuration.map(
+                (item: any, idx) => ({
+                  name: `Question ${idx + 1}`,
+                  ...item,
+                })
+              )}
+              tableKey={['name', 'fastest', 'average', 'slowest']}
+            />
+          ) : (
+            <p>No Data Found</p>
+          )}
         </div>
       </div>
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Most Submission by Sales</p>
-          <Table
-            listTitle={[
-              'Rank',
-              'User Name',
-              'Name',
-              'Email',
-              'Phone',
-              'Status',
-              'Total Submission',
-            ]}
-            data={mostSubmissionBySales}
-            listKey={[
-              'brand_name',
-              'series_name',
-              'total_variant',
-              'is_active',
-              'created_at',
-              'action',
-              'detail',
-            ]}
-            type={'product'}
-            subType='product'
-            id={''}
-          />
+          {mostSubmissionBySales.length > 0 ? (
+            <Table
+              listTitle={[
+                'Rank',
+                'User Name',
+                'Name',
+                'Email',
+                'Phone',
+                'Status',
+                'Total Submission',
+              ]}
+              data={mostSubmissionBySales}
+              listKey={[
+                'brand_name',
+                'series_name',
+                'total_variant',
+                'is_active',
+                'created_at',
+                'action',
+                'detail',
+              ]}
+              type={'product'}
+              subType='product'
+              id={''}
+            />
+          ) : (
+            <p>No Data Found</p>
+          )}
         </div>
       </div>
       <div className='dashboard_box'>
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Most Selected Product</p>
           <div className='grid grid-cols-5 gap-[20px]'>
-            {mostSelectedProduct.map((item: any, idx: number) => (
-              <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
-                <Card
-                  // brand_name='Mitsubishi'
-                  product_level_1_name={item.product_name}
-                  product_level_2_name={item.variant_name}
-                  price={item.price}
-                  image={item.image}
-                />
-                <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
-                  <span className='font-bold text-[24px] '>#{idx + 1}</span>
-                  <span className=''>Choosen</span>
-                  <span className='font-bold'>{item.total}</span>X
+            {mostSelectedProduct.length > 0 ? (
+              mostSelectedProduct.map((item: any, idx: number) => (
+                <div
+                  className='flex flex-col bg-[#B5B5B5] rounded-[20px]'
+                  key={item.product_name}
+                >
+                  <Card
+                    // brand_name='Mitsubishi'
+                    product_level_1_name={item.product_name}
+                    product_level_2_name={item.variant_name}
+                    price={item.price}
+                    image={item.image}
+                  />
+                  <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
+                    <span className='font-bold text-[24px] '>#{idx + 1}</span>
+                    <span className=''>Choosen</span>
+                    <span className='font-bold'>{item.total}</span>X
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p> No Data Found</p>
+            )}
           </div>
         </div>
       </div>
