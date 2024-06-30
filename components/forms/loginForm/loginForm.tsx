@@ -12,6 +12,7 @@ export default function LoginForm() {
   const [payload, setPayload] = useState({
     username: '',
     password: '',
+    type: 'admin',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -27,12 +28,15 @@ export default function LoginForm() {
       });
 
       if (response.ok) {
-        const { code, data } = await response.json();
+        const {code, data} = await response.json();
         if (code === 200) {
           Cookie.set('token_aifred_neo_cms', data.token, {
             expires: new Date(data.expired_at),
           });
           Cookie.set('username_aifred_neo_cms', data.username, {
+            expires: new Date(data.expired_at),
+          });
+          Cookie.set('unique_id_aifred_neo_cms', data.unique_id, {
             expires: new Date(data.expired_at),
           });
           router.push('/dashboard');

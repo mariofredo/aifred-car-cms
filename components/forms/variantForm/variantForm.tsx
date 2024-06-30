@@ -152,7 +152,6 @@ export default function VariantForm({type}: {type: string}) {
               };
             });
           });
-          console.log(updatedData, 'updatedData');
           return updatedData;
         });
         setPreviewImg(data.variant.image);

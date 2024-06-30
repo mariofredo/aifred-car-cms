@@ -15,12 +15,21 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {CirclePlus} from '@/public';
+import {
+  CirclePlus,
+  PencilIcon,
+  ReturnIcon,
+  SliderIcon,
+  TrashIcon,
+} from '@/public';
 import {IoSearch} from 'react-icons/io5';
 import {useBrand, useModal, useProduct} from '@/context';
 import {Product} from '@/types';
 import Link from 'next/link';
 import {SingleValue} from 'react-select';
+import Image from 'next/image';
+import {useRouter} from 'next/navigation';
+import {formatDateUI} from '@/utils';
 interface Payload {
   brand_unique_id: SingleValue<{
     label: string;
@@ -34,8 +43,10 @@ interface Payload {
   is_active: number;
 }
 export default function DashboardProduct() {
-  const {getListProduct} = useProduct();
+  const router = useRouter();
+  const {getListProduct, deleteProduct} = useProduct();
   const {getListBrand} = useBrand();
+  const [loading, setLoading] = useState(true);
   const [brand, setBrand] = useState<{label: string; value: string}[]>([]);
   const {filterModal, setFilterModal} = useModal();
   const [payload, setPayload] = useState<Payload>({
@@ -58,19 +69,40 @@ export default function DashboardProduct() {
   });
   const callListProduct = useCallback(
     async (payload: any) => {
+      setLoading(true);
       const {data, total_data} = await getListProduct(payload);
       setProduct(data);
       setPagination((prev) => ({
         ...prev,
         totalCount: total_data,
       }));
+      setLoading(false);
     },
     [product, payload, pagination]
+  );
+  const callDeleteProduct = useCallback(
+    async (id: string) => {
+      const {code} = await deleteProduct(id);
+      if (code === 200)
+        await getListProduct({
+          page: pagination.currentPage,
+          limit: pagination.limit,
+          brand_unique_id: payload.brand_unique_id?.value,
+          keyword: payload.keyword,
+          order_by_brand: payload.order_by_brand,
+          order_by_series: payload.order_by_series,
+          date_created_start: payload.date_created_start,
+          date_created_end: payload.date_created_end,
+          is_active: payload.is_active,
+        });
+    },
+    [pagination, payload]
   );
   const callListBrand = useCallback(async () => {
     const {data} = await getListBrand();
     setBrand(data.map((item) => ({label: item.name, value: item.unique_id})));
   }, [brand]);
+
   const handleRenderFilter = useMemo(
     () =>
       filterModal && (
@@ -142,6 +174,28 @@ export default function DashboardProduct() {
           setFilterModal={setFilterModal}
           payload={payload}
           setPayload={setPayload}
+          onReset={() => {
+            setPayload({
+              brand_unique_id: {label: '', value: ''},
+              keyword: '',
+              order_by_brand: '',
+              order_by_series: '',
+              date_created_start: '',
+              date_created_end: '',
+              is_active: 1,
+            });
+            callListProduct({
+              page: pagination.currentPage,
+              limit: pagination.limit,
+              brand_unique_id: '',
+              keyword: '',
+              order_by_brand: '',
+              order_by_series: '',
+              date_created_start: '',
+              date_created_end: '',
+              is_active: 1,
+            });
+          }}
           action={() => {
             setFilterModal(false);
             callListProduct({
@@ -248,38 +302,117 @@ export default function DashboardProduct() {
             </form>
           </div>
           <div className='dc_table'>
-            <Table
-              listTitle={[
-                'Brand',
-                'Series',
-                'Total Variant',
-                'Status',
-                'Date created',
-                '',
-                'Detail',
-                'Option',
-              ]}
-              data={product}
-              listKey={[
-                'brand_name',
-                'series_name',
-                'total_variant',
-                'is_active',
-                'created_at',
-                'object_id',
-                'detail',
-                'option',
-              ]}
-              type={'product'}
-              subType='product'
-              id={''}
-            />
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <Table
+                listTitle={[
+                  'Brand',
+                  'Series',
+                  'Total Variant',
+                  'Status',
+                  'Date created',
+                  '',
+                  <div className='flex justify-center' key='return'>
+                    <Image
+                      src={ReturnIcon}
+                      className='w-[20px] h-[15px]'
+                      alt='return_icon'
+                    />
+                  </div>,
+                  <div className='flex justify-center' key='delete'>
+                    <Image
+                      src={SliderIcon}
+                      alt='trash_icon'
+                      className='w-[20px] h-[20px]'
+                      onClick={() => setFilterModal((prev) => !prev)}
+                    />
+                  </div>,
+                ]}
+                data={product.map((item) => ({
+                  ...item,
+                  is_active: (
+                    <span
+                      className={`table_status ${
+                        item.is_active === 1 ? 'publish' : 'draft'
+                      }`}
+                    >
+                      {item.is_active ? 'Publish' : 'Draft'}
+                    </span>
+                  ),
+                  created_at: formatDateUI(item.created_at),
+                  action: (
+                    <div className='flex flex-col gap-[10px]'>
+                      <Link
+                        href={`/dashboard/variant/${item.object_id}`}
+                        className='w-full'
+                      >
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(101, 57, 228, 0.58)'
+                          color='#fff'
+                          text='Variant List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                      <Link href={`/dashboard/comparison/${item.object_id}`}>
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(228, 57, 57, 0.58)'
+                          color='#fff'
+                          text='Comparison List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                    </div>
+                  ),
+                  detail: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={PencilIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='return_icon'
+                        onClick={() =>
+                          router.push(`/dashboard/product/${item.object_id}`)
+                        }
+                      />
+                    </div>
+                  ),
+                  delete: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={TrashIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='trash_icon'
+                        onClick={() => callDeleteProduct(item.object_id)}
+                      />
+                    </div>
+                  ),
+                }))}
+                listKey={[
+                  'brand_name',
+                  'series_name',
+                  'total_variant',
+                  'is_active',
+                  'created_at',
+                  'action',
+                  'detail',
+                  'delete',
+                ]}
+                type={'product'}
+                subType='product'
+              />
+            )}
           </div>
-          <TablePagination
-            limit={pagination.limit}
-            pagination={pagination}
-            setPagination={setPagination}
-          />
+          {!loading && (
+            <TablePagination
+              limit={pagination.limit}
+              pagination={pagination}
+              setPagination={setPagination}
+            />
+          )}
         </div>
       </div>
     </DefaultContainer>

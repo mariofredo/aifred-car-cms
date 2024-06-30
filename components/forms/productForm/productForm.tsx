@@ -1,14 +1,38 @@
 'use client';
-import {CirclePlus} from '@/public';
+import {
+  CirclePlus,
+  NoImage,
+  PencilIcon,
+  ReturnIcon,
+  SliderIcon,
+  TrashIcon,
+} from '@/public';
 import Image from 'next/image';
-import {useCallback, useEffect, useState} from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {IoSearch} from 'react-icons/io5';
-import {Table, ModalForm} from '@/components';
-import {useModal, useBrand, useProduct, useSpec} from '@/context';
+import {Table, ModalForm, Button, FilterModal} from '@/components';
+import {
+  useModal,
+  useBrand,
+  useProduct,
+  useSpec,
+  useVariant,
+  useComparison,
+} from '@/context';
 import {useParams, useRouter} from 'next/navigation';
-import {Tag, Brand} from '@/types';
+import {Tag, Brand, Variant, Comparison} from '@/types';
 import Cookie from 'js-cookie';
 import '@/styles/productForm.scss';
+import Link from 'next/link';
+import {formatDateUI} from '@/utils';
+import {FILTER_PRODUCT_DETAIL} from '@/consts';
 interface ProductFormProps {
   type: string;
   params: {[key: string]: any};
@@ -19,15 +43,30 @@ interface Payload {
   name: string;
   is_active: number;
 }
+interface PayloadVariant {
+  keyword_variant: string;
+  is_active_variant: number;
+  order_by_name_variant: string;
+  date_created_start_variant: string;
+  date_created_end_variant: string;
+}
+interface PayloadComparison {
+  keyword: string;
+  order_by_brand: string;
+  order_by_series: string;
+  date_created_start: string;
+  date_created_end: string;
+  is_active: number;
+}
 export default function ProductForm(
   {type, params}: ProductFormProps = {type: '', params: {}}
 ) {
   const router = useRouter();
   const {id}: {id: string} = useParams();
-  const token = Cookie.get('token_aifred_neo_cms')?.toString();
-  const {showModal, setShowModal} = useModal();
-  const {productId} = params;
+  const {showModal, setShowModal, filterModal, setFilterModal} = useModal();
   const {createProduct, getDetailProduct, updateProduct} = useProduct();
+  const {getListVariant, deleteVariant} = useVariant();
+  const {getListComparison, deleteComparison} = useComparison();
   const {getListBrand} = useBrand();
   const {
     selectedSpecs,
@@ -48,11 +87,36 @@ export default function ProductForm(
     name: '',
     is_active: 0,
   });
-  const [previewImg, setPreviewImg] = useState<string>('');
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [suggestions, setSuggestions] = useState<Tag[]>([]);
-  const [variant, setVariant] = useState([]);
-  const [comparison, setComparison] = useState([]);
+  const [filterType, setFilterType] = useState<string>('');
+  const [variant, setVariant] = useState<Variant[]>([]);
+  const [comparison, setComparison] = useState<Comparison[]>([]);
+  const [payloadVariant, setPayloadVariant] = useState<PayloadVariant>({
+    keyword_variant: '',
+    order_by_name_variant: '',
+    is_active_variant: 1,
+    date_created_start_variant: '',
+    date_created_end_variant: '',
+  });
+  const [payloadComparison, setPayloadComparison] = useState<PayloadComparison>(
+    {
+      keyword: '',
+      order_by_brand: '',
+      order_by_series: '',
+      date_created_start: '',
+      date_created_end: '',
+      is_active: 1,
+    }
+  );
+  const [paginationVariant, setPaginationVariant] = useState({
+    limit: 10,
+    currentPage: 1,
+    totalCount: 0,
+  });
+  const [paginationComparison, setPaginationComparison] = useState({
+    limit: 10,
+    currentPage: 1,
+    totalCount: 0,
+  });
 
   const callListBrand = useCallback(async () => {
     const {data} = await getListBrand();
@@ -94,26 +158,6 @@ export default function ProductForm(
   //   setPayload({...payload, price: value});
   // };
 
-  const getListTag = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/answer-tag`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      const result = await data.data.map((el: {tag: string}) => ({
-        id: el.tag,
-        text: el.tag,
-      }));
-      setSuggestions(result);
-    }
-  };
-
   const handleSelectedSpecChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
       setSelectedSpecs((prev) => {
@@ -127,7 +171,89 @@ export default function ProductForm(
     },
     [selectedSpecs, setSelectedSpecs]
   );
-
+  const handleRenderFilter = useMemo(
+    () =>
+      filterModal && (
+        <FilterModal
+          list={
+            filterType === 'variant'
+              ? FILTER_PRODUCT_DETAIL.variant
+              : FILTER_PRODUCT_DETAIL.competitor
+          }
+          setFilterModal={setFilterModal}
+          onReset={() => {
+            filterType === 'variant'
+              ? () => {
+                  setPayloadVariant({
+                    keyword_variant: '',
+                    order_by_name_variant: '',
+                    is_active_variant: 1,
+                    date_created_start_variant: '',
+                    date_created_end_variant: '',
+                  });
+                  callListVariant(id, {
+                    page: paginationVariant.currentPage,
+                    limit: paginationVariant.limit,
+                    keyword_variant: '',
+                    order_by_name_variant: '',
+                    is_active_variant: 1,
+                    date_created_start_variant: '',
+                    date_created_end_variant: '',
+                  });
+                }
+              : () => {
+                  setPayloadComparison({
+                    keyword: '',
+                    order_by_brand: '',
+                    order_by_series: '',
+                    date_created_start: '',
+                    date_created_end: '',
+                    is_active: 1,
+                  });
+                  callListComparison(id, {
+                    page: paginationComparison.currentPage,
+                    limit: paginationComparison.limit,
+                    keyword: '',
+                    order_by_brand: '',
+                    order_by_series: '',
+                    date_created_start: '',
+                    date_created_end: '',
+                    is_active: 1,
+                  });
+                };
+          }}
+          payload={
+            filterType === 'variant' ? payloadVariant : payloadComparison
+          }
+          setPayload={
+            filterType === 'variant' ? setPayloadVariant : setPayloadComparison
+          }
+          action={() => {
+            setFilterModal(false);
+            filterType === 'variant'
+              ? callListVariant(id, {
+                  page: paginationVariant.currentPage,
+                  limit: paginationVariant.limit,
+                  ...payloadVariant,
+                })
+              : callListComparison(id, {
+                  page: paginationComparison.currentPage,
+                  limit: paginationComparison.limit,
+                  ...payloadComparison,
+                });
+          }}
+        />
+      ),
+    [
+      payloadComparison,
+      payloadVariant,
+      paginationComparison,
+      paginationVariant,
+      filterModal,
+      filterType,
+      id,
+    ]
+  );
   const callDetailProduct = async (id: string) => {
     const {product, competitors, variants} = await getDetailProduct(id);
     setPayload((prev) => ({
@@ -136,9 +262,55 @@ export default function ProductForm(
       brand_unique_id: product.brand_unique_id,
       is_active: product.is_active,
     }));
-    setVariant(variants);
-    setComparison(competitors);
+    // setVariant(variants);
+    // setComparison(competitors);
   };
+  const callListVariant = useCallback(
+    async (id: string, payload: any) => {
+      const {data, total_data} = await getListVariant(id, payload);
+      setVariant(data);
+      setPaginationVariant((prev) => ({
+        ...prev,
+        totalCount: total_data,
+      }));
+    },
+    [variant, paginationVariant, payloadVariant]
+  );
+  const callDeleteVariant = useCallback(
+    async (productId: string, variantId: string) => {
+      const {code} = await deleteVariant(productId, variantId);
+      if (code === 200)
+        callListVariant(id, {
+          page: paginationVariant.currentPage,
+          limit: paginationVariant.limit,
+          ...payloadComparison,
+        });
+    },
+    [payloadComparison, id, paginationVariant]
+  );
+  const callListComparison = useCallback(
+    async (id: string, payload: any) => {
+      const {data, total_data} = await getListComparison(id, payload);
+      setComparison(data);
+      setPaginationComparison((prev) => ({
+        ...prev,
+        totalCount: total_data,
+      }));
+    },
+    [comparison, paginationComparison, payloadComparison]
+  );
+  const callDeleteComparison = useCallback(
+    async (productId: string, comparisonId: string) => {
+      const {code} = await deleteComparison(productId, comparisonId);
+      if (code === 200)
+        callListComparison(productId, {
+          page: paginationComparison.currentPage,
+          limit: paginationComparison.limit,
+          ...payloadComparison,
+        });
+    },
+    [payloadComparison, id, paginationComparison]
+  );
   useEffect(() => {
     callListBrand();
   }, []);
@@ -147,10 +319,28 @@ export default function ProductForm(
       callDetailProduct(id);
     }
   }, [brand]);
-
+  useEffect(() => {
+    if (id) {
+      callListVariant(id, {
+        page: paginationVariant.currentPage,
+        limit: paginationVariant.limit,
+        ...payloadVariant,
+      });
+    }
+  }, [paginationVariant.currentPage]);
+  useEffect(() => {
+    if (id) {
+      callListComparison(id, {
+        page: paginationComparison.currentPage,
+        limit: paginationComparison.limit,
+        ...payloadComparison,
+      });
+    }
+  }, [paginationComparison.currentPage]);
   return (
     <>
       <div className='grid grid-cols-3 gap-[30px]'>
+        {handleRenderFilter}
         <div className='col-span-3'>
           <div className='text-[24px] text-[#3e3e3e]'>Product Essentials</div>
           <div className='text-[12px] text-[#b5b5b5]'>
@@ -235,11 +425,7 @@ export default function ProductForm(
             <div className='col-span-3 flex gap-[20px] '>
               <button
                 className='flex justify-center items-center py-[10px] px-[21px] rounded-[12px] bg-[#dfdfdf] text-[16px] w-[30%] gap-[15px] whitespace-nowrap'
-                // onClick={() =>
-                //   router.push(
-                //     `/dashboard/product/${productId}/addComparison?category_level_1_product_id=${payload.category_level_1_id}`
-                //   )
-                // }
+                onClick={() => router.push(`/dashboard/variant/${id}/create`)}
               >
                 <Image
                   src={CirclePlus}
@@ -248,18 +434,35 @@ export default function ProductForm(
                 />
                 New Variant
               </button>
-              <div className='relative w-[80%]'>
+              <form
+                className='relative w-[80%]'
+                onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                  e.preventDefault();
+                  callListVariant(id, {
+                    page: paginationVariant.currentPage,
+                    limit: paginationVariant.limit,
+                    ...payloadVariant,
+                  });
+                }}
+              >
                 <input
-                  name='brand'
+                  name='keyword_variant'
                   type='text'
                   className='h-full w-full  rounded-[10px] border-[1.5px] border-[#b5b5b5] pl-[15px] pr-[40px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
                   placeholder='Search name or sub-series'
+                  value={payloadVariant.keyword_variant}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setPayloadVariant((prev) => ({
+                      ...prev,
+                      keyword_variant: e.target.value,
+                    }))
+                  }
                 />
                 <IoSearch
                   color='#b5b5b5'
                   className='w-[20px] h-[20px] absolute top-[50%] right-[15px] transform translate-y-[-50%]'
                 />
-              </div>
+              </form>
             </div>
             <div className='col-span-3 overflow-scroll'>
               <Table
@@ -269,8 +472,24 @@ export default function ProductForm(
                   'Status',
                   'Date created',
                   'Image',
-                  'Detail',
-                  'Option',
+                  <div className='flex justify-center'>
+                    <Image
+                      src={ReturnIcon}
+                      className='w-[20px] h-[15px]'
+                      alt='return_icon'
+                    />
+                  </div>,
+                  <div className='flex justify-center'>
+                    <Image
+                      src={SliderIcon}
+                      alt='slider_icon'
+                      className='w-[20px] h-[20px] cursor-pointer'
+                      onClick={() => {
+                        setFilterModal((prev) => !prev);
+                        setFilterType('variant');
+                      }}
+                    />
+                  </div>,
                 ]}
                 listKey={[
                   'name',
@@ -278,11 +497,82 @@ export default function ProductForm(
                   'created_at',
                   'image',
                   'detail',
-                  'option',
+                  'delete',
                 ]}
-                data={variant}
+                data={variant.map((item) => ({
+                  ...item,
+                  image: (
+                    <Image
+                      src={item.image || NoImage}
+                      width={150}
+                      height={100}
+                      alt={`gambar`}
+                      className='rounded-md'
+                    />
+                  ),
+                  is_active: (
+                    <span
+                      className={`table_status ${
+                        item.is_active === 1 ? 'publish' : 'draft'
+                      }`}
+                    >
+                      {item.is_active ? 'Publish' : 'Draft'}
+                    </span>
+                  ),
+                  created_at: formatDateUI(item.created_at),
+                  action: (
+                    <div className='flex flex-col gap-[10px]'>
+                      <Link
+                        href={`/dashboard/variant/${item.object_id}`}
+                        className='w-full'
+                      >
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(101, 57, 228, 0.58)'
+                          color='#fff'
+                          text='Variant List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                      <Link href={`/dashboard/comparison/${item.object_id}`}>
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(228, 57, 57, 0.58)'
+                          color='#fff'
+                          text='Comparison List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                    </div>
+                  ),
+                  detail: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={PencilIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='return_icon'
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/variant/${id}/edit/${item.object_id}`
+                          )
+                        }
+                      />
+                    </div>
+                  ),
+                  delete: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={TrashIcon}
+                        className='w-[20px] h-[20px]'
+                        alt='trash_icon'
+                        onClick={() => callDeleteVariant(id, item.object_id)}
+                      />
+                    </div>
+                  ),
+                }))}
                 type={'product'}
-                id={''}
               />
             </div>
           </>
@@ -299,13 +589,9 @@ export default function ProductForm(
               </div>
             </div>
             <div className='col-span-3 flex gap-[20px] '>
-              <button
+              <Link
                 className='flex justify-center items-center py-[10px] px-[21px] rounded-[12px] bg-[#dfdfdf] text-[16px] w-[30%] gap-[15px] whitespace-nowrap'
-                // onClick={() =>
-                //   router.push(
-                //     `/dashboard/product/${productId}/addComparison?category_level_1_product_id=${payload.category_level_1_id}`
-                //   )
-                // }
+                href={`/dashboard/comparison/${id}/create`}
               >
                 <Image
                   src={CirclePlus}
@@ -313,45 +599,148 @@ export default function ProductForm(
                   className='w-[15px] h-[15px]'
                 />{' '}
                 Create New
-              </button>
-              <div className='relative w-[80%]'>
+              </Link>
+              <form
+                className='relative w-[80%]'
+                onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                  e.preventDefault();
+                  callListComparison(id, {
+                    page: paginationComparison.currentPage,
+                    limit: paginationComparison.limit,
+                    ...payloadComparison,
+                  });
+                }}
+              >
                 <input
-                  name='brand'
+                  name='keyword'
                   type='text'
                   className='h-full w-full  rounded-[10px] border-[1.5px] border-[#b5b5b5] pl-[15px] pr-[40px] py-[10px] text-[24px] text-[#3e3e3e] font-semibold'
                   placeholder='Search name or sub-series'
+                  value={payloadComparison.keyword}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setPayloadComparison((prev) => ({
+                      ...prev,
+                      keyword: e.target.value,
+                    }))
+                  }
                 />
                 <IoSearch
                   color='#b5b5b5'
                   className='w-[20px] h-[20px] absolute top-[50%] right-[15px] transform translate-y-[-50%]'
                 />
-              </div>
+              </form>
             </div>
             <div className='col-span-3 overflow-scroll'>
               <Table
                 listTitle={[
-                  'Main Comparison',
+                  // 'Main Comparison',
                   'Brand',
                   'Name',
                   'Status',
                   'Date created',
                   'Image',
-                  'Detail',
-                  'Option',
+                  <div className='flex justify-center'>
+                    <Image
+                      src={ReturnIcon}
+                      className='w-[20px] h-[15px]'
+                      alt='return_icon'
+                    />
+                  </div>,
+                  <div className='flex justify-center'>
+                    <Image
+                      src={SliderIcon}
+                      alt='trash_icon'
+                      className='w-[20px] h-[20px] cursor-pointer'
+                      onClick={() => {
+                        setFilterModal((prev) => !prev);
+                        setFilterType('comparison');
+                      }}
+                    />
+                  </div>,
                 ]}
                 listKey={[
-                  'is_primary',
                   'brand',
                   'name',
                   'is_active',
                   'created_at',
                   'image',
                   'detail',
-                  'option',
+                  'delete',
                 ]}
-                data={comparison}
+                data={comparison.map((item) => ({
+                  ...item,
+                  image: (
+                    <Image
+                      src={item.image || NoImage}
+                      width={150}
+                      height={100}
+                      alt={`gambar`}
+                      className='rounded-md'
+                    />
+                  ),
+                  is_active: (
+                    <span
+                      className={`table_status ${
+                        item.is_active === 1 ? 'publish' : 'draft'
+                      }`}
+                    >
+                      {item.is_active ? 'Publish' : 'Draft'}
+                    </span>
+                  ),
+                  created_at: formatDateUI(item.created_at),
+                  action: (
+                    <div className='flex flex-col gap-[10px]'>
+                      <Link
+                        href={`/dashboard/comparison/${item.object_id}`}
+                        className='w-full'
+                      >
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(101, 57, 228, 0.58)'
+                          color='#fff'
+                          text='Variant List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                      <Link href={`/dashboard/comparison/${item.object_id}`}>
+                        <Button
+                          borderRadius='5px'
+                          bgColor='rgba(228, 57, 57, 0.58)'
+                          color='#fff'
+                          text='Comparison List'
+                          width='100%'
+                          padding='3.5px'
+                        />
+                      </Link>
+                    </div>
+                  ),
+                  detail: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={PencilIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='return_icon'
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/comparison/${id}/edit/${item.object_id}`
+                          )
+                        }
+                      />
+                    </div>
+                  ),
+                  delete: (
+                    <div className='flex justify-center'>
+                      <Image
+                        src={TrashIcon}
+                        className='w-[20px] h-[20px] cursor-pointer'
+                        alt='trash_icon'
+                        onClick={() => callDeleteComparison(id, item.object_id)}
+                      />
+                    </div>
+                  ),
+                }))}
                 type={'product'}
-                id={''}
               />
             </div>
           </>

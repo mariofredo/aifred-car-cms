@@ -26,6 +26,7 @@ interface SelectProps {
       value: string;
     }>
   ) => void;
+  isDisabled?: boolean;
 }
 export default function Select({
   options = [],
@@ -35,6 +36,7 @@ export default function Select({
   name = '',
   value,
   onChange,
+  isDisabled = false,
 }: SelectProps) {
   return (
     <div className='select_ctr'>
@@ -61,6 +63,7 @@ export default function Select({
         name={name}
         value={value}
         onChange={onChange}
+        isDisabled={isDisabled}
       />
     </div>
   );

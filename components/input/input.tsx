@@ -1,4 +1,5 @@
 import React, {ChangeEvent} from 'react';
+import '@/styles/input.scss';
 interface InputProps {
   type: string;
   placeholder?: string;
@@ -6,6 +7,8 @@ interface InputProps {
   name: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   id: string;
+  label?: string;
+  readOnly?: boolean;
 }
 export default function Input({
   type = 'text',
@@ -14,10 +17,12 @@ export default function Input({
   name,
   onChange,
   id,
+  label,
+  readOnly = false,
 }: InputProps) {
   return (
-    <div>
-      <label htmlFor={id}></label>
+    <div className='input_ctrs'>
+      <label htmlFor={id}>{label}</label>
       <input
         id={id}
         name={name}
@@ -25,6 +30,11 @@ export default function Input({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        readOnly={readOnly}
+        style={{
+          backgroundColor: `${readOnly ? '#DFDFDF' : '#fff'}`,
+          cursor: `${readOnly ? 'not-allowed' : 'text'}`,
+        }}
       />
     </div>
   );

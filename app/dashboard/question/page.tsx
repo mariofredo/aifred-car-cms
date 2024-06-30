@@ -1,23 +1,36 @@
 'use client';
 
-import {Button, DefaultContainer, Table} from '@/components';
+import {Button, DefaultContainer, Table, TablePagination} from '@/components';
 import {useQuestion} from '@/context';
 import {CirclePlus} from '@/public';
+import {Question} from '@/types';
 import Link from 'next/link';
 import {useCallback, useEffect, useState} from 'react';
 import {IoSearch} from 'react-icons/io5';
 
 export default function DashboardQuestion() {
   const {getListQuestion} = useQuestion();
-  const [question, setQuestion] = useState<[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [question, setQuestion] = useState<Question[]>([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalCount: 0,
+    limit: 10,
+  });
 
-  const callListVariant = useCallback(async () => {
-    const {data} = await getListQuestion();
+  const callListQuestion = useCallback(async () => {
+    setLoading(true);
+    const {data, total_data} = await getListQuestion();
     setQuestion(data);
+    setPagination((prev) => ({
+      ...prev,
+      totalCount: total_data,
+    }));
+    setLoading(false);
   }, [question]);
 
   useEffect(() => {
-    callListVariant();
+    callListQuestion();
   }, []);
 
   return (
@@ -49,31 +62,41 @@ export default function DashboardQuestion() {
             </div> */}
           </div>
           <div className='dc_table'>
-            <Table
-              listTitle={[
-                'Brand',
-                'Question Set Title',
-                'Total Question',
-                'Status',
-                'Date created',
-                'Detail',
-                'Option',
-              ]}
-              data={question}
-              listKey={[
-                'brand_name',
-                'question_set_title',
-                'total_question',
-                'is_active',
-                'created_at',
-                'detail',
-                'option',
-              ]}
-              type={'question'}
-              subType='question'
-              id={''}
-            />
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <Table
+                listTitle={[
+                  'Brand',
+                  'Question Set Title',
+                  'Total Question',
+                  'Status',
+                  'Date created',
+                  'Detail',
+                  'Option',
+                ]}
+                data={question}
+                listKey={[
+                  'brand_name',
+                  'question_set_title',
+                  'total_question',
+                  'is_active',
+                  'created_at',
+                  'detail',
+                  'option',
+                ]}
+                type={'question'}
+                subType='question'
+              />
+            )}
           </div>
+          {!loading && (
+            <TablePagination
+              limit={pagination.limit}
+              pagination={pagination}
+              setPagination={setPagination}
+            />
+          )}
         </div>
       </div>
     </DefaultContainer>

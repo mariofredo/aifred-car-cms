@@ -1,7 +1,7 @@
 import {StaticImageData} from 'next/image';
 
 export interface Product {
-  id: number;
+  object_id: string;
   brand_name: string;
   series_name: string;
   total_variant: number;
@@ -24,4 +24,5 @@ export interface Comparison {
   image: string | StaticImageData;
   created_at: Date;
   object_id: string;
+  is_primary: number;
 }
