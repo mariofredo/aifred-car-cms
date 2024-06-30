@@ -362,7 +362,6 @@ export default function page() {
                 ]}
                 type={'product'}
                 subType='product'
-                id={''}
               />
             )}
           </div>
