@@ -340,7 +340,6 @@ export default function page() {
                 ]}
                 type={'product'}
                 subType='variant'
-                id={id}
               />
             )}
           </div>
