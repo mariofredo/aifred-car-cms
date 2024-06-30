@@ -24,5 +24,6 @@ export {default as TrashIcon} from './trash_icon.svg';
 export {default as FilterChevronUp} from './filter_modal_chevron_up.svg';
 export {default as UncheckIcon} from './uncheck_icon.svg';
 export {default as CheckIcon} from './check_icon.svg';
+export {default as CompareWithIcon} from './compare_with_icon.svg';
 // export {default as EyeShow} from './eye_show.png';
 // export {default as EyeHidden} from './eye_hidden.png';

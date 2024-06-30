@@ -18,7 +18,13 @@ interface ContextProps {
   getListSpec: () => void;
   selectedSpecs: SelectedSpec[];
   setSelectedSpecs: Dispatch<SetStateAction<SelectedSpec[]>>;
-  createSpec: (payload: {name: string}) => void;
+  createSpec: (payload: {name: string}) => Promise<{[key: string]: any}>;
+  updateSpec: (payload: {
+    name: string;
+    is_active: number;
+    id: number;
+  }) => Promise<{[key: string]: any}>;
+  deleteSpec: (id: number) => Promise<{[key: string]: any}>;
   fetchSpecs: boolean;
   setFetchSpecs: Dispatch<SetStateAction<boolean>>;
   getListTag: () => void;
@@ -32,7 +38,9 @@ const defaultValue = {
   getListSpec: async () => {},
   selectedSpecs: [],
   setSelectedSpecs: () => {},
-  createSpec: () => {},
+  createSpec: async () => ({}),
+  updateSpec: async () => ({}),
+  deleteSpec: async () => ({}),
   fetchSpecs: false,
   setFetchSpecs: () => {},
   getListTag: () => {},
@@ -84,9 +92,11 @@ export function SpecParamContextProvider({
         body: JSON.stringify(payload),
       }
     );
-    if (response.ok) {
-      const data = response.json();
+    if (!response.ok) {
+      throw new Error('Error');
     }
+    const data = response.json();
+    return data;
   };
   const updateSpec = async (payload: {name: string; id: number}) => {
     try {
@@ -101,11 +111,36 @@ export function SpecParamContextProvider({
           body: JSON.stringify(payload),
         }
       );
-      if (response.ok) {
-        const data = response.json();
+      if (!response.ok) {
+        throw new Error('Error');
       }
+      const data = response.json();
+      return data;
     } catch (error) {
+      console.log(error);
     } finally {
+    }
+  };
+  const deleteSpec = async (id: number) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/spec/delete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({id}),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const data = response.json();
+      return data;
+    } catch (error) {
+      console.log(error);
     }
   };
   const getListTag = async () => {
@@ -138,6 +173,8 @@ export function SpecParamContextProvider({
     selectedSpecs,
     setSelectedSpecs,
     createSpec,
+    updateSpec,
+    deleteSpec,
     fetchSpecs,
     setFetchSpecs,
     getListTag,

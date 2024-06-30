@@ -13,3 +13,4 @@ export * from './tagInput';
 export * from './dateInput';
 export * from './filterModal';
 export * from './checkboxStatus';
+export * from './heatmap';

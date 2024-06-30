@@ -32,7 +32,6 @@ export default function SpecForm({
   data: {[key: string]: any};
   setData: Dispatch<SetStateAction<any>>;
 }) {
-  const token = Cookies.get('token_aifred_neo_cms')?.toString();
   const {setShowModal} = useModal();
   const {
     specs,
@@ -40,6 +39,8 @@ export default function SpecForm({
     selectedSpecs,
     setSelectedSpecs,
     createSpec,
+    updateSpec,
+    deleteSpec,
     getListSpec,
     fetchSpecs,
     setFetchSpecs,
@@ -49,10 +50,7 @@ export default function SpecForm({
     is_active: 1,
     id: 0,
   });
-  const [bool, setBool] = useState(false);
-  const [specListInput, setSpecListInput] = useState<SpecListInput[]>(
-    specs.map((item) => ({...item, isEdit: false, newName: item.name}))
-  );
+  const [specListInput, setSpecListInput] = useState<SpecListInput[]>([]);
   const handleChecked = useCallback(
     (checked: boolean, item: any, idx: number) => {
       if (checked) {
@@ -131,6 +129,42 @@ export default function SpecForm({
     },
     [specListInput]
   );
+  const handleUpdateEditSpec = useCallback(
+    async (payload: Payload) => {
+      try {
+        const {code} = await updateSpec(payload);
+        if (code === 200) {
+          setFetchSpecs(false);
+          await getListSpec();
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    },
+    [specs, specListInput]
+  );
+  const handleDeleteSpec = useCallback(
+    async (id: number) => {
+      try {
+        const {code} = await deleteSpec(id);
+        if (code === 200) {
+          setFetchSpecs(false);
+          await getListSpec();
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    },
+    [specs, specListInput]
+  );
+
+  useEffect(() => {
+    setSpecListInput(
+      specs.map((item) => ({...item, isEdit: false, newName: item.name}))
+    );
+  }, [specs]);
 
   return (
     <>
@@ -161,9 +195,9 @@ export default function SpecForm({
         <button
           className='btn_done'
           onClick={async () => {
-            createSpec(payload);
+            await createSpec(payload);
             setFetchSpecs(false);
-            getListSpec();
+            await getListSpec();
             setShowModal(false);
           }}
         >
@@ -199,7 +233,13 @@ export default function SpecForm({
                       <FaCheck
                         color='#06D001'
                         className='item_input_edit_confirm'
-                        onClick={() => {}}
+                        onClick={() =>
+                          handleUpdateEditSpec({
+                            name: el.newName,
+                            id: el.id,
+                            is_active: 1,
+                          })
+                        }
                         height={20}
                         width={20}
                       />
@@ -245,7 +285,7 @@ export default function SpecForm({
                       src={TrashIcon}
                       className='w-[15px] h-[15px] cursor-pointer'
                       alt='trash_icon'
-                      onClick={() => {}}
+                      onClick={() => handleDeleteSpec(el.id)}
                     />
                   </div>
                 </>
