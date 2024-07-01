@@ -347,6 +347,8 @@ export default function DashboardHome() {
               z: z_axis,
               type: 'heatmap',
               colorscale: color_scale,
+              hovertemplate:
+                'Time: %{x}<br>Day: %{y}<br>Submission: %{z}<extra></extra>',
             },
           ],
           layout: {
@@ -499,13 +501,13 @@ export default function DashboardHome() {
             <p className='dashboard_info_value'>{summaryRespondent.total}</p>
           </div>
           <div className='dashboard_info'>
-            <p className='dashboard_info_title'>Completed</p>
+            <p className='dashboard_info_title'>Total Complete</p>
             <p className='dashboard_info_value'>
               {summaryRespondent.completed}
             </p>
           </div>
           <div className='dashboard_info'>
-            <p className='dashboard_info_title'>Uncompleted</p>
+            <p className='dashboard_info_title'>Total Incomplete</p>
             <p className='dashboard_info_value'>
               {summaryRespondent.uncompleted}
             </p>
@@ -522,7 +524,7 @@ export default function DashboardHome() {
                     backgroundColor: ['#18BE1F', '#E2E1E1'],
                   },
                 ],
-                labels: ['Total Complete', 'Total Not Complete'],
+                labels: ['Total Complete', 'Total Incomplete'],
               }}
               options={{
                 plugins: {
@@ -597,7 +599,7 @@ export default function DashboardHome() {
                     backgroundColor: ['#18BE1F', '#E2E1E1'],
                   },
                 ],
-                labels: ['Total Complete', 'Total Not Complete'],
+                labels: ['Total Saved', 'Total Unsaved'],
               }}
               options={{
                 plugins: {

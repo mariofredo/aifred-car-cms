@@ -41,12 +41,24 @@
     letter-spacing: -1.6px;
   }
 
+  .cotent_description {
+    color: var(--unselect, #3e3e3e);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 104%; /* 16.64px */
+    letter-spacing: -0.8px;
+  }
+
   .back_button {
     display: flex;
+    margin: auto 0;
     padding: 10.942px 41.579px;
+    justify-content: center;
     align-items: center;
     gap: 10.942px;
-
+    height: 36px;
     border-radius: 10.942px;
     background: var(--sub1, #dfdfdf);
     p {

@@ -73,7 +73,6 @@ export default function DashboardQuestion() {
                   'Status',
                   'Date created',
                   'Detail',
-                  'Option',
                 ]}
                 data={question}
                 listKey={[
@@ -83,7 +82,6 @@ export default function DashboardQuestion() {
                   'is_active',
                   'created_at',
                   'detail',
-                  'option',
                 ]}
                 type={'question'}
                 subType='question'
