@@ -1,10 +1,23 @@
+'use client';
 import {PlotlyType} from '@/types';
-import Plotly from 'plotly.js-dist-min';
 import {useEffect, useState} from 'react';
-
+type PlotlyModuleType = typeof import('plotly.js-dist-min');
 export default function Heatmap({data, layout, loading}: PlotlyType) {
+  const [Plotly, setPlotly] = useState<PlotlyModuleType | null>(null);
+
   useEffect(() => {
-    Plotly.newPlot('heatmap_ctr', data, layout);
+    const loadPlotly = async () => {
+      if (typeof window !== 'undefined') {
+        const PlotlyModule = await import('plotly.js-dist-min');
+        setPlotly(PlotlyModule.default || PlotlyModule);
+      }
+    };
+    loadPlotly();
+  }, []);
+  useEffect(() => {
+    if (typeof window !== 'undefined' && data && layout) {
+      Plotly?.newPlot('heatmap_ctr', data, layout);
+    }
   }, [data, layout]);
   return (
     <>

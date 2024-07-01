@@ -87,7 +87,6 @@ export default function DashboardQuestion() {
                 ]}
                 type={'question'}
                 subType='question'
-                id={''}
               />
             )}
           </div>
