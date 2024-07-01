@@ -49,7 +49,14 @@ export default function LoginForm() {
   }, [payload, router]);
 
   return (
-    <div className='login_form'>
+    <form
+      className='login_form'
+      method='POST'
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleLogin();
+      }}
+    >
       <div className='login_img_ctr'>
         <Image src={SPFK} alt='spfk_logo' />
       </div>
@@ -96,7 +103,9 @@ export default function LoginForm() {
         </Link>
       </div>
       {error && <p className='error_message'>{error}</p>}
-      <button onClick={handleLogin}>Login</button>
-    </div>
+      <button onClick={handleLogin} type='submit'>
+        Login
+      </button>
+    </form>
   );
 }
