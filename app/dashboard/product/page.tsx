@@ -3,6 +3,7 @@ import {
   Button,
   DefaultContainer,
   FilterModal,
+  ModalDeleteConfirmation,
   Select,
   Table,
   TablePagination,
@@ -46,6 +47,9 @@ export default function DashboardProduct() {
   const router = useRouter();
   const {getListProduct, deleteProduct} = useProduct();
   const {getListBrand} = useBrand();
+  const [modal, setModal] = useState(false);
+  const [objectId, setObjectId] = useState('');
+  const [objectName, setObjectName] = useState('');
   const [loading, setLoading] = useState(true);
   const [brand, setBrand] = useState<{label: string; value: string}[]>([]);
   const {filterModal, setFilterModal} = useModal();
@@ -83,8 +87,9 @@ export default function DashboardProduct() {
   const callDeleteProduct = useCallback(
     async (id: string) => {
       const {code} = await deleteProduct(id);
-      if (code === 200)
-        await getListProduct({
+      if (code === 200) {
+        setModal(false);
+        callListProduct({
           page: pagination.currentPage,
           limit: pagination.limit,
           brand_unique_id: payload.brand_unique_id?.value,
@@ -95,6 +100,8 @@ export default function DashboardProduct() {
           date_created_end: payload.date_created_end,
           is_active: payload.is_active,
         });
+      }
+      setModal(false);
     },
     [pagination, payload]
   );
@@ -214,6 +221,19 @@ export default function DashboardProduct() {
       ),
     [payload, filterModal, pagination]
   );
+
+  const handleDeleteModal = useMemo(
+    () =>
+      modal && (
+        <ModalDeleteConfirmation
+          label={`Are you sure to delete the product ${objectName}?`}
+          onCancel={() => setModal(false)}
+          onDone={() => callDeleteProduct(objectId)}
+        />
+      ),
+    [modal, objectName, objectId]
+  );
+
   useEffect(() => {
     callListBrand();
   }, []);
@@ -233,6 +253,7 @@ export default function DashboardProduct() {
 
   return (
     <DefaultContainer title='Product Library'>
+      {handleDeleteModal}
       {handleRenderFilter}
       <div className='dc_ctr'>
         <div className='dc_filter_ctr'>
@@ -386,7 +407,13 @@ export default function DashboardProduct() {
                         src={TrashIcon}
                         className='w-[20px] h-[20px] cursor-pointer'
                         alt='trash_icon'
-                        onClick={() => callDeleteProduct(item.object_id)}
+                        onClick={() => {
+                          setModal(true);
+                          setObjectId(item.object_id);
+                          setObjectName(
+                            item.brand_name + ' ' + item.series_name
+                          );
+                        }}
                       />
                     </div>
                   ),

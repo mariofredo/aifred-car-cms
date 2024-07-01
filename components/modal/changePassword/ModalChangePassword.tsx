@@ -80,7 +80,7 @@ export default function ModalChangePassword({
                     : 'pointer',
               }}
             >
-              Done
+              Confirm
             </button>
           </div>
         </div>

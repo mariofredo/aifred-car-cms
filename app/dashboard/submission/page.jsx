@@ -1,6 +1,11 @@
 'use client';
-import {useState, useEffect, useCallback} from 'react';
-import {DefaultContainer, Table, TablePagination} from '@/components';
+import {useState, useEffect, useCallback, useMemo} from 'react';
+import {
+  DefaultContainer,
+  ModalDeleteConfirmation,
+  Table,
+  TablePagination,
+} from '@/components';
 import Cookies from 'js-cookie';
 import '@/styles/submission.scss';
 import Link from 'next/link';
@@ -12,7 +17,8 @@ export default function page() {
     currentPage: 1,
     totalCount: 0,
   });
-
+  const [modal, setModal] = useState(false);
+  const [submissionId, setSubmissionId] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = Cookies.get('token_aifred_neo_cms');
@@ -70,12 +76,14 @@ export default function page() {
         );
         // Optionally, refetch the data
         fetchData();
+        setModal(false);
       } else {
         console.error(
           'Failed to delete submission:',
           response.status,
           await response.text()
         );
+        setModal(false);
       }
     } catch (error) {
       console.error('Failed to delete submission:', error);
@@ -101,12 +109,27 @@ export default function page() {
     }
   }, []);
 
+  const handleDeleteModal = useMemo(
+    () =>
+      modal && (
+        <ModalDeleteConfirmation
+          label={`Are you sure to delete the submission with ID ${submissionId}?`}
+          onCancel={() => setModal(false)}
+          onDone={() => {
+            deleteSubmission(submissionId);
+          }}
+        />
+      ),
+    [modal, submissionId]
+  );
+
   useEffect(() => {
     fetchData();
   }, [pagination.currentPage, pagination.limit]);
 
   return (
     <div className='flex flex-col gap-[15px]'>
+      {handleDeleteModal}
       <DefaultContainer title={'Submission'} />
       {/* To Be Done */}
       {/* <div className='flex gap-[23px]'>
@@ -149,7 +172,11 @@ export default function page() {
                     </Link>
                     <button
                       className='red_btn'
-                      onClick={() => deleteSubmission(submission.unique_id)}
+                      onClick={() => {
+                        // deleteSubmission(submission.unique_id);
+                        setModal(true);
+                        setSubmissionId(submission.unique_id);
+                      }}
                     >
                       Delete
                     </button>
