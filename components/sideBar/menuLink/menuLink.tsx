@@ -36,6 +36,8 @@ export default function MenuLink({
           onClick={async () => {
             if (title === 'Logout') {
               Cookies.remove('token_aifred_neo_cms');
+              Cookies.remove('username_aifred_neo_cms');
+              Cookies.remove('unique_id_aifred_neo_cms');
             }
             // router.push(path);
           }}

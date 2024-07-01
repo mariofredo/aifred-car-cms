@@ -2,13 +2,13 @@
 import Image from 'next/image';
 import {ContactIcon, MailIcon, UserIcon} from '@/public';
 import {DefaultContainer, TableHome, Card} from '@/components';
-import {useParams} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';
 import Cookies from 'js-cookie';
-import Link from 'next/link';
 import '@/styles/submissionDetail.scss';
 
 export default function page() {
+  const router = useRouter();
   const {unique_id} = useParams();
   const [submissionDetail, setSubmissionDetail] = useState(null);
 
@@ -83,11 +83,17 @@ export default function page() {
       </div>
       <div className='sd_content_container'>
         <div className='w-full flex justify-between'>
-          <p className='content_title'>Questions Details</p>
-          <button className='back_button'>
-            <Link href='/dashboard/submission/'>
-              <p>Back</p>
-            </Link>
+          <div className='flex flex-col gap-[10px]'>
+            <p className='content_title'>
+              Questions {submissionDetail.question_set_title}
+            </p>
+            <p className='cotent_description'>Questions Details</p>
+          </div>
+          <button
+            className='back_button'
+            onClick={() => router.push('/dashboard/submission')}
+          >
+            <p>Back</p>
           </button>
         </div>
         <TableHome

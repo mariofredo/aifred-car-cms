@@ -16,6 +16,7 @@ import {
   Button,
   DefaultContainer,
   FilterModal,
+  ModalDeleteConfirmation,
   Table,
   TablePagination,
 } from '@/components';
@@ -31,8 +32,11 @@ import {formatDateUI} from '@/utils';
 
 export default function page() {
   const router = useRouter();
+  const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<[]>([]);
+  const [userId, setUserId] = useState('');
+  const [username, setUsername] = useState('');
   const [payload, setPayload] = useState<any>({
     order_by_name: '',
     order_by_username: '',
@@ -110,6 +114,7 @@ export default function page() {
       }
       const {code} = await response.json();
       if (code === 200) {
+        setModal(false);
         getUserData(pagination.currentPage, pagination.limit, {
           keyword: payload.keyword,
           order_by_name: payload.order_by_name,
@@ -120,10 +125,23 @@ export default function page() {
           date_created_end: payload.date_created_end,
         });
       }
+      setModal(false);
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleDeleteModal = useMemo(
+    () =>
+      modal && (
+        <ModalDeleteConfirmation
+          label={`Are you sure to delete the user ${username}?`}
+          onCancel={() => setModal(false)}
+          onDone={() => deleteUser(userId)}
+        />
+      ),
+    [userId, username, modal]
+  );
 
   useEffect(() => {
     getUserData(pagination.currentPage, pagination.limit, {
@@ -248,6 +266,7 @@ export default function page() {
   return (
     <DefaultContainer title='Admin Management'>
       {handleRenderFilter}
+      {handleDeleteModal}
       <div>
         <div className='dc_table_ctr'>
           <div className='dc_action_ctr'>
@@ -346,7 +365,11 @@ export default function page() {
                         src={TrashIcon}
                         className='w-[20px] h-[20px] cursor-pointer'
                         alt='trash_icon'
-                        onClick={() => deleteUser(item.unique_id)}
+                        onClick={() => {
+                          setModal(true);
+                          setUserId(item.unique_id);
+                          setUsername(item.username);
+                        }}
                       />
                     </div>
                   ),

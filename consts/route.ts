@@ -40,6 +40,7 @@ export const API_ROUTES = {
   question_detail: (id: string) => base_url + `/question/${id}`,
   question_update: base_url + `/question/update`,
   question_list_by_brand: base_url + `/question/get-by-brand`,
+  question_delete: base_url + '/question/delete',
 
   // BRAND
   brand_list: base_url + '/brand',
