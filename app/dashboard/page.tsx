@@ -656,8 +656,8 @@ export default function DashboardHome() {
         <div className='col-span-3 dashboard_box'>
           <div className='dashboard_info'>
             <p className='dashboard_text_title'>Total Respondent per Period</p>
-            {totalRespondentsPerPeriod.completed.length > 0 &&
-            totalRespondentsPerPeriod.uncompleted.length > 0 ? (
+            {Object.keys(totalRespondentsPerPeriod.completed).length > 0 &&
+            Object.keys(totalRespondentsPerPeriod.uncompleted).length > 0 ? (
               <Line
                 data={{
                   datasets: [
