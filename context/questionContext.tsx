@@ -140,7 +140,7 @@ export function QuestionContextProvider({
   };
   const deleteQuestion = async (object_id: string) => {
     try {
-      const response = await fetch(API_ROUTES.variant_delete('1'), {
+      const response = await fetch(API_ROUTES.question_delete, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

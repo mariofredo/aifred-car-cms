@@ -25,10 +25,10 @@ export default function ModalDeleteConfirmation({
               Cancel
             </button>
             <button
-              className='w-[30%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#dfdfdf]'
+              className='w-[30%] px-[30px] py-[10px] rounded-[10px] border-[1px] border-[#dfdfdf] bg-[#2f5cde]'
               onClick={onDone}
             >
-              Confirm
+              <p className='text-[#fff]'>Confirm</p>
             </button>
           </div>
         </div>

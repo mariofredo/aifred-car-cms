@@ -1,15 +1,11 @@
 'use client';
 import Image from 'next/image';
-import {ReturnIcon, SliderIcon, PencilIcon, NoImage, TrashIcon} from '@/public';
+import {PencilIcon} from '@/public';
 import {HiDotsVertical} from 'react-icons/hi';
 import {useRouter} from 'next/navigation';
-import {Button} from '@/components';
-import Link from 'next/link';
 import {ReactNode, useCallback} from 'react';
 import {formatDateUI} from '@/utils';
 import '@/styles/table.scss';
-import {useModal, useProduct} from '@/context';
-import {useComparison} from '@/context/comparisonContext';
 export default function Table({
   listTitle = [],
   data = [],
