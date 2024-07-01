@@ -1,11 +1,11 @@
 'use client';
 import {useCallback, useState} from 'react';
+import Cookie from 'js-cookie';
 import Link from 'next/link';
 import Image from 'next/image';
-import {SPFK} from '@/public';
-import {IoMdEye, IoMdEyeOff} from 'react-icons/io';
 import {useRouter} from 'next/navigation';
-import Cookie from 'js-cookie';
+import {IoMdEye, IoMdEyeOff} from 'react-icons/io';
+import {SPFK} from '@/public';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -26,9 +26,8 @@ export default function LoginForm() {
         },
         body: JSON.stringify(payload),
       });
-
       if (response.ok) {
-        const {code, data} = await response.json();
+        const {code, data, message} = await response.json();
         if (code === 200) {
           Cookie.set('token_aifred_neo_cms', data.token, {
             expires: new Date(data.expired_at),
@@ -40,18 +39,12 @@ export default function LoginForm() {
             expires: new Date(data.expired_at),
           });
           router.push('/dashboard');
-        }
-      } else {
-        const errorResponse = await response.json();
-        if (errorResponse.message === 'Email and password do not match') {
-          setError('Email and password do not match. Please try again.');
         } else {
-          setError('Email and password do not match. Please try again.');
+          setError(message);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      setError('Failed to log in. Please try again later.');
     }
   }, [payload, router]);
 
@@ -63,7 +56,7 @@ export default function LoginForm() {
       <input
         type='text'
         name='username'
-        placeholder='Email ID'
+        placeholder='Username'
         className='email_style'
         value={payload.username}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
