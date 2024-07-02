@@ -67,6 +67,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
+            type: 'admin',
             unique_id: id,
             ...payload,
           }),
@@ -97,6 +98,7 @@ export default function page() {
             Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
           },
           body: JSON.stringify({
+            type: 'admin',
             unique_id: id,
             password_old: changePassword.old,
             password: changePassword.new,
