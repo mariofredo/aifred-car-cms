@@ -37,7 +37,7 @@ export default function page() {
   const getUserData = useCallback(async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}?type=user`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user-management/${id}?type=admin`,
         {
           method: 'GET',
           headers: {
