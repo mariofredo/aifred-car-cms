@@ -865,10 +865,10 @@ export default function DashboardHome() {
                 <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
                   <Card
                     // brand_name='Mitsubishi'
-                    product_level_1_name={item.compared_with.level_1_name}
-                    product_level_2_name={item.compared_with.name}
-                    price={item.compared_with.price}
-                    image={item.compared_with.image}
+                    product_level_1_name={item.level_1_name}
+                    product_level_2_name={item.name}
+                    price={item.price}
+                    image={item.image}
                   />
                   <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
                     <span className='font-bold text-[24px] '>#{idx + 1}</span>
@@ -876,19 +876,19 @@ export default function DashboardHome() {
                     <span className='font-bold'>{item.total}</span>X
                   </div>
                 </div>
-                <div className='w-full flex justify-center items-center font-bold'>
+                <div className='w-full flex justify-center items-center font-medium text-[14px]'>
                   Compare With{' '}
                   <Image src={CompareWithIcon} alt='compare_with_icon' />
                 </div>
                 <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
                   <Card
                     // brand_name='Mitsubishi'
-                    product_level_1_name={item.level_1_name}
-                    product_level_2_name={item.name}
-                    price={item.price}
-                    image={item.image}
+                    product_level_1_name={item.compared_with.level_1_name}
+                    product_level_2_name={item.compared_with.name}
+                    price={item.compared_with.price}
+                    image={item.compared_with.image}
                   />
-                  <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
+                  <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-[#B5B5B5]'>
                     <span className='font-bold text-[24px] '>#{idx + 1}</span>
                     <span className=''>Choosen</span>
                     <span className='font-bold'>{item.total}</span>X
