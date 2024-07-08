@@ -45,6 +45,14 @@ interface Payload {
     value: string;
   }>;
   date_range_home: Range;
+  province_id: SingleValue<{
+    label: string;
+    value: string;
+  }>;
+  city_id: SingleValue<{
+    label: string;
+    value: string;
+  }>;
 }
 export default function DashboardHome() {
   const {getListBrand} = useBrand();
@@ -65,6 +73,14 @@ export default function DashboardHome() {
       ),
       endDate: new Date(),
       key: 'date_range_home',
+    },
+    province_id: {
+      label: '',
+      value: '',
+    },
+    city_id: {
+      label: '',
+      value: '',
     },
   });
   const [brand, setBrand] = useState<{label: string; value: string}[]>([]);
@@ -105,6 +121,8 @@ export default function DashboardHome() {
     layout: {},
     loading: false,
   });
+  const [province, setProvince] = useState([]);
+  const [city, setCity] = useState([]);
   const getSummaryRespondents = useCallback(async (payload: Payload) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/dashboard/summary-respondents`,
@@ -118,6 +136,8 @@ export default function DashboardHome() {
           question_unique_id: payload.question_unique_id?.value,
           date_start: formatDate(payload.date_range_home.startDate),
           date_end: formatDate(payload.date_range_home.endDate),
+          province_id: payload.province_id?.value,
+          city_id: payload.city_id?.value,
         }),
       }
     );
@@ -142,6 +162,8 @@ export default function DashboardHome() {
           question_unique_id: payload.question_unique_id?.value,
           date_start: formatDate(payload.date_range_home.startDate),
           date_end: formatDate(payload.date_range_home.endDate),
+          province_id: payload.province_id?.value,
+          city_id: payload.city_id?.value,
         }),
       }
     );
@@ -165,6 +187,8 @@ export default function DashboardHome() {
           question_unique_id: payload.question_unique_id?.value,
           date_start: formatDate(payload.date_range_home.startDate),
           date_end: formatDate(payload.date_range_home.endDate),
+          province_id: payload.province_id?.value,
+          city_id: payload.city_id?.value,
         }),
       }
     );
@@ -189,6 +213,8 @@ export default function DashboardHome() {
           question_unique_id: payload.question_unique_id?.value,
           date_start: formatDate(payload.date_range_home.startDate),
           date_end: formatDate(payload.date_range_home.endDate),
+          province_id: payload.province_id?.value,
+          city_id: payload.city_id?.value,
         }),
       }
     );
@@ -212,6 +238,8 @@ export default function DashboardHome() {
           question_unique_id: payload.question_unique_id?.value,
           date_start: formatDate(payload.date_range_home.startDate),
           date_end: formatDate(payload.date_range_home.endDate),
+          province_id: payload.province_id?.value,
+          city_id: payload.city_id?.value,
         }),
       }
     );
@@ -237,6 +265,8 @@ export default function DashboardHome() {
             question_unique_id: payload.question_unique_id?.value,
             date_start: formatDate(payload.date_range_home.startDate),
             date_end: formatDate(payload.date_range_home.endDate),
+            province_id: payload.province_id?.value,
+            city_id: payload.city_id?.value,
           }),
         }
       );
@@ -262,6 +292,8 @@ export default function DashboardHome() {
           question_unique_id: payload.question_unique_id?.value,
           date_start: formatDate(payload.date_range_home.startDate),
           date_end: formatDate(payload.date_range_home.endDate),
+          province_id: payload.province_id?.value,
+          city_id: payload.city_id?.value,
         }),
       }
     );
@@ -285,6 +317,8 @@ export default function DashboardHome() {
           question_unique_id: payload.question_unique_id?.value,
           date_start: formatDate(payload.date_range_home.startDate),
           date_end: formatDate(payload.date_range_home.endDate),
+          province_id: payload.province_id?.value,
+          city_id: payload.city_id?.value,
         }),
       }
     );
@@ -311,6 +345,8 @@ export default function DashboardHome() {
               question_unique_id: payload.question_unique_id?.value,
               date_start: formatDate(payload.date_range_home.startDate),
               date_end: formatDate(payload.date_range_home.endDate),
+              province_id: payload.province_id?.value,
+              city_id: payload.city_id?.value,
             }),
           }
         );
@@ -417,6 +453,8 @@ export default function DashboardHome() {
             question_unique_id: payload.question_unique_id?.value,
             date_start: formatDate(payload.date_range_home.startDate),
             date_end: formatDate(payload.date_range_home.endDate),
+            province_id: payload.province_id?.value,
+            city_id: payload.city_id?.value,
           }),
         }
       );
@@ -429,9 +467,54 @@ export default function DashboardHome() {
       console.log(error);
     }
   }, []);
+  const getProvince = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/dashboard/get-provinces`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const {data} = await response.json();
+      setProvince(
+        data.map((item: any) => ({label: item.name, value: item.id}))
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  const getCity = useCallback(async (province_id: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/dashboard/get-cities?province_id=${province_id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token_aifred_neo_cms')}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Error');
+      }
+      const {data} = await response.json();
+      setCity(data.map((item: any) => ({label: item.name, value: item.id})));
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   useEffect(() => {
     callListBrand();
+    getProvince();
   }, []);
   useEffect(() => {
     if (payload.question_unique_id?.value) {
@@ -452,6 +535,9 @@ export default function DashboardHome() {
     if (payload.brand_unique_id?.value)
       callListQuestion(payload.brand_unique_id);
   }, [payload.brand_unique_id]);
+  useEffect(() => {
+    if (payload.province_id?.value) getCity(payload.province_id?.value);
+  }, [payload.province_id]);
   return (
     <div className='dashboard_home_ctr'>
       {/* <HomeHeader /> */}
@@ -492,6 +578,35 @@ export default function DashboardHome() {
             }));
           }}
           label='PERIOD'
+        />
+      </div>
+      <div className='dashboard_home_filter'>
+        <Select
+          options={province}
+          value={payload.province_id}
+          isSearchable
+          isClearable
+          label='PROVINCE'
+          name='province_id'
+          onChange={(newValue) => {
+            setPayload((prev) => ({
+              ...prev,
+              province_id: newValue,
+              city_id: {label: '', value: ''},
+            }));
+          }}
+        />
+        <Select
+          options={city}
+          value={payload.city_id}
+          isSearchable
+          isClearable
+          label='CITY'
+          name='city_id'
+          onChange={(newValue) => {
+            setPayload((prev) => ({...prev, city_id: newValue}));
+          }}
+          isDisabled={!payload.province_id?.value}
         />
       </div>
       <div className='dashboard_box'>
@@ -656,8 +771,11 @@ export default function DashboardHome() {
         <div className='col-span-3 dashboard_box'>
           <div className='dashboard_info'>
             <p className='dashboard_text_title'>Total Respondent per Period</p>
-            {Object.keys(totalRespondentsPerPeriod.completed).length > 0 &&
-            Object.keys(totalRespondentsPerPeriod.uncompleted).length > 0 ? (
+
+            {totalRespondentsPerPeriod.completed &&
+            totalRespondentsPerPeriod.uncompleted &&
+            Object.keys(totalRespondentsPerPeriod?.completed).length > 0 &&
+            Object.keys(totalRespondentsPerPeriod?.uncompleted).length > 0 ? (
               <Line
                 data={{
                   datasets: [
@@ -860,42 +978,46 @@ export default function DashboardHome() {
         <div className='dashboard_info'>
           <p className='dashboard_text_title'>Most Compared Product</p>
           <div className='grid grid-cols-5 gap-[20px]'>
-            {mostComparedProduct.map((item: any, idx: number) => (
-              <div className='flex flex-col gap-[20px]'>
-                <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
-                  <Card
-                    // brand_name='Mitsubishi'
-                    product_level_1_name={item.level_1_name}
-                    product_level_2_name={item.name}
-                    price={item.price}
-                    image={item.image}
-                  />
-                  <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
-                    <span className='font-bold text-[24px] '>#{idx + 1}</span>
-                    <span className=''>Choosen</span>
-                    <span className='font-bold'>{item.total}</span>X
+            {mostComparedProduct.length > 0 ? (
+              mostComparedProduct.map((item: any, idx: number) => (
+                <div className='flex flex-col gap-[20px]'>
+                  <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
+                    <Card
+                      // brand_name='Mitsubishi'
+                      product_level_1_name={item.level_1_name}
+                      product_level_2_name={item.name}
+                      price={item.price}
+                      image={item.image}
+                    />
+                    <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-white'>
+                      <span className='font-bold text-[24px] '>#{idx + 1}</span>
+                      <span className=''>Choosen</span>
+                      <span className='font-bold'>{item.total}</span>X
+                    </div>
+                  </div>
+                  <div className='w-full flex justify-center items-center font-medium text-[14px]'>
+                    Compare With{' '}
+                    <Image src={CompareWithIcon} alt='compare_with_icon' />
+                  </div>
+                  <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
+                    <Card
+                      // brand_name='Mitsubishi'
+                      product_level_1_name={item.compared_with.level_1_name}
+                      product_level_2_name={item.compared_with.name}
+                      price={item.compared_with.price}
+                      image={item.compared_with.image}
+                    />
+                    <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-[#B5B5B5]'>
+                      <span className='font-bold text-[24px] '>#{idx + 1}</span>
+                      <span className=''>Choosen</span>
+                      <span className='font-bold'>{item.total}</span>X
+                    </div>
                   </div>
                 </div>
-                <div className='w-full flex justify-center items-center font-medium text-[14px]'>
-                  Compare With{' '}
-                  <Image src={CompareWithIcon} alt='compare_with_icon' />
-                </div>
-                <div className='flex flex-col bg-[#B5B5B5] rounded-[20px]'>
-                  <Card
-                    // brand_name='Mitsubishi'
-                    product_level_1_name={item.compared_with.level_1_name}
-                    product_level_2_name={item.compared_with.name}
-                    price={item.compared_with.price}
-                    image={item.compared_with.image}
-                  />
-                  <div className='flex items-center gap-[5px] py-[5px] px-[10px] text-[#B5B5B5]'>
-                    <span className='font-bold text-[24px] '>#{idx + 1}</span>
-                    <span className=''>Choosen</span>
-                    <span className='font-bold'>{item.total}</span>X
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p> No Data Found</p>
+            )}
           </div>
         </div>
       </div>
