@@ -3,7 +3,7 @@ import {CirclePlus} from '@/public';
 import Image from 'next/image';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {SelectedSpec, Tag} from '@/types';
-import {ModalForm, TagInput} from '@/components';
+import {ModalForm, ModalNotification, TagInput} from '@/components';
 import {useModal, useSpec, useVariant} from '@/context';
 import {useParams, useRouter} from 'next/navigation';
 interface Payload {
@@ -17,6 +17,11 @@ export default function VariantForm({type}: {type: string}) {
   const router = useRouter();
   const {createVariant, getDetailVariant, updateVariant} = useVariant();
   const {showModal, setShowModal} = useModal();
+  const [showNotif, setShowNotif] = useState<boolean>(false);
+  const [notif, setNotif] = useState<{title: string; message: string}>({
+    title: '',
+    message: '',
+  });
   const {
     tagSuggestion,
     selectedSpecs,
@@ -86,6 +91,13 @@ export default function VariantForm({type}: {type: string}) {
               tag: tags,
             });
             if (resUpdate.code === 200) router.push(`/dashboard/variant/${id}`);
+            else if (resUpdate.code === 400) {
+              setNotif({
+                title: 'Error',
+                message: resUpdate.message,
+              });
+              setShowNotif(true);
+            }
             return;
 
           default:
@@ -95,6 +107,13 @@ export default function VariantForm({type}: {type: string}) {
               tag: tags,
             });
             if (resCreate.code === 200) router.push(`/dashboard/variant/${id}`);
+            else if (resCreate.code === 400) {
+              setNotif({
+                title: 'Error',
+                message: resCreate.message,
+              });
+              setShowNotif(true);
+            }
             return;
         }
       } catch (error) {
@@ -179,6 +198,9 @@ export default function VariantForm({type}: {type: string}) {
   }, [payload, selectedSpecs, specs]);
   return (
     <>
+      {showNotif && (
+        <ModalNotification {...notif} onClose={() => setShowNotif(false)} />
+      )}
       <div className='grid grid-cols-3 gap-[30px]'>
         <div className='col-span-3'>
           <div className='text-[24px] text-[#3e3e3e] font-medium'>

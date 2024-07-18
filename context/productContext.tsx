@@ -93,7 +93,8 @@ export function ProductContextProvider({
         }
       );
       if (!response.ok) {
-        throw new Error('Error');
+        const error = await response.json();
+        return error;
       }
       const data = await response.json();
       return data;
@@ -115,7 +116,8 @@ export function ProductContextProvider({
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
-        throw new Error('Error');
+        const error = await response.json();
+        return error;
       }
       const data = await response.json();
       return data;

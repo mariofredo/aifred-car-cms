@@ -3,7 +3,7 @@ import {CirclePlus} from '@/public';
 import Image, {StaticImageData} from 'next/image';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {SelectedSpec, Tag} from '@/types';
-import {ModalForm, TagInput} from '@/components';
+import {ModalForm, TagInput, ModalNotification} from '@/components';
 import {useModal, useSpec} from '@/context';
 import {useParams} from 'next/navigation';
 import {useComparison} from '@/context/comparisonContext';
@@ -22,6 +22,11 @@ export default function ComparisonForm({type}: {type: string}) {
   const {getDetailComparison, createComparison, updateComparison} =
     useComparison();
   const {showModal, setShowModal} = useModal();
+  const [showNotif, setShowNotif] = useState<boolean>(false);
+  const [notif, setNotif] = useState<{title: string; message: string}>({
+    title: '',
+    message: '',
+  });
   const [payload, setPayload] = useState<Payload>({
     product_name: '',
     variant_name: '',
@@ -93,6 +98,13 @@ export default function ComparisonForm({type}: {type: string}) {
             });
             if (resUpdate.code === 200)
               router.push(`/dashboard/comparison/${id}`);
+            else if (resUpdate.code === 400) {
+              setNotif({
+                title: 'Error',
+                message: resUpdate.message,
+              });
+              setShowNotif(true);
+            }
             return;
 
           default:
@@ -102,13 +114,20 @@ export default function ComparisonForm({type}: {type: string}) {
             });
             if (resCreate.code === 200)
               router.push(`/dashboard/comparison/${id}`);
+            else if (resCreate.code === 400) {
+              setNotif({
+                title: 'Error',
+                message: resCreate.message,
+              });
+              setShowNotif(true);
+            }
             return;
         }
       } catch (error) {
         console.log(error);
       }
     },
-    [payload, id, comparisonId, selectedSpecs, specs, type]
+    [payload, id, comparisonId, selectedSpecs, specs, type, showNotif, notif]
   );
   const callDetailVariant = useCallback(
     async (id: string, comparisonId: string) => {
@@ -174,6 +193,15 @@ export default function ComparisonForm({type}: {type: string}) {
   }, [specs]);
   return (
     <>
+      {showNotif && (
+        <ModalNotification
+          title={notif.title}
+          message={notif.message}
+          onClose={() => {
+            setShowNotif(false);
+          }}
+        />
+      )}
       <div className='grid grid-cols-3 gap-[30px]'>
         <div className='col-span-3'>
           <div className='text-[24px] text-[#3e3e3e] font-medium'>

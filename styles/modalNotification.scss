@@ -1,0 +1,42 @@
+.modal_notif_ctr {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  .modal_notif_content {
+    background: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 10px;
+    gap: 20px;
+    .modal_notif_title {
+      font-weight: 700;
+      font-size: 18px;
+      color: #3e3e3e;
+    }
+    .modal_notif_message {
+      font-weight: 500;
+      font-size: 14px;
+      color: #3e3e3e;
+    }
+    .modal_notif_close {
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      color: #3e3e3e;
+      border: 1.5px solid #dfdfdf;
+      padding: 12px 32px;
+      border-radius: 10px;
+    }
+  }
+}
