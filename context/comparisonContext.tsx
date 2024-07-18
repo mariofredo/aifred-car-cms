@@ -132,22 +132,22 @@ export function ComparisonContextProvider({
       });
       if (image) formData.append('image', image);
       else formData.append('image', '');
-      // console.log(payload, 'payload');
       const response = await fetch(API_ROUTES.comparison_create(productId), {
         method: 'POST',
         headers: {
-          // 'Content-Type': 'application/json',
-          // 'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
       if (!response.ok) {
-        throw new Error('Error');
+        const error = await response.json();
+        return error;
       }
       const data = await response.json();
       return data;
-    } catch (error) {}
+    } catch (error) {
+      return error;
+    }
   };
   const updateComparison = async (
     productId: string,
@@ -179,19 +179,19 @@ export function ComparisonContextProvider({
       const response = await fetch(API_ROUTES.comparison_update(productId), {
         method: 'POST',
         headers: {
-          // 'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
       if (!response.ok) {
-        throw new Error('Error');
+        const error = await response.json();
+        return error;
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.log(error, 'error');
+      return error;
     }
   };
   const getDetailComparison = async (id: string, comparisonId: string) => {

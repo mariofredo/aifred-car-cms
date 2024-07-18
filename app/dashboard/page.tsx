@@ -425,8 +425,8 @@ export default function DashboardHome() {
       setPayload((prev) => ({
         ...prev,
         question_unique_id: {
-          label: data[0].question_set_title,
-          value: data[0].unique_id,
+          label: data[0]?.question_set_title,
+          value: data[0]?.unique_id,
         },
       }));
       setQuestion(
