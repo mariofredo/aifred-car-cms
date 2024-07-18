@@ -136,7 +136,8 @@ export function VariantContextProvider({
         body: formData,
       });
       if (!response.ok) {
-        throw new Error('Error');
+        const error = await response.json();
+        return error;
       }
       const data = await response.json();
       return data;
@@ -179,7 +180,8 @@ export function VariantContextProvider({
         body: formData,
       });
       if (!response.ok) {
-        throw new Error('Error');
+        const error = await response.json();
+        return error;
       }
       const data = await response.json();
       return data;

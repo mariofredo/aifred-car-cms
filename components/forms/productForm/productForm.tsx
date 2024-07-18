@@ -17,7 +17,13 @@ import {
   useState,
 } from 'react';
 import {IoSearch} from 'react-icons/io5';
-import {Table, ModalForm, Button, FilterModal} from '@/components';
+import {
+  Table,
+  ModalForm,
+  Button,
+  FilterModal,
+  ModalNotification,
+} from '@/components';
 import {
   useModal,
   useBrand,
@@ -68,15 +74,11 @@ export default function ProductForm(
   const {getListVariant, deleteVariant} = useVariant();
   const {getListComparison, deleteComparison} = useComparison();
   const {getListBrand} = useBrand();
-  const {
-    selectedSpecs,
-    setSelectedSpecs,
-    getListSpec,
-    specs,
-    setSpecs,
-    fetchSpecs,
-    setFetchSpecs,
-  } = useSpec();
+  const [showNotif, setShowNotif] = useState<boolean>(false);
+  const [notif, setNotif] = useState<{title: string; message: string}>({
+    title: '',
+    message: '',
+  });
   const [brand, setBrand] = useState<Brand[]>([]);
   const [modalProps, setModalProps] = useState({
     title: '',
@@ -132,45 +134,28 @@ export default function ProductForm(
               ...payload,
             });
             if (resUpdate.code === 200) router.push('/dashboard/product');
+            else if (resUpdate.code === 400) {
+              setNotif({title: 'Error', message: resUpdate.message});
+              setShowNotif(true);
+            }
             return;
 
           default:
             const resCreate = await createProduct(payload);
             if (resCreate.code === 200) router.push('/dashboard/product');
+            else if (resCreate.code === 400) {
+              setNotif({title: 'Error', message: resCreate.message});
+              setShowNotif(true);
+            }
             return;
         }
       } catch (error) {
         console.log(error);
       }
     },
-    [payload, id]
+    [payload, id, notif, showNotif]
   );
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const {value} = event.target;
-
-  //   // // Remove non-digit characters from the input value
-  //   // const numericValue = value.replace(/\D/g, '');
-
-  //   // // Format the numeric value
-  //   // const formatted = numericValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-
-  //   setPayload({...payload, price: value});
-  // };
-
-  const handleSelectedSpecChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
-      setSelectedSpecs((prev) => {
-        const updatedData = [...prev];
-        updatedData[idx] = {
-          ...updatedData[idx],
-          value: e.target.value,
-        };
-        return updatedData;
-      });
-    },
-    [selectedSpecs, setSelectedSpecs]
-  );
   const handleRenderFilter = useMemo(
     () =>
       filterModal && (
@@ -339,6 +324,13 @@ export default function ProductForm(
   }, [paginationComparison.currentPage]);
   return (
     <>
+      {showNotif && (
+        <ModalNotification
+          title={notif.title}
+          message={notif.message}
+          onClose={() => setShowNotif(false)}
+        />
+      )}
       <div className='grid grid-cols-3 gap-[30px]'>
         {handleRenderFilter}
         <div className='col-span-3'>
