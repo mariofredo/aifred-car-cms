@@ -120,7 +120,7 @@ export default function VariantForm({type}: {type: string}) {
         console.log(error);
       }
     },
-    [payload, id, variantId, selectedSpecs, specs]
+    [payload, id, variantId, selectedSpecs, specs, tags]
   );
   const callDetailVariant = useCallback(
     async (id: string, variantId: string) => {
